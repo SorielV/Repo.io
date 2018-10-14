@@ -1,0 +1,45 @@
+{
+  "name": "Repo",
+  "version": "1.0.0",
+  "description": "My tiptop Nuxt.js project",
+  "author": "SorielV",
+  "private": true,
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development nodemon --exec babel-node --presets @babel/preset-env server/index.js --watch server",
+    "build": "nuxt build",
+    "start": "cross-env NODE_ENV=production babel-node --presets @babel/preset-env server/index.js",
+    "generate": "nuxt generate",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "precommit": "npm run lint"
+  },
+  "dependencies": {
+    "@nuxtjs/axios": "^5.0.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "cross-env": "^5.2.0",
+    "express": "^4.16.3",
+    "jsonwebtoken": "^8.3.0",
+    "mysql2": "^1.6.1",
+    "nuxt": "^2.0.0",
+    "nuxt-buefy": "^0.2.1",
+    "sequelize": "^4.39.0",
+    "vuex": "^3.0.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/node": "^7.0.0",
+    "@babel/preset-env": "^7.1.0",
+    "babel-eslint": "^8.2.1",
+    "babel-plugin-module-resolver": "^3.1.1",
+    "eslint": "^5.0.1",
+    "eslint-config-prettier": "^3.1.0",
+    "eslint-loader": "^2.0.0",
+    "eslint-plugin-prettier": "2.6.2",
+    "eslint-plugin-vue": "^4.0.0",
+    "nodemon": "^1.11.0",
+    "prettier": "1.14.3",
+    "pug": "^2.0.3",
+    "pug-plain-loader": "^1.0.0"
+  }
+}

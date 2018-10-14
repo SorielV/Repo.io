@@ -1,0 +1,18 @@
+{
+  "plugins": [
+    [
+      "module-resolver",
+      {
+        "root": [
+          "./"
+        ],
+        "alias": {
+          "config": "./server/config",
+          "schemas": "./server/models",
+          "models": "./server/config/sequelize",
+          "apis": "./server/api"
+        }
+      }
+    ]
+  ]
+}
