@@ -43,6 +43,11 @@ module.exports = (sequelize, Type) => {
       allowNull: true,
       default: 1
     },
+    image: {
+      type: Type.STRING,
+      allowNull: true,
+      default: ""
+    },
     type: {
       type: Type.INTEGER
     },

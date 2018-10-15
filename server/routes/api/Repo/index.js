@@ -1,5 +1,6 @@
 import { Router } from 'express'
-import { Repo, RepoAuth, RepoComment as Comment } from './../../../config/sequelize'
+import { Repo, RepoAuth, ViewRepoComment as ViewComment, RepoComment as Comment } from './../../../config/sequelize'
+import { isAuth } from './../../../lib/middleware'
 
 const router = Router()
 
@@ -137,6 +138,9 @@ router.get('/:id', async (req, res) => {
   }
 })
 
+// Only Auth Users
+router.use(isAuth)
+
 router.post('/', async (req, res) => {
   try {
     const repo = (await Repo.create(req.body)).get({ plain: true })
@@ -184,7 +188,7 @@ router.get('/:id/comment', async (req, res) => {
     const { query: { all = false }, query: { page = 1 }, query: { limit = 5 } } = req
     const offset = (Number(page) - 1) * Number(limit);
 
-    const { count, rows } = await Comment.findAndCountAll({
+    const { count, rows } = await ViewComment.findAndCountAll({
       where: [{
         idRepository
       }],
@@ -204,6 +208,23 @@ router.get('/:id/comment', async (req, res) => {
       },
       data: rows
     })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ message: error.message })
+  }
+})
+
+router.post('/:id/comment', async (req, res) => {
+  try {
+    const idRepository = Number(req.params.id)
+    const { id: idUser, username } = req.user
+    const { comment } = req.body
+    if (comment.trim()) {
+      const data = (await Comment.create({ idRepository, idUser, username, comment })).get({ plain: true })
+      return res.status(201).json({ data })
+    } else {
+      return res.status(400)
+    }
   } catch (error) {
     console.error(error)
     return res.status(500).json({ message: error.message })

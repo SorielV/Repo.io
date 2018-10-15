@@ -42,10 +42,11 @@ router.get('/login/status', (req, res) => {
   if (!token) {
     return res.status(403).json({ auth: false, message: '!Token'})
   } else {
+    console.log(token)
     jwt.verify(token, jwtConfig.secret, (error, user) => {
       if (error) consola.error(error)
-      return res.status(err ? 500 : 200)
-        .json(err
+      return res.status(error ? 500 : 200)
+        .json(error
           ? { auth: false, message: 'Token no valido' }
           : user
         )

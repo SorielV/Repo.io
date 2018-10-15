@@ -20,6 +20,9 @@ export default {
         { title: 'Inspire', icon: 'lightbulb', to: { name: 'inspire' } }
       ]
     }
+  },
+  created() {
+    this.$store.dispatch('loadAuth')
   }
 }
 </script>

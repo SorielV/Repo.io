@@ -159,7 +159,7 @@ export default {
     },
     handleViewRepo(repo) {
       console.log(repo)
-      this.$router.push('/repositories/' + repo.id)
+      this.$router.push('/repo/' + repo.id)
     }
   }
 }

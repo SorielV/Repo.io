@@ -1,5 +1,5 @@
 module.exports = (sequelize, Type) => {
-  return sequelize.define('RepositoryComment', {
+  return sequelize.define('ViewRepositoryComment', {
     id: {
       type: Type.INTEGER,
       primaryKey: true,
@@ -13,8 +13,9 @@ module.exports = (sequelize, Type) => {
       length: 20,
       allowNull: false
     },
-    idUser: {
-      type: Type.INTEGER
+    profileImage: {
+      type: Type.STRING,
+      alllowNull: true
     },
     comment: {
       type: Type.STRING,
@@ -24,10 +25,14 @@ module.exports = (sequelize, Type) => {
     createdAt: {
       type: Type.DATE,
       allowNull: true
+    },
+    updatedAt: {
+      type: Type.DATE,
+      allowNull: true
     }
   },
   {
-    tableName: 'RepositoryComment',
+    tableName: 'ViewRepositoryComment',
     timestamp: true
   }
 )}

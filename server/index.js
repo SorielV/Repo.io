@@ -36,7 +36,6 @@ async function start() {
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(LoginRouter)
   app.use('/api/user', UserRouter)
-  app.use('/api/user', UserRouter)
   app.use('/api/repo', RepoRouter)
   app.use(nuxt.render)
   
