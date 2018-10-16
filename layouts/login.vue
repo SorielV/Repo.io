@@ -51,8 +51,13 @@ export default {
     }
   },
   methods: {
-    handleSubmit() {
-      this.$store.dispatch('login', this.user)
+    async handleSubmit() {
+      try {
+        this.$store.dispatch('login', this.user)
+        this.$router.push('/')
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 }

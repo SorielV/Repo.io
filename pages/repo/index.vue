@@ -12,7 +12,7 @@
         ul
           li(v-for="(type, key) in catalog.types" :key="key")
             a(@click='handleSelectType($event, type.value)' v-text="type.text")
-    section.container.is-fluid.block
+    section
       .columns.is-multiline.is-centered
         .column.is-12(v-if="filtered.length === 0")
           section.hero.has-text-centered
@@ -51,23 +51,22 @@ export default {
     try {
       if (Object.keys(params).length) {
         const {
-          data: { data }
+          data: { data: repositories }
         } = await axios.get(`/api/repo/?search=${params}`)
         return {
           params,
-          repositories: data,
-          filtered: data,
+          repositories,
+          filtered: repositories,
           filter: ''
         }
       } else {
         const {
-          data: { data }
+          data: { data: repositories }
         } = await axios.get('http://localhost:3000/api/repo')
-        console.log(data)
         return {
           params,
-          repositories: data,
-          filtered: data
+          repositories,
+          filtered: repositories
         }
       }
     } catch (error) {
@@ -100,6 +99,7 @@ export default {
   },
   watch: {
     types(types) {
+      console.log(types)
       if (types.length === 0) {
         this.filtered = this.repositories
       } else {

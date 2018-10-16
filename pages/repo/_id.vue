@@ -13,7 +13,7 @@
           p
             strong {{ comment.username }}
             br
-            |         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis porta eros lacus, nec ultricies elit blandit non. Suspendisse pellentesque mauris sit amet dolor blandit rutrum. Nunc in tempus turpis.
+            |         {{ comment.comment }}
             br
             small
               | {{ new Date(comment.createdAt).toDateString() }}

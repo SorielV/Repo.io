@@ -17,9 +17,7 @@ const store = () => {
   return new Vuex.Store({
     state: () => ({
       isAuth: false,
-      token: process.browser
-        ? sessionStorage.getItem('token')
-        : null,
+      token: process.browser ? sessionStorage.getItem('token') : null,
       user: {}
     }),
     getters: {
@@ -31,6 +29,15 @@ const store = () => {
       }
     },
     mutations: {
+      clearAuth: state => {
+        state.token = null
+        state.user = {}
+        state.isAuth = false
+        if (process.browser) {
+          window.sessionStorage.removeItem('token')
+          window.sessionStorage.removeItem('user')
+        }
+      },
       setAuth: (state, token, user) => {
         state.token = token
         state.user = user
@@ -62,9 +69,18 @@ const store = () => {
             }
             axios.defaults.headers.common['x-access-token'] = token
             let { data: user } = await axios.get('/login/status')
-            context.commit('setAuth', token, user)
+            context.commit('login', { token, user })
           } catch (error) {
-            console.log(error)
+            if (error.response) {
+              const {
+                response: { data }
+              } = error
+              if (data.code && data.code === 400) {
+                context.commit('clearAuth')
+                $nuxt.$router.push('/login')
+              }
+            }
+            console.log(error, Object.keys(error))
           }
         }
       },
@@ -76,13 +92,16 @@ const store = () => {
           console.log(error)
         }
       },
-      login: async (context, { username, password }) => {
-        try {
-          const { data } = await axios.post('/login', { username, password })
-          context.commit('login', data)
-        } catch (error) {
-          console.log(error)
-        }
+      login: (context, { username, password }) => {
+        return new Promise(async (resolve, reject) => {
+          try {
+            const { data } = await axios.post('/login', { username, password })
+            context.commit('login', data)
+            return resolve()
+          } catch (error) {
+            return reject(error)
+          }
+        })
       }
     }
   })

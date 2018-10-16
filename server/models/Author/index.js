@@ -41,8 +41,9 @@ module.exports = (sequelize, Type) => {
         type: Type.DATE,
         allowNull: true
       }
-    }, 
+    },
     {
+      tableName: 'Author',
       timestamps: true
     }
   )}

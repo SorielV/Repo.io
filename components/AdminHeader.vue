@@ -1,6 +1,6 @@
 <template lang="pug">
   section.header
-    section.hero.is-black.is-medium.is-bold
+    section.hero.is-info.is-medium.is-bold
       .hero-head
         nav.navbar
           .container
@@ -20,13 +20,11 @@
                     li
                       nuxt-link(to='/admin') Dashboard
                     li
-                      nuxt-link(to='/repo') Repositorios Digitales
+                      nuxt-link(to='/admin/users') Usuario
                     li
-                      nuxt-link(to='/homework') Tareas
+                      nuxt-link(to='/admin/repos') Repositorios
                     li
-                      nuxt-link(to='/community') Comunidad
-                    li
-                      nuxt-link(to='/chat') Chat Room
+                      nuxt-link(to='/admin/authors') Autores
                   span.navbar-item(v-if="$store.state.isAuth")
                     b-dropdown(v-model='navigation', position='is-bottom-left')
                       img(:src="$store.state.user.profileImage || 'https://bulma.io/images/placeholders/128x128.png'" width="48" height="48" slot='trigger')
@@ -40,14 +38,6 @@
                       b-dropdown-item(value='logout')
                         b-icon(icon='logout')
                         |                         Logout
-                  span.navbar-item(v-else)
-                    .buttons
-                      nuxt-link(to="/login").button.is-info.is-outlined
-                        span(title='Ingresa C:') Ingresa
-                      nuxt-link(to="/singup").button.is-danger
-                        span.icon
-                          i.mdi.mdi-account
-                        span(title='Registro C:') Registro
 </template>
 
 <script>

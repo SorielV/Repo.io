@@ -143,7 +143,14 @@ router.use(isAuth)
 
 router.post('/', async (req, res) => {
   try {
-    const repo = (await Repo.create(req.body)).get({ plain: true })
+    const { id: idUser, username } = req.user
+
+    // Remove Conflit Keys
+    delete req.body.id
+    delete req.body.username
+    delete req.body.idUser
+
+    const repo = (await Repo.create({ idUser, username, ...req.body })).get({ plain: true })
     return res.status(repo ? 201 : 500).json({ data: repo });
   } catch (error) {
     console.error(error)

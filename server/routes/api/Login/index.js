@@ -42,9 +42,17 @@ router.get('/login/status', (req, res) => {
   if (!token) {
     return res.status(403).json({ auth: false, message: '!Token'})
   } else {
-    console.log(token)
     jwt.verify(token, jwtConfig.secret, (error, user) => {
-      if (error) consola.error(error)
+      if (error) {
+        console.error(error.name)
+        if (error.name === 'TokenExpiredError') {
+          return res.status(400).json({
+            message: 'Token Caduco',
+            code: 400
+          })
+        }
+      }
+      console.log(error)
       return res.status(error ? 500 : 200)
         .json(error
           ? { auth: false, message: 'Token no valido' }
