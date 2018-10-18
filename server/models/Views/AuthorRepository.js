@@ -1,5 +1,5 @@
 module.exports = (sequelize, Type) => {
-  const Model = sequelize.define('ViewAuthor', {
+  const Model = sequelize.define('ViewRepoAuthor',{
     idAuthor: {
       type: Type.INTEGER
     },
@@ -16,11 +16,10 @@ module.exports = (sequelize, Type) => {
       type: Type.DATE,
     }
   },
-    {
-      timestamps: false,
-      tableName: 'ViewAuthor'
-    }
-  )
+  {
+    timestamps: false,
+    tableName: 'ViewRepoAuthor'
+  })
   Model.removeAttribute('id')
   return Model
 }

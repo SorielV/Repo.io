@@ -4,12 +4,25 @@ import { isAuth } from './../../../lib/middleware'
 
 const router = Router()
 
+const deleteAuthorKeys = (repo) => {
+  delete repo['author.idAuthor']
+  delete repo["author.idRepository"]
+  delete repo["author.firstName"]
+  delete repo["author.lastName"]
+  delete repo["author.createdAt"]
+}
+
 const cleanAuthors = (repos) => {
-  let current = -1
+  let currentId = 0
+  let currentIndex;
+  let repo;
+
   console.time('cleanAuthors')
   if (Array.isArray(repos)) {
-    repos.forEach((repo, index) => {
-      if (repo.id !== current) { // Nuevo Repo
+    for (let index = 0; index < repos.length; index++) {
+      repo = repos[index]
+      if (repo.id !== currentId) {
+        console.log('1.1')
         if (repo['author.idAuthor'] !== null) {
           repo.author = []
           repo.author.push({
@@ -19,25 +32,17 @@ const cleanAuthors = (repos) => {
             lastName: repo['author.lastName'],
             createdAt: repo['author.createdAt'],
           })
-          delete repo['author.idAuthor']
-          delete repo["author.idRepository"]
-          delete repo["author.firstName"]
-          delete repo["author.lastName"]
-          delete repo["author.createdAt"]
-          // repos.push(repo)
+          deleteAuthorKeys(repo)
         } else {
+          console.log('1.2')
           repo.author = []
-          delete repo['author.idAuthor']
-          delete repo["author.idRepository"]
-          delete repo["author.firstName"]
-          delete repo["author.lastName"]
-          delete repo["author.createdAt"]
-          // repos.push(repo)
+          deleteAuthorKeys(repo)
         }
-        current = index
-      } else { // Repo Actual
+        currentIndex = index
+        currentId = repo.id
+      } else {
         if (repo['author.idAuthor'] !== null) {
-          repos[current].author.push({
+          repos[currentIndex].author.push({
             idAuthor: repo['author.idAuthor'],
             idRepository: repo['author.idRepository'],
             firstName: repo['author.firstName'],
@@ -45,9 +50,12 @@ const cleanAuthors = (repos) => {
             createdAt: repo['author.createdAt'],
           })
         }
+        repos.splice(index--, 1)
       }
-    })
+    }
   } else {
+    console.log('2')
+    console.table([repo, currentIndex, currentId])
     repos.author = []
     if (repos['author.idAuthor'] !== null) {
       repos.author.push({
@@ -58,11 +66,7 @@ const cleanAuthors = (repos) => {
         createdAt: repos['author.createdAt'],
       })
     }
-    delete repos['author.idAuthor']
-    delete repos["author.idRepository"]
-    delete repos["author.firstName"]
-    delete repos["author.lastName"]
-    delete repos["author.createdAt"]
+    deleteAuthorKeys(repo)
   }
   console.timeEnd('cleanAuthors')
 }

@@ -5,6 +5,8 @@ import UserRouter from './routes/api/User'
 import RepoRouter from './routes/api/Repo'
 import LoginRouter from './routes/api/Login'
 import AuthorRouter from './routes/api/Author'
+import CatTopics from './routes/api/Catalog/Topics'
+import CatTypes from './routes/api/Catalog/Types'
 
 // Nuxt Configuration
 import consola from 'consola'
@@ -39,6 +41,8 @@ async function start() {
   app.use('/api/user', UserRouter)
   app.use('/api/repo', RepoRouter)
   app.use('/api/author', AuthorRouter)
+  app.use('/api/type', CatTypes)
+  app.use('/api/topic', CatTopics)
   app.use(nuxt.render)
   
   // Listen the server

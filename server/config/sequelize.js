@@ -6,6 +6,9 @@ const RepoCommentModel = require('./../models/Repo/Comment')
 const ViewRepoCommentModel = require('./../models/Views/Repo/Comment')
 const RepoAuthModel = require('./../models/Views/AuthorRepository')
 
+const CatTypesModel = require('./../models/Catalog/Types')
+const CatTopicsModel = require('./../models/Catalog/Topics')
+
 const sequelize = new Sequelize('Repos', 'java', '', {
   dialect: 'mysql'
 })
@@ -16,6 +19,9 @@ const Author = AuthorModel(sequelize, Sequelize)
 const RepoAuth = RepoAuthModel(sequelize, Sequelize)
 const RepoComment = RepoCommentModel(sequelize, Sequelize)
 const ViewRepoComment = ViewRepoCommentModel(sequelize, Sequelize)
+const CatTypes = CatTypesModel(sequelize, Sequelize)
+const CatTopics = CatTopicsModel(sequelize, Sequelize)
+
 
 Repo.hasMany(RepoAuth, {foreignKey: 'idRepository', as: 'author', allowNull: false, default: null })
 
@@ -25,5 +31,7 @@ module.exports = {
   Author,
   RepoAuth,
   RepoComment,
-  ViewRepoComment
+  ViewRepoComment,
+  CatTypes,
+  CatTopics
 }

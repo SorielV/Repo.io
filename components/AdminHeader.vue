@@ -1,6 +1,6 @@
 <template lang="pug">
   section.header
-    section.hero.is-info.is-medium.is-bold
+    section.hero.is-danger.is-medium.is-bold
       .hero-head
         nav.navbar
           .container
@@ -13,31 +13,38 @@
                 span
             #navbarMenu.navbar-menu
               .navbar-end
-                .tabs.is-right
-                  ul
-                    li
-                      nuxt-link(to='/') Inicio
-                    li
-                      nuxt-link(to='/admin') Dashboard
-                    li
-                      nuxt-link(to='/admin/users') Usuario
-                    li
-                      nuxt-link(to='/admin/repos') Repositorios
-                    li
-                      nuxt-link(to='/admin/authors') Autores
-                  span.navbar-item(v-if="$store.state.isAuth")
-                    b-dropdown(v-model='navigation', position='is-bottom-left')
-                      img(:src="$store.state.user.profileImage || 'https://bulma.io/images/placeholders/128x128.png'" width="48" height="48" slot='trigger')
-                      b-dropdown-item(custom='')
-                        | Logged as 
-                        b Rafael Beraldo
-                      hr.dropdown-divider
-                      b-dropdown-item(value='settings')
-                        b-icon(icon='settings')
-                        |                         Settings
-                      b-dropdown-item(value='logout')
-                        b-icon(icon='logout')
-                        |                         Logout
+                .navbar-item
+                  nuxt-link.has-text-white(to='/') Inicio
+                .navbar-item
+                  nuxt-link.has-text-white(to='/admin') Dashboard
+                .navbar-item
+                  nuxt-link.has-text-white(to='/admin/users') Usuarios
+                .navbar-item
+                  nuxt-link.has-text-white(to='/admin/repos') Repositorios
+                .navbar-item
+                  nuxt-link.has-text-white(to='/admin/authors') Autores
+                .navbar-item
+                  b-dropdown
+                    button.button.is-danger(slot='trigger')
+                      span Catalogos
+                      b-icon(icon='menu-down')
+                    b-dropdown-item
+                      nuxt-link.has-text-black(to='/admin/catalog/types') Tipos De Repositorios
+                    b-dropdown-item
+                      nuxt-link.has-text-black(to='/admin/catalog/topics') Temas
+                .navbar-item(v-if="$store.state.isAuth")
+                  b-dropdown(v-model='navigation', position='is-bottom-left')
+                    img(:src="$store.state.user.profileImage || 'https://bulma.io/images/placeholders/128x128.png'" width="48" height="48" slot='trigger')
+                    b-dropdown-item(custom='')
+                      | Logged as 
+                      b Rafael Beraldo
+                    hr.dropdown-divider
+                    b-dropdown-item(value='settings')
+                      b-icon(icon='settings')
+                      |                         Settings
+                    b-dropdown-item(value='logout')
+                      b-icon(icon='logout')
+                      |                         Logout
 </template>
 
 <script>

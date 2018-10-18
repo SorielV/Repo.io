@@ -1,28 +1,7 @@
-/**
-  create table User
-  (
-    id            mediumint auto_increment,
-    username      varchar(20)                        not null,
-    email         varchar(45)                        not null,
-    firstName     varchar(45)                        not null,
-    lastName      varchar(45)                        not null,
-    birthDate     date                               not null,
-    profileImage  varchar(80)                        null,
-    userType      smallint(2)                        not null,
-    recoveryToken varchar(45)                        null,
-    emailToken    varchar(45)                        null,
-    createdAt     datetime default CURRENT_TIMESTAMP null,
-    updatedAt     datetime default CURRENT_TIMESTAMP null
-    primary key (id, username),
-    constraint User_username_uindex
-    unique (username)
-  );
-*/
-
 module.exports = (sequelize, Type) => {
   return sequelize.define('User', {
     id: {
-      type: Type.INTEGER,
+      type: Type.MEDIUMINT,
       primaryKey: true,
       autoIncrement: true
     },
@@ -57,7 +36,7 @@ module.exports = (sequelize, Type) => {
       length: 80
     },
     userType: {
-      type: Type.INTEGER
+      type: Type.SMALLINT
     },
     recoveryToken: {
       type: Type.STRING,
