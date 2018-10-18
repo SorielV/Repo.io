@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { Repo, RepoAuth, ViewRepoComment as ViewComment, RepoComment as Comment } from './../../../config/sequelize'
+import { Repo, RepoAuthor, ViewRepoComment as ViewComment, RepoComment as Comment } from './../../../config/sequelize'
 import { isAuth } from './../../../lib/middleware'
 
 const router = Router()
@@ -71,6 +71,11 @@ const cleanAuthors = (repos) => {
   console.timeEnd('cleanAuthors')
 }
 
+/**
+ * CRUD Repository 
+ * /api/repo/[(:id)|(\b)]
+**/
+
 router.get('/', async (req, res) => {
   try {
     const { query: { all = false }, query: { page = 1 }, query: { limit = 5 } } = req
@@ -80,7 +85,7 @@ router.get('/', async (req, res) => {
     if (all) {
       data = await Repo.findAll({
         include: [{
-          model: RepoAuth,
+          model: RepoAuthor,
           as: 'author',
           required: false
         }],
@@ -97,7 +102,7 @@ router.get('/', async (req, res) => {
         offset,
         $sort: { id: 1 },
         include: [{
-          model: RepoAuth,
+          model: RepoAuthor,
           as: 'author',
           required: false
         }],
@@ -128,7 +133,7 @@ router.get('/:id', async (req, res) => {
     const id = Number(req.params.id)
     const repo = await Repo.findById(id, {
       include: [{
-        model: RepoAuth,
+        model: RepoAuthor,
         as: 'author',
         required: false
       }],
@@ -170,7 +175,7 @@ const updateParams = (data) => {
 
 router.put('/:id', async (req, res) => {
   try {
-    delete req.body.id
+    delete req.params.id
     const { params: { id } } = req
     const repo = await (await Repo.findById(Number(id))).updateAttributes(req.body)
     return res.status(200).json({ data: repo })
@@ -193,6 +198,92 @@ router.delete('/:id', async (req, res) => {
   }
 })
 
+/**
+ * CRUD Author 
+ * /api/repo/:id/author/[(:id)|(\b)]
+**/
+
+router.get('/:id/author', async (req, res) => {
+  try {
+    const idRepository = Number(req.params.id)
+    const { query: { all = false }, query: { page = 1 }, query: { limit = 10 } } = req
+    const offset = (Number(page) - 1) * Number(limit);
+
+    const { count, rows } = await RepoAuthor.findAndCountAll({
+      where: [{
+        idRepository
+      }],
+      limit: Number(limit),
+      offset,
+      $sort: { id: 1 },
+      raw: true
+    })
+
+    return res.status(200).json({
+      total: count,
+      prevPage: page - 1 > 0 ? `http://localhost:4000/api/author?page=${(Number(page) - 1)}&limit=${limit}` : null,
+      nextPage: count > (offset + (Number(page) * Number(limit))) ? `http://localhost:4000/api/author?page=${(Number(page) + 1)}&limit=${limit}`: null,
+      params: {
+        limit: Number(limit),
+        page: Number(page)
+      },
+      data: rows
+    })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ message: error.message })
+  }
+})
+
+router.post('/:id/author', async (req, res) => { 
+  try {
+    const idRepository = Number(req.params.id)
+    const author = await (await RepoAuthor.findAll({ where: { idRepository }})).updateAttributes(req.body)
+    return res.status(200).json(author)
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ message: error.message, data: [] })
+  }
+})
+
+router.put('/:idRepository/author/:id', async (req, res) => {
+  try {
+    delete req.params.id
+    delete req.params.idRepository
+    const { userType: isAdmin } = req.user
+    if (!isAdmin) {
+      return res.status(403).json({ message: 'No tienes los privilegios para realizar esta accion', code: 403 })
+    }
+    const id = Number(req.params.id)
+    const author = await (await RepoAuthor.findById(Number(id))).updateAttributes(req.body)
+    return res.status(200).json({ data: author })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ message: error.message })
+  }
+})
+
+router.delete('/:id', async (req, res) => {
+  try {
+    const id = Number(req.params.id)
+    const result = await RepoAuthor.destroy({
+      where: { id }
+    })
+    return res.status(result ? 204 : 400).end()
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ message: error.message })
+  }
+})
+
+/**
+ * CRUD Comment
+ * /api/repo/:id/author/[(:id)|(\b)]
+**/
+function getDataPaginated(Model, req, options, where) {
+  // const { count, rows } = await Model.findAndCountAll({ where, ...options })
+}
+
 router.get('/:id/comment', async (req, res) => {
   try {
     const idRepository = Number(req.params.id)
@@ -202,13 +293,13 @@ router.get('/:id/comment', async (req, res) => {
     const { count, rows } = await ViewComment.findAndCountAll({
       where: [{
         idRepository
-      }],
+      }], 
       limit: Number(limit),
       offset,
       $sort: { id: 1 },
       raw: true
     })
-    
+
     return res.status(200).json({
       total: count,
       prevPage: page - 1 > 0 ? `http://localhost:4000/api/comment?page=${(Number(page) - 1)}&limit=${limit}` : null,

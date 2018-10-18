@@ -16,20 +16,20 @@ const sequelize = new Sequelize('Repos', 'java', '', {
 const User = UserModel(sequelize, Sequelize)
 const Repo = RepoModel(sequelize, Sequelize)
 const Author = AuthorModel(sequelize, Sequelize)
-const RepoAuth = RepoAuthModel(sequelize, Sequelize)
+const RepoAuthor = RepoAuthModel(sequelize, Sequelize)
 const RepoComment = RepoCommentModel(sequelize, Sequelize)
 const ViewRepoComment = ViewRepoCommentModel(sequelize, Sequelize)
 const CatTypes = CatTypesModel(sequelize, Sequelize)
 const CatTopics = CatTopicsModel(sequelize, Sequelize)
 
 
-Repo.hasMany(RepoAuth, {foreignKey: 'idRepository', as: 'author', allowNull: false, default: null })
+Repo.hasMany(RepoAuthor, {foreignKey: 'idRepository', as: 'author', allowNull: false, default: null })
 
 module.exports = {
   User,
   Repo,
   Author,
-  RepoAuth,
+  RepoAuthor,
   RepoComment,
   ViewRepoComment,
   CatTypes,
