@@ -1,5 +1,5 @@
 <template lang="pug">
-  section(style="padding: 4%;")
+  section(style="padding: 2%;")
     section.block
       .field.is-grouped.is-fullwidth(style="justify-content: center;")
         p.control.is-expanded
@@ -43,16 +43,13 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
-  async asyncData({ params = null }) {
-    console.log(params)
+  async asyncData({ app, params }) {
     try {
       if (Object.keys(params).length) {
         const {
           data: { data: repositories }
-        } = await axios.get(`/api/repo/?search=${params}`)
+        } = await app.$axios.get(`/api/repo/?search=${params}`)
         return {
           params,
           repositories,
@@ -62,7 +59,7 @@ export default {
       } else {
         const {
           data: { data: repositories }
-        } = await axios.get('http://localhost:3000/api/repo')
+        } = await app.$axios.get('/api/repo')
         return {
           params,
           repositories,
@@ -130,12 +127,6 @@ export default {
         })
       }
     }
-  },
-  async created() {
-    const {
-      data: { data }
-    } = await axios.get('/api/repo')
-    // console.log(data)
   },
   methods: {
     getType(type) {

@@ -1,17 +1,4 @@
 import Vuex from 'vuex'
-import axios from 'axios'
-
-/*
-const isValidUser = (userStr) => {
-  try {
-    const user =  JSON.parse(userStr)
-    return user
-  } catch (error) {
-    console.log(error)
-    return null
-  }
-}
-*/
 
 const store = () => {
   return new Vuex.Store({
@@ -44,10 +31,10 @@ const store = () => {
         state.isAuth = true
       },
       login: (state, { user, token }) => {
+        console.log(user, token)
         state.isAuth = true
         state.user = user
         state.token = token
-        axios.defaults.headers.common['x-access-token'] = state.token
         if (process.browser) {
           window.sessionStorage.setItem('token', state.token)
           window.sessionStorage.setItem('user', JSON.stringify(state.user))
@@ -59,44 +46,54 @@ const store = () => {
       }
     },
     actions: {
-      loadAuth: async context => {
-        if (process.browser) {
-          try {
-            const token = window.sessionStorage.getItem('token') || null
-            if (!token) {
-              console.log('loadAuth::Fail')
-              return
+      async loadAuth({ commit }) {
+        if (!process.browser) return
+        try {
+          let currentToken = window.sessionStorage.getItem('token') || null
+          if (!currentToken) {
+            console.log('loadAuth::Fail')
+            return
+          }
+          this.$axios.defaults.headers.common[
+            'Authorization'
+          ] = `Bearer ${currentToken}`
+          let {
+            data: { user = {}, token = null }
+          } = await this.$axios.get('/login/status')
+          this.$axios.defaults.headers.common[
+            'Authorization'
+          ] = `Bearer ${token}`
+          commit('login', { token, user })
+        } catch (error) {
+          if (error.response) {
+            const {
+              response: { data }
+            } = error
+            if (data.code && data.code === 400) {
+              commit('clearAuth')
+              $nuxt.$router.push('/login')
             }
-            axios.defaults.headers.common['x-access-token'] = token
-            let { data: user } = await axios.get('/login/status')
-            context.commit('login', { token, user })
-          } catch (error) {
-            if (error.response) {
-              const {
-                response: { data }
-              } = error
-              if (data.code && data.code === 400) {
-                context.commit('clearAuth')
-                $nuxt.$router.push('/login')
-              }
-            }
-            console.log(error, Object.keys(error))
           }
         }
       },
-      logout: async context => {
+      async logout({ commit }) {
         try {
-          await axios.post('/logout')
-          context.commit('logout')
+          await this.$axios.post('/logout')
+          commit('logout')
         } catch (error) {
           console.log(error)
         }
       },
-      login: (context, { username, password }) => {
+      login({ commit }, { username, password }) {
         return new Promise(async (resolve, reject) => {
           try {
-            const { data } = await axios.post('/login', { username, password })
-            context.commit('login', data)
+            const {
+              data: { user, token }
+            } = await this.$axios.post('/login', { username, password })
+            this.$axios.defaults.headers.common[
+              'Authorization'
+            ] = `Bearer ${token}`
+            commit('login', { user, token })
             return resolve()
           } catch (error) {
             return reject(error)

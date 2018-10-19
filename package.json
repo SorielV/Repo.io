@@ -6,6 +6,7 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon --exec babel-node --presets @babel/preset-env server/index.js --watch server",
+    "java-dev": "cross-env NODE_ENV=development BASE_URL=http://localhost:8080 nodemon --exec babel-node --presets @babel/preset-env ./server/java-index.js --watch server",
     "build": "nuxt build",
     "start": "cross-env NODE_ENV=production babel-node --presets @babel/preset-env server/index.js",
     "generate": "nuxt generate",

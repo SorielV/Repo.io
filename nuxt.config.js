@@ -2,7 +2,6 @@ const pkg = require('./package')
 
 module.exports = {
   mode: 'universal',
-
   /*
   ** Headers of the page
   */
@@ -15,7 +14,14 @@ module.exports = {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-    ]
+    ],
+    htmlAttrs: {
+      class: 'has-navbar-fixed-top'
+    },
+    script: [
+      { src: "/public/navbar.js" }
+    ],
+    class: 'has-navbar-fixed-top'
   },
 
   /*
@@ -46,6 +52,7 @@ module.exports = {
   ** Axios module configuration
   */
   axios: {
+    baseURL: process.env.BASE_URL || 'http://localhost:3000'
     // See https://github.com/nuxt-community/axios-module#options
   },
 

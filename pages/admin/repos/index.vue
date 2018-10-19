@@ -550,7 +550,6 @@
 
 <script>
 import debounce from 'lodash/debounce'
-import axios from 'axios'
 
 const columns = [
   {
@@ -646,11 +645,11 @@ export default {
       title: 'Repositorios'
     }
   },
-  async asyncData() {
+  async asyncData({ app }) {
     try {
       const {
         data: { data }
-      } = await axios.get('http://localhost:3000/api/repo')
+      } = await app.$axios.get('/api/repo')
       return {
         data: data,
         table: {
@@ -831,7 +830,7 @@ export default {
     },
     async getAuthors() {
       try {
-        const { data } = await axios.get('/public/authors.json')
+        const { data } = await this.$axios.get('/public/authors.json')
         this.author = data
       } catch (error) {
         console.error(error)
@@ -854,7 +853,7 @@ export default {
       try {
         const {
           data: { data }
-        } = await axios.post('/api/repo', this.create)
+        } = await this.$axios.post('/api/repo', this.create)
         this.create = {}
         data.author = [] // Estado Inicial
         this.data.push(data)
@@ -876,7 +875,7 @@ export default {
     async handleSubmitUpdate(ev) {
       const item = this.update.data
       try {
-        const { data } = await axios.put(
+        const { data } = await this.$axios.put(
           '/api/repo/' + item.id,
           this.update.data
         )
@@ -908,7 +907,7 @@ export default {
     },
     async removeAuthor(row) {
       try {
-        const { data } = await axios.delete('/api/repo/' + row.id)
+        const { data } = await this.$axios.delete('/api/repo/' + row.id)
         this.data.splice(this.data.indexOf(row), 1) // General
         const dataIndex = this.table.data.indexOf(row) // Subbusqueda
 
@@ -987,7 +986,10 @@ export default {
       try {
         const {
           data: { data }
-        } = await axios.post(`/api/repo/${idRepository}/author`, repoAuthor)
+        } = await this.$axios.post(
+          `/api/repo/${idRepository}/author`,
+          repoAuthor
+        )
         data.lastName = lastName
         data.firstName = firstName
         console.log(data)

@@ -163,8 +163,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 const columns = [
   {
     field: 'id',
@@ -216,11 +214,11 @@ export default {
       title: 'Autores'
     }
   },
-  async asyncData() {
+  async asyncData({ app }) {
     try {
       const {
         data: { data }
-      } = await axios.get('http://localhost:3000/api/author')
+      } = await app.$axios.get('/api/author')
       return {
         data: data,
         table: {
@@ -308,7 +306,7 @@ export default {
     },
     async onCreate() {
       try {
-        const { data } = await axios.post('/api/author', this.create)
+        const { data } = await this.$axios.post('/api/author', this.create)
         const author = data.data
         this.create = {}
         this.data.push(author)
@@ -342,7 +340,7 @@ export default {
     async onUpdate(ev) {
       const author = this.update.data
       try {
-        const { data } = await axios.put(
+        const { data } = await this.$axios.put(
           '/api/author/' + author.id,
           this.update.data
         )
@@ -371,7 +369,7 @@ export default {
     },
     async removeAuthor(row) {
       try {
-        const { data } = await axios.delete('/api/author/' + row.id)
+        const { data } = await this.$axios.delete('/api/author/' + row.id)
         this.data.splice(this.data.indexOf(row), 1) // General
         const dataIndex = this.table.data.indexOf(row) // Subbusqueda
 
