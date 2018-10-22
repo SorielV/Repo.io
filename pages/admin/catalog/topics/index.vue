@@ -62,28 +62,19 @@
               ) {{ props.row['id'] }}
 
               b-table-column(
-                field="firstName"
-                label="Nombre"
+                field="text"
+                label="Texto"
                 :visible="true"
                 sortable
-              ) {{ props.row['firstName'] }}
+              ) {{ props.row['text'] }}
                   
 
               b-table-column(
-                field="lastName"
-                label="Apellido"
+                field="description"
+                label="Descripcion"
                 :visible="true"
                 sortable
-              ) {{ props.row['lastName'] }}
-                  
-
-              b-table-column(
-                field="createdAt"
-                label="Fecha de Creacion"
-                :visible="true"
-                sortable
-              ) {{ props.row['createdAt'] }}
-
+              ) {{ props.row['description'] }}
 
               b-table-column(
                 field="id" 
@@ -116,42 +107,42 @@
         b-tab-item(label="Crear")
           form.block(v-on:submit.prevent="onCreate")
             b-field(
-              label="Nombre"
+              label="Tema"
             )
-              b-input(type="Nombre"
-                v-model="create.firstName"
+              b-input(type="text"
+                v-model="create.text"
                 value=""
                 maxlength="60"
                 :required="true"
               )
             b-field(
-              label="Apellido"
+              label="Descripcion"
             )
-              b-input(type="Apellido"
-                v-model="create.lastName"
+              b-input(type="text"
+                v-model="create.description"
                 value=""
                 maxlength="60"
                 :required="true"
               )
             .buttons.is-centered
               button.button.is-danger(@click="cancelCreate") Cancelar
-              button.button.is-dark(type="submit") Crear Autor
+              button.button.is-dark(type="submit") Crear Tema
         b-tab-item(:label='`Actualizar (id: ${update.data.id})`' :disabled="update.index === null")
           form.block(v-on:submit.prevent="onUpdate")
             b-field(
-              label="Nombre"
+              label="Tema"
             )
-              b-input(type="Nombre"
-                v-model="update.data.firstName"
+              b-input(type="text"
+                v-model="update.data.text"
                 value=""
                 maxlength="60"
                 :required="true"
               )
             b-field(
-              label="Apellido"
+              label="Descripcion"
             )
-              b-input(type="Apellido"
-                v-model="update.data.lastName"
+              b-input(type="text"
+                v-model="update.data.description"
                 value=""
                 maxlength="60"
                 :required="true"
@@ -159,7 +150,7 @@
             pre {{ update }}
             .buttons.is-centered
               button.button.is-danger(@click="cancelUpdate") Cancelar
-              button.button.is-dark(type="submit") Actualizar Autor
+              button.button.is-dark(type="submit") Actualizar Tema
 </template>
 
 <script>
@@ -167,40 +158,24 @@ const columns = [
   {
     field: 'id',
     label: 'Id',
-    meta: 'Id Usuario',
+    meta: 'Id Tema',
     sortable: true,
     numeric: true,
     visible: true,
     type: 'number'
   },
   {
-    field: 'firstName',
-    label: 'Nombre',
-    meta: 'Nombre de Usuario',
+    field: 'text',
+    label: 'Texto',
+    meta: 'Texto',
     sortable: true,
     visible: true,
     type: 'string'
   },
   {
-    field: 'lastName',
-    label: 'Apellido',
-    meta: 'Apellido Usuario',
-    sortable: true,
-    visible: true,
-    type: 'string'
-  },
-  {
-    field: 'date',
-    label: 'Fecha de Creacion',
-    meta: 'Fecha de Creacion',
-    sortable: true,
-    visible: true,
-    type: 'date'
-  },
-  {
-    field: 'gender',
-    label: 'Genero',
-    meta: 'Genero',
+    field: 'description',
+    label: 'Descripcion',
+    meta: 'Descripcion de Tema',
     sortable: true,
     visible: true,
     type: 'string'
@@ -209,19 +184,16 @@ const columns = [
 
 export default {
   layout: 'admin',
-  head: {
-    titleTemplate: 'Autores',
-    meta: [
-      { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: 'Meta description' }
-    ]
+  head() {
+    return {
+      title: 'Autores'
+    }
   },
   async asyncData({ app }) {
     try {
       const {
         data: { data }
-      } = await app.$axios.get('/api/author')
+      } = await app.$axios.get('/api/topic')
       return {
         data: data,
         table: {
@@ -309,25 +281,26 @@ export default {
     },
     async onCreate() {
       try {
-        const { data } = await this.$axios.post('/api/author', this.create)
-        const author = data.data
+        const {
+          data: { data: topic }
+        } = await this.$axios.post('/api/topic', this.create)
         this.create = {}
-        this.data.push(author)
+        this.data.push(topic)
         const index = Array.apply(null, this.table.data).findIndex(
-          ({ id }) => id === author.id
+          ({ id }) => id === topic.id
         )
         if (index === -1) {
-          this.table.data.push(author)
+          this.table.data.push(topic)
         }
         this.selectedTab = 0
         this.$toast.open({
-          message: 'Autor Creado',
+          message: 'Tema Creado',
           type: 'is-success'
         })
       } catch (err) {
         console.error(err)
         this.$toast.open({
-          message: 'Error al creare Autor',
+          message: 'Error al creare Tema',
           type: 'is-danger'
         })
       }
@@ -341,10 +314,10 @@ export default {
       this.selectedTab = 0
     },
     async onUpdate(ev) {
-      const author = this.update.data
+      const topic = this.update.data
       try {
         const { data } = await this.$axios.put(
-          '/api/author/' + author.id,
+          '/api/topic/' + topic.id,
           this.update.data
         )
         this.update.index = null
@@ -352,27 +325,27 @@ export default {
         this.data.splice(this.update.index, 1, data.data)
 
         const index = Array.apply(null, this.table.data).findIndex(
-          ({ id }) => id === author.id
+          ({ id }) => id === topic.id
         )
         if (index !== -1) {
           this.table.data.splice(index, 1, data.data)
         }
         this.selectedTab = 0
         this.$toast.open({
-          message: 'Autor Actualizado',
+          message: 'Tema Actualizado',
           type: 'is-success'
         })
       } catch (error) {
         console.error(error)
         this.$toast.open({
-          message: 'Error al actualizar Autor',
+          message: 'Error al actualizar Tema',
           type: 'is-danger'
         })
       }
     },
     async removeAuthor(row) {
       try {
-        const { data } = await this.$axios.delete('/api/author/' + row.id)
+        const { data } = await this.$axios.delete('/api/topic/' + row.id)
         this.data.splice(this.data.indexOf(row), 1) // General
         const dataIndex = this.table.data.indexOf(row) // Subbusqueda
 
@@ -381,13 +354,13 @@ export default {
         }
 
         this.$toast.open({
-          message: 'Autor Borrado',
+          message: 'Tema Borrado',
           type: 'is-success'
         })
       } catch (error) {
         console.error(error)
         this.$toast.open({
-          message: 'Error al eliminar autor!',
+          message: 'Error al eliminar Tema!',
           type: 'is-danger'
         })
       }
@@ -396,7 +369,7 @@ export default {
       this.$dialog.confirm({
         iconPack: 'fa',
         message: `<pre>${JSON.stringify(row, undefined, 4)}</pre>`,
-        title: 'Borrar Cuenta',
+        title: 'Borrar Tema',
         confirmText: 'Borrar',
         type: 'is-danger',
         hasIcon: false,

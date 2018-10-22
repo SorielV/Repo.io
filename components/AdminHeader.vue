@@ -2,7 +2,7 @@
   section.header
     section.hero.is-danger.is-medium.is-bold
       .hero-head
-        nav.navbar
+        nav.navbar.is-danger.is-fixed-top
           .container
             .navbar-brand
               a.navbar-item(href='../')
@@ -58,6 +58,9 @@ export default {
 </script>
 
 <style>
+.navbar.is-danger {
+  background-color: #ff3860 !important;
+}
 .nuxt-link-exact-active .nuxt-link-active {
   font-style: italic !important;
 }

@@ -31,7 +31,6 @@ const store = () => {
         state.isAuth = true
       },
       login: (state, { user, token }) => {
-        console.log(user, token)
         state.isAuth = true
         state.user = user
         state.token = token

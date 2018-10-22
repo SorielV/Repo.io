@@ -24,25 +24,18 @@
                     .container.is-fluid
                       .columns
                         .column
-                          h1.title.is-6.is-mega-menu-title Sub Menu Title
-                          a.navbar-item(href='/2017/08/03/list-of-tags/')
+                          h1.title.is-6.is-mega-menu-title Tematicas
+                          a.navbar-item(href='#')
                             .navbar-content
-                              p
-                                small.has-text-info 03 Aug 2017
                               p New feature: list of tags
-                          a.navbar-item(href='/2017/08/03/list-of-tags/')
+                          a.navbar-item(href='#')
                             .navbar-content
-                              p
-                                small.has-text-info 03 Aug 2017
                               p New feature: list of tags
-                          a.navbar-item(href='/2017/08/03/list-of-tags/')
+                          a.navbar-item(href='#')
                             .navbar-content
-                              p
-                                small.has-text-info 03 Aug 2017
                               p New feature: list of tags
                         .column
-                          h1.title.is-6.is-mega-menu-title Sub Menu Title
-                          a.navbar-item(href='/2017/08/03/list-of-tags/')
+                          a.navbar-item(href='#')
                             .navbar-content
                               p
                                 small.has-text-info 03 Aug 2017
@@ -54,24 +47,17 @@
                           a.navbar-item(href='http://bulma.io/documentation/columns/basics/')
                             | Columns
                         .column
-                          h1.title.is-6.is-mega-menu-title Sub Menu Title
-                          a.navbar-item(href='/2017/08/03/list-of-tags/')
+                          h1.title.is-6.is-mega-menu-title Tipos
+                          a.navbar-item(href='#')
                             .navbar-content
-                              p
-                                small.has-text-info 03 Aug 2017
                               p New feature: list of tags
-                          a.navbar-item(href='/2017/08/03/list-of-tags/')
+                          a.navbar-item(href='#')
                             .navbar-content
-                              p
-                                small.has-text-info 03 Aug 2017
                               p New feature: list of tags
-                          a.navbar-item(href='/2017/08/03/list-of-tags/')
+                          a.navbar-item(href='#')
                             .navbar-content
-                              p
-                                small.has-text-info 03 Aug 2017
                               p New feature: list of tags
                         .column
-                          h1.title.is-6.is-mega-menu-title Sub Menu Title
                           a.navbar-item(href='/documentation/overview/start/')
                             | Overview
                           a.navbar-item(href='http://bulma.io/documentation/modifiers/syntax/')
