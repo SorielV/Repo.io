@@ -1,15 +1,15 @@
 # Repo
 
-> My tiptop Nuxt.js project
+## 
+# Download & Install NodeJS https://nodejs.org/es/
+# Download & Install MariaDB https://mariadb.org/
+# Install vue-cli npm install -g @vue/cli
+# Install nodemon npm install -g nodemon
 
 ## Build Setup
-
 ``` bash
 # install dependencies
-$ yarn install
-
-# serve with hot reload at localhost:3000
-$ yarn run dev
+# npm install
 
 # build for production and launch server
 $ yarn run build
