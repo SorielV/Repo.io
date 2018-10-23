@@ -1,13 +1,13 @@
 export default function(sequelize, Type) {
   const model = sequelize.define(
-    'RepositoryComment',
+    'RepoComment',
     {
       id: {
         type: Type.INTEGER,
         primaryKey: true,
         autoIncrement: true
       },
-      idRepository: {
+      idUser: {
         type: Type.INTEGER
       },
       username: {
@@ -15,7 +15,7 @@ export default function(sequelize, Type) {
         length: 20,
         allowNull: false
       },
-      idUser: {
+      idRepository: {
         type: Type.INTEGER
       },
       comment: {

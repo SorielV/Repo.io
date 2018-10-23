@@ -1,26 +1,22 @@
 export default function(sequelize, Type) {
   const model = sequelize.define(
-    'RepoAuthor',
+    'RepoEditorial',
     {
       id: {
         type: Type.INTEGER,
         primaryKey: true,
         autoIncrement: true
       },
-      idAuthor: {
-        type: Type.INTEGER
-      },
       idRepository: {
         type: Type.INTEGER
       },
-      createdAt: {
-        type: Type.DATE,
-        allowNull: true
+      idCatalog: {
+        type: Type.INTEGER
       }
     },
     {
-      tableName: 'RepositoryAuthors',
-      timestamp: true
+      tableName: 'RepositoryEditorials',
+      timestamp: false
     }
   )
   return model

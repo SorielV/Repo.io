@@ -1,6 +1,6 @@
 export default function(sequelize, Type) {
   const model = sequelize.define(
-    'Types',
+    'Editorials',
     {
       id: {
         type: Type.TINYINT,
@@ -17,7 +17,7 @@ export default function(sequelize, Type) {
       }
     },
     {
-      tableName: 'CatTypes',
+      tableName: 'CatEditorials',
       timestamps: false
     }
   )

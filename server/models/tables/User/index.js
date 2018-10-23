@@ -66,4 +66,5 @@ export default function(sequelize, Type) {
       timestamps: true
     }
   )
+  return model
 }

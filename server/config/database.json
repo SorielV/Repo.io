@@ -1,7 +1,18 @@
 {
-  "host": "127.0.0.1",
-  "post": "3306",
-  "database": "Repos",
-  "username": "java",
-  "password": ""
+  "mysql": {
+    "dialect": "mysql",
+    "host": "127.0.0.1",
+    "post": "3306",
+    "database": "Repos",
+    "username": "java",
+    "password": ""
+  },
+  "postgres": {
+    "dialet": "postgres",
+    "host": "127.0.0.1",
+    "post": "5432",
+    "database": "repos",
+    "username": "postgres",
+    "password": "postgres"
+  }
 }

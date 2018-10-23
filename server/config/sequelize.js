@@ -1,45 +1,69 @@
+import config from './database.json'
 import Sequelize from 'sequelize'
-
-import ViewRepoCommentModel from './../models/Views/Repo/Comment'
-import RepoAuthModel from './../models/Views/AuthorRepository'
-
 import Tables from './../models/tables'
-const {
-  User: UserModel,
-  CatTypes: CatTypesModel,
-  CatTopics: CatTopicsModel,
-  Author: AuthorModel,
-  Repository: RepoModel,
-  RepoComment: RepoCommentModel
-} = Tables
+import Relations from './../models/relations'
 
-const sequelize = new Sequelize('Repos', 'java', '', {
-  dialect: 'mysql'
+function handleConnection({
+  host,
+  port,
+  database,
+  username,
+  password,
+  dialect = 'mysql'
+}) {
+  const sequelize = new Sequelize(database, username, password, {
+    dialect,
+    host,
+    port
+  })
+  return sequelize
+}
+
+const { mysql, postgres } = config
+console.log(postgres)
+const sequelize = handleConnection(postgres)
+
+const TControllers = {}
+Object.keys(Tables).forEach(key => {
+  TControllers[key] = Tables[key](sequelize, Sequelize)
 })
 
-const User = UserModel(sequelize, Sequelize)
-const Repo = RepoModel(sequelize, Sequelize)
-const Author = AuthorModel
-const RepoAuthor = RepoAuthModel(sequelize, Sequelize)
-const RepoComment = RepoCommentModel(sequelize, Sequelize)
-const ViewRepoComment = ViewRepoCommentModel(sequelize, Sequelize)
-const CatTypes = CatTypesModel(sequelize, Sequelize)
-const CatTopics = CatTopicsModel(sequelize, Sequelize)
+const RControllers = {}
+Object.keys(Relations).forEach(key => {
+  RControllers[key] = Relations[key](sequelize, Sequelize)
+})
 
-Repo.hasMany(RepoAuthor, {
+/*RControllers.RepoAuthor.hasOne(TControllers.Author, {
+  foreignKey: 'idAuthor',
+  allowNull: false,
+  default: null
+})*/
+
+TControllers.Repo.hasMany(RControllers.RepoAuthor, {
   foreignKey: 'idRepository',
-  as: 'author',
   allowNull: false,
   default: null
 })
 
+RControllers.RepoAuthor.findAll({
+  raw: true
+}).then(console.log)
+
+TControllers.Repo.findAll({
+  include: [
+    {
+      model: RControllers.RepoAuthor,
+      as: 'repoAuthorC'
+    }
+  ],
+  limit: 2,
+  raw: true
+}).then(console.log)
+
+console.table(Object.keys(TControllers))
+console.table(Object.keys(RControllers))
+
 module.exports = {
-  User,
-  Repo,
-  Author,
-  RepoAuthor,
-  RepoComment,
-  ViewRepoComment,
-  CatTypes,
-  CatTopics
+  ...TControllers,
+  ...RControllers
 }

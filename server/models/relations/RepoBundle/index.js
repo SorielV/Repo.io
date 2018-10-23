@@ -1,27 +1,17 @@
 export default function(sequelize, Type) {
   const model = sequelize.define(
-    'RepositoryComment',
+    'RepoBundle',
     {
       id: {
         type: Type.INTEGER,
         primaryKey: true,
         autoIncrement: true
       },
+      idBundle: {
+        type: Type.INTEGER
+      },
       idRepository: {
         type: Type.INTEGER
-      },
-      username: {
-        type: Type.STRING,
-        length: 20,
-        allowNull: false
-      },
-      idUser: {
-        type: Type.INTEGER
-      },
-      comment: {
-        type: Type.STRING,
-        length: 255,
-        allowNull: false
       },
       createdAt: {
         type: Type.DATE,
@@ -29,8 +19,8 @@ export default function(sequelize, Type) {
       }
     },
     {
-      tableName: 'RepositoryComment',
-      timestamp: true
+      tableName: 'RepositoryAuthors',
+      timestamp: false
     }
   )
   return model

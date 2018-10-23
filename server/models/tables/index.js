@@ -1,16 +1,16 @@
 import User from './User'
 import Author from './Author'
-import CatTypes from './Catalog/Types'
-import CatTopics from './Catalog/Topics'
-import Repository from './Repo'
+import CatType from './Catalog/Types'
+import CatTopic from './Catalog/Topics'
+import Repo from './Repo'
 import RepoComment from './RepoComment'
 
 const modules = {
   User,
+  CatType,
+  CatTopic,
   Author,
-  CatTypes,
-  CatTopics,
-  Repository,
+  Repo,
   RepoComment
 }
 

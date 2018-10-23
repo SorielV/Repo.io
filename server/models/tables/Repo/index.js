@@ -53,7 +53,7 @@ export default function(sequelize, Type) {
       }
     },
     {
-      tableName: 'Repository'
+      tableName: 'Repositories'
     }
   )
   return model
