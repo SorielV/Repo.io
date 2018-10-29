@@ -12,15 +12,11 @@ module.exports = {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: pkg.description }
     ],
-    link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-    ],
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
     htmlAttrs: {
       class: 'has-navbar-fixed-top'
     },
-    script: [
-      { src: "/public/navbar.js" }
-    ],
+    script: [{ src: '/public/navbar.js' }],
     class: 'has-navbar-fixed-top'
   },
 
@@ -33,8 +29,7 @@ module.exports = {
   /*
   ** Global CSS
   */
-  css: [
-  ],
+  css: [],
 
   /*
   ** Plugins to load before mounting the App

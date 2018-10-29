@@ -1,7 +1,7 @@
+const { Pool } = require('pg')
 const env = process.env.NODE_ENV || 'development'
 const { [env]: config } = require('./../database.json')
 
-const { Pool } = require('pg')
 const database = new Pool(config)
 
 const files = {
