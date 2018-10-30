@@ -1,11 +1,26 @@
 import consola from 'consola'
 
+/**
+ * Model.prototype.initState = function(data) {
+ * Model.prototype.save = async function() {
+ * Model.prototype.update = async function() {
+ * Model.prototype.delete = async function() {
+ *
+ * Model.findById = async function(id, raw = true) {
+ * Model.findAll = async function() {
+ * Model.findOne = async function(options) {
+ * Model.find = async function(options = {}) {
+ * Model.findOneAndUpadate = async function(where, values) {
+ */
+
 module.exports = function Schema(
   database,
   { table, columns: Schema, options, debug = false }
 ) {
   // Validacion de Schema
-  if (!Schema || !Object.keys(Schema).length) throw new Error('Schema Invalido')
+  if (!Schema || !Object.keys(Schema).length) {
+    throw new Error('Schema Invalido')
+  }
 
   // Generar Schema
   function Model(data, validate = true) {
@@ -309,20 +324,21 @@ module.exports = function Schema(
     return rows
   }
 
-  Model.findOne = async function(options, raw = true) {
+  Model.findOne = async function(options) {
     options.limit = 1
-    const [result = null] = await Model.find(options, raw)
+    const [result = null] = await Model.find(options)
     return result
   }
 
   // Select [static]
-  Model.find = async function(options = {}, raw = true) {
+  Model.find = async function(options = {}) {
     const {
       where = null,
       columns = [],
       limit = null,
       offset = null,
-      page = 0
+      page = 0,
+      raw = true
     } = options
 
     const table = Model.Table
