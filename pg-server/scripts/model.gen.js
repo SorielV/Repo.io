@@ -1,6 +1,13 @@
 const { Pool } = require('pg')
+const fs = require('fs')
+const { promisify } = require('util')
+const Path = require('path')
+
 const env = process.env.NODE_ENV || 'development'
 const { [env]: config } = require('./../database.json')
+
+const mkdir = promisify(fs.mkdir)
+const writeFile = promisify(fs.writeFile)
 
 const database = new Pool(config)
 
@@ -28,7 +35,8 @@ const files = {
   Repositories: {
     folder: '/repository',
     file: 'repository.js',
-    model: 'Repositoy'
+    model: 'Repositoy',
+    deep: 2
   },
   RepositoryAuthors: {
     folder: '/repository/author',
@@ -61,14 +69,15 @@ const files = {
     model: 'Type'
   },
   Verification_Token: {
-    folder: '/v-token',
+    folder: '/user/v-token',
     file: 'index.js',
     model: 'Token'
   },
   Bundle: {
     folder: '/bundle',
     file: 'bundle.js',
-    model: 'Bundle'
+    model: 'Bundle',
+    deep: 2
   },
   BundleRepository: {
     folder: '/bundle/repository',
@@ -83,7 +92,8 @@ const files = {
   Files: {
     folder: '/files',
     file: 'index.js',
-    model: 'Files'
+    model: 'Files',
+    deep: 2
   },
   MyList: {
     folder: '/user/mylist',
@@ -93,7 +103,8 @@ const files = {
   Users: {
     folder: '/user',
     file: 'user.js',
-    model: 'User'
+    model: 'User',
+    deep: 2
   }
 }
 
@@ -114,28 +125,35 @@ export default ${model}
 `
 }
 
-const infoTable = (table, schema = 'public') => `
-  SELECT
-    I.column_name as name,
-    I.data_type as type,
-    I.is_nullable as required,
-    I.is_updatable as updatable,
-    I.column_default as default,
-    I.character_maximum_length as length
-  FROM information_schema.columns as I
-    WHERE 
-  (table_schema, table_name) = ('${schema}', '${table}')
-`
+const infoTable = (table, schema = 'public') => {
+  return `
+    SELECT
+      I.column_name as name,
+      I.data_type as type,
+      I.is_nullable as required,
+      I.is_updatable as updatable,
+      I.column_default as default,
+      I.character_maximum_length as length
+    FROM information_schema.columns as I
+      WHERE 
+    (table_schema, table_name) = ('${schema}', '${table}')
+  `
+}
 
-const infoKeyTable = (table, schema) => `
-  SELECT
-    c.column_name
-  FROM
-    information_schema.table_constraints tc
-    JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name)
-    JOIN information_schema.columns AS c ON c.table_schema = tc.constraint_schema AND tc.table_name = c.table_name AND ccu.column_name = c.column_name
-  where constraint_type = 'PRIMARY KEY' and tc.table_name = '${table}';
-`
+const infoKeyTable = (table, schema) => {
+  return `
+    SELECT
+      c.column_name
+    FROM
+      information_schema.table_constraints tc
+      JOIN information_schema.constraint_column_usage AS ccu USING (constraint_schema, constraint_name)
+      JOIN information_schema.columns AS c 
+        ON c.table_schema = tc.constraint_schema AND 
+          tc.table_name = c.table_name AND
+          ccu.column_name = c.column_name
+    where constraint_type = 'PRIMARY KEY' and tc.table_name = '${table}';
+   `
+}
 
 const formatType = sqlType => {
   if (sqlType.includes('character')) return '~String~'
@@ -148,11 +166,12 @@ const formatType = sqlType => {
 async function parseInfo(table, columns) {
   const Schema = {
     table,
-    columns: [],
+    columns: {},
     options: {
       id: []
     }
   }
+
   const { rows: keys } = await database.query(infoKeyTable(table))
   if (keys.length === 1) Schema.options.id = keys[0].column_name
   else Schema.options.id = keys.map(({ column_name }) => column_name)
@@ -165,15 +184,15 @@ async function parseInfo(table, columns) {
     default: _default,
     length
   } of columns) {
-    const column = {
-      name,
+    Schema.columns[name] = {
       type: formatType(type),
       required: required === 'YES',
       updatable: updatable === 'YES'
     }
-    if (column.type === '~String~') column.length = length
-    if (column.required && _default) column.default = _default
-    Schema.columns.push(column)
+    if (Schema.columns[name].type === '~String~')
+      Schema.columns[name].length = length
+    if (Schema.columns[name].required && _default)
+      Schema.columns[name].default = _default
   }
   return Schema
 }
@@ -198,12 +217,22 @@ async function genereateSchemas(schema) {
   return table_schemas
 }
 
+const path = Path.join(__dirname, '../models')
+console.log(path)
+
 genereateSchemas('public')
   .then(schemas => {
     for (let schema of schemas) {
       const { table } = schema
-      console.log(files[table].folder + files[table].file)
-      console.log(baseModel(schema, files[table]))
+      const folderPath = Path.join(path, files[table].folder)
+      const filePath = Path.join(path, files[table].folder, files[table].file)
+      writeFile(
+        filePath,
+        baseModel(schema, files[table], files[table].deep || 3),
+        'utf8'
+      )
+        .then(_ => console.log(table, filePath))
+        .catch(console.error)
     }
   })
   .catch(console.log)

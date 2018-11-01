@@ -1,3 +1,4 @@
 import { UserApi } from './user/index'
+import { CatalogType } from './catalog'
 
-export { UserApi }
+export { UserApi, CatalogType as CatalogTypeApi }

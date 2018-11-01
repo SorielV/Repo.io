@@ -18,7 +18,10 @@ const UserSchema = {
       type: String,
       required: true,
       updatable: true,
-      length: 80
+      length: 80,
+      validate() {
+        return this.email.includes('@')
+      }
     },
     username: {
       type: String,
@@ -73,13 +76,11 @@ const UserSchema = {
 
 const User = new Schema(database, UserSchema)
 
-console.log(User ? 'Instanciado' : 'No Instanciado')
-
-User.findOneAndUpadate({ id: 2 }, { firstName: 'Actualizado' })
+/*User.findOneAndUpadate({ id: 2 }, { firstName: 'Actualizado' })
   .then(data => {
     console.log(data)
   })
-  .catch(console.log)
+  .catch(console.log)*/
 
 const user = new User({
   email: 'xxsorielxx2@gmail.com',
@@ -93,10 +94,3 @@ const user = new User({
   profileImage:
     'https://raw.githubusercontent.com/voodootikigod/logo.js/master/js.png'
 })
-
-user
-  .save()
-  .then(console.log)
-  .catch(error => {
-    console.log(error.code, error.message)
-  })

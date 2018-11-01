@@ -1,17 +1,20 @@
 import consola from 'consola'
 
-/**
- * Model.prototype.initState = function(data) {
- * Model.prototype.save = async function() {
- * Model.prototype.update = async function() {
- * Model.prototype.delete = async function() {
- *
- * Model.findById = async function(id, raw = true) {
- * Model.findAll = async function() {
- * Model.findOne = async function(options) {
- * Model.find = async function(options = {}) {
- * Model.findOneAndUpadate = async function(where, values) {
- */
+Date.prototype.formatDate = function() {
+  return (
+    this.getFullYear() +
+    '-' +
+    this.getMonth() +
+    '-' +
+    this.getDay() +
+    ' ' +
+    this.getHours() +
+    ':' +
+    this.getMinutes() +
+    ':' +
+    this.getSeconds()
+  )
+}
 
 module.exports = function Schema(
   database,
@@ -23,448 +26,561 @@ module.exports = function Schema(
   }
 
   // Generar Schema
-  function Model(data, validate = true) {
-    this.data = validate ? this.initState(data) : data
+  class Model {
+    static get Table() {
+      return this instanceof Model ? this.constructor._Table : this._Table
+    }
 
-    for (let key in this.Schema) {
-      const type = this.Schema[key].type
-      const validate = this.Schema[key].validate || null
-      const property = key.charAt(0).toLocaleUpperCase() + key.substr(1)
-      this[`set${property}`] = function(value) {
-        // Call static method
-        this.data[key] = this.constructor.formatValue(value, type, validate)
+    static get Schema() {
+      return this instanceof Model ? this.constructor._Schema : this._Schema
+    }
+
+    static get Options() {
+      return this instanceof Model ? this.constructor._Options : this._Options
+    }
+
+    static get allowedOperators() {
+      return {
+        '=': true,
+        '<>': true,
+        '>': true,
+        '<': true,
+        '>=': true,
+        '=<': true,
+        '%': true,
+        or: true,
+        like: true,
+        between: true
       }
-      this[`get${property}`] = function() {
-        return this.data[key]
+    }
+
+    /**
+     * @param value => Valor
+     * @param type => Tipo de dato
+     * @param validate => function
+     * @return propiedad validada y convertida
+     */
+    static formatValue(value, type, sql = false) {
+      switch (type) {
+        case String:
+          return sql ? `'${String(value).replace("'", "''")}'` : String(value)
+        case Date:
+          return sql ? `'${new Date(value)}'` : new Date(value)
+        case Number:
+          if (isNaN(value)) {
+            throw new Error(`${value} expected ${type} value`)
+          }
+          return Number(value)
+        case Boolean:
+          return Boolean(value)
+        default:
+          return
       }
     }
-  }
 
-  // Instanced
-  Model.prototype.Schema = Schema
-  Model.prototype.Table = table
-  Model.prototype.Options = options
-
-  // Static
-  Model.Schema = Schema
-  Model.Table = table
-  Model.Options = options
-
-  Model.allowedOperators = {
-    '=': true,
-    '<>': true,
-    '>': true,
-    '<': true,
-    '>=': true,
-    '=<': true,
-    '%': true,
-    or: true,
-    like: true,
-    between: true
-  }
-
-  /**
-   * @param value => Valor
-   * @param type => Tipo de dato
-   * @param validate => function
-   * @return propiedad validada y convertida
-   */
-  Model.formatValue = function(value, type, sql = false) {
-    switch (type) {
-      case String:
-        return sql ? `'${String(value).replace("'", "''")}'` : String(value)
-      case Date:
-        return sql ? `'${new Date(value)}'` : new Date(value)
-      case Number:
-        if (isNaN(value)) {
-          throw new Error(`${value} expected ${type} value`)
-        }
-        return Number(value)
-      case Boolean:
-        return Boolean(value)
-      default:
-        return
-    }
-  }
-
-  /**
-   * Return a value with valid sql format
-   * @param {*} value
-   * @param {*} type
-   */
-  Model.formatValueToSql = function(value, type) {
-    if (type === String || type === Date) {
-      return `'${value}'`
-    } else {
-      return value
-    }
-  }
-
-  /**
-   * Return a model validated
-   * @param {*} data
-   * @return Model
-   */
-  Model.validation = function(data) {
-    const primaryKeys = this.Options.id || 'id'
-    const Schema = Model.Schema
-    const formatValue = Model.formatValue
-
-    const model = {}
-
-    for (let key in Schema) {
-      if (!Schema[key].required) {
-        model[key] =
-          data.hasOwnProperty(key) && data[key] !== null
-            ? formatValue(data[key], Schema[key].type)
-            : Schema[key].default === undefined // 0 null undefined => false
-              ? null
-              : Schema[key].default
+    /**
+     * Return a value with valid sql format
+     * @param {*} value
+     * @param {*} type
+     */
+    static formatValueToSql(value, type) {
+      if (type === String) {
+        return `'${value}'`
+      } else if (type === Date) {
+        return `'${new Date(value).formatDate()}'`
       } else {
-        if (!data.hasOwnProperty(key) && !Schema[key].default) {
-          throw new Error(`${key} Faltante`)
-        }
-
-        // null as ''
-        model[key] =
-          data[key] === null
-            ? Schema[key].type === String
-              ? ''
-              : Schema[key].default
-            : formatValue(data[key], Schema[key].type)
+        return value
       }
     }
 
-    return model
-  }
+    static validation(data) {
+      const Schema =
+        this instanceof Model ? this.constructor._Schema : this._Schema
+      const Options =
+        this instanceof Model ? this.constructor._Options : this._Options
+      const primaryKeys = Options || 'id'
+      const formatValue =
+        this instanceof Model ? this.constructor.formatValue : this.formatValue
 
-  Model.prototype.initState = function(data) {
-    const primaryKeys = this.Options.id || 'id'
-    const Schema = this.Schema
+      const model = {}
 
-    // Static Method
-    const model = this.constructor.validation(data)
-
-    // Remove autogenerate primaryKey
-    if (Array.isArray(primaryKeys)) {
-      for (let primaryKey of primaryKeys) {
-        if (!Schema[primaryKey].required) {
-          model[primaryKey] = null
+      // Set Properties
+      for (let key in Schema) {
+        if (!Schema[key].required) {
+          model[key] =
+            data.hasOwnProperty(key) && data[key] !== null
+              ? formatValue(data[key], Schema[key].type)
+              : Schema[key].default === undefined // 0 null undefined => false
+                ? null
+                : Schema[key].default
+          if (
+            Schema[key].type === String &&
+            model[key] &&
+            model[key].length > Schema[key].length
+          ) {
+            throw new Error(`${key} Length > ${Schema[key].length}`)
+          }
+        } else {
+          if (!data.hasOwnProperty(key) && !Schema[key].default) {
+            throw new Error(`${key} Faltante`)
+          }
+          // null as ''
+          model[key] =
+            data[key] === null
+              ? Schema[key].type === String
+                ? ''
+                : Schema[key].default
+              : formatValue(data[key], Schema[key].type)
         }
       }
+
+      // Handle Validation
+      for (let key in Schema) {
+        if (Schema[key].validate) {
+          console.log(Schema[key].validate)
+          if (!Schema[key].validate.apply(model)) {
+            throw new Error(`${key} Validacion Fallida`)
+          }
+        }
+      }
+      console.log(model)
+      return model
     }
-    // Return validated model
-    return model
-  }
 
-  /**
-   * Insert Element
-   * @return Prommise(Element)
-   */
-  Model.prototype.save = async function() {
-    const model = this.data
-    const columnNames = []
-    const columnValues = []
+    /**
+     * Insert Element
+     * @return Prommise(Element)
+     */
+    async save() {
+      const Table = this.constructor.Table
+      const Schema = this.constructor.Schema
+      const formatValueToSql = this.constructor.formatValueToSql
 
-    const formatValueToSql = this.constructor.formatValueToSql
+      const model = this.data
+      const columnNames = [],
+        columnValues = []
 
-    for (let key in model) {
-      columnNames.push(`"${key}"`)
-      columnValues.push(
-        model[key] !== null
-          ? formatValueToSql(model[key], this.Schema[key].type)
-          : 'default'
+      for (let key in model) {
+        columnNames.push(`"${key}"`)
+        columnValues.push(
+          model[key] !== null
+            ? formatValueToSql(model[key], Schema[key].type)
+            : 'default'
+        )
+      }
+
+      const query = `insert into "${Table}"(${columnNames.join(
+        ' , '
+      )}) values (${columnValues.join(' , ')}) RETURNING *;`
+
+      console.log(query)
+
+      const {
+        rows: [row]
+      } = await database.query(query)
+      return row
+    }
+
+    async update() {
+      const Schema = this.constructor.Schema
+      const Options = this.constructor.Options
+      const formatValueToSql = this.constructor.formatValueToSql
+      const primaryKeys = Options.id || 'id'
+      const model = this.data
+
+      const columnNames = Object.keys(model).map(column => {
+        // Produce "column_name" = 'value'
+        return `"${column}" = ${
+          model[column] !== null
+            ? formatValueToSql(model[column], this.Schema[column].type)
+            : 'default'
+        }
+        `
+      })
+
+      const statement = `update "${this.Table}" set ${columnNames.join(' , ')}`
+      const whereStatement = []
+      if (Array.isArray(primaryKeys)) {
+        for (let primaryKey of primaryKeys) {
+          // Produce "id" = "1" and "username" = "foo"
+          whereStatement.push(`
+            "${primaryKey}" = ${formatValueToSql(
+            model[primaryKey],
+            this.Schema[primaryKey].type
+          )}
+          `)
+        }
+      }
+
+      return (
+        statement + ' where ' + whereStatement.join(' and ') + ' RETURNING *;'
       )
     }
 
-    const query = `insert into "${this.Table}"(${columnNames.join(
-      ' , '
-    )}) values (${columnValues.join(' , ')}) RETURNING *;`
+    /**
+     *
+     * @param {String} column Columna
+     * @param {Object} params
+     */
+    static formatWhereOperator(column, params, type) {
+      const formatValue = Model.formatValue
+      const allowedOperators = Model.allowedOperators
+      const operator = Object.keys(params)[0]
 
-    const {
-      rows: [row]
-    } = await database.query(query)
-    return row
-  }
-
-  /**
-   *
-   * @param {String} column Columna
-   * @param {Object} params
-   */
-  Model.formatWhereOperator = function(column, params, type) {
-    const formatValue = this === Model ? this.formatValue : Model.formatValue // Static
-
-    const allowedOperators =
-      this === Model ? this.allowedOperators : Model.allowedOperators
-
-    const operator = Object.keys(params)[0]
-
-    if (allowedOperators[operator]) {
-      const param = params[operator]
-      if (operator === '%' || operator === 'like') {
-        if (param === null || typeof param === 'object')
-          throw new Error('Solo se espera un String')
-        else return `"${column}" like '${param.replace("'", "''")}'`
-      } else if (operator === 'between') {
-        if (param.length !== 2) {
-          throw new Error(`Se esperan 2 parametros ${params.join(' ')}`)
-        }
-        const [min = null, max = null] = param.map(el =>
-          formatValue(el, type, true)
-        )
-        if (min === null || max === null) {
-          throw new Error(`Parametros No Valididos`)
+      if (allowedOperators[operator]) {
+        const param = params[operator]
+        if (operator === '%' || operator === 'like') {
+          if (param === null || typeof param === 'object')
+            throw new Error('Solo se espera un String')
+          else return `"${column}" like '${param.replace("'", "''")}'`
+        } else if (operator === 'between') {
+          if (param.length !== 2) {
+            throw new Error(`Se esperan 2 parametros ${params.join(' ')}`)
+          }
+          const [min = null, max = null] = param.map(el =>
+            formatValue(el, type, true)
+          )
+          if (min === null || max === null) {
+            throw new Error(`Parametros No Valididos`)
+          } else {
+            return `"${column}" between ${min} and ${max}`
+          }
         } else {
-          return `"${column}" between ${min} and ${max}`
+          const value = formatValue(param, type, true)
+          return `"${column}" ${operator} ${value}`
         }
       } else {
-        const value = formatValue(param, type, true)
-        return `"${column}" ${operator} ${value}`
+        return
       }
-    } else {
-      return
     }
-  }
 
-  Model.whereStament = function(where) {
-    const Schema = this === Model ? this.Schema : Model.prototype.Schema
+    static whereStament(where) {
+      const Schema = Model.Schema
+      const formatWhereOperator = Model.formatWhereOperator
+      const whereStament = Model.whereStament
 
-    const formatWhereOperator =
-      this === Model ? this.formatWhereOperator : Model.formatWhereOperator
-
-    const whereStament = this === Model ? this.whereStament : Model.whereStament
-
-    const whereStaments = []
-    for (let whereKey in where) {
-      if (whereKey === 'or' || whereKey === 'and') {
-        // Llamada recurida
-        whereStaments.push(whereStament(where[whereKey]))
-      } else if (Schema[whereKey]) {
-        if (where[whereKey] !== null && typeof where[whereKey] === 'object') {
-          whereStaments.push(
-            formatWhereOperator(
-              whereKey,
-              where[whereKey],
-              Schema[whereKey].type
+      const whereStaments = []
+      for (let whereKey in where) {
+        if (whereKey === 'or' || whereKey === 'and') {
+          // Llamada recurida
+          whereStaments.push(whereStament(where[whereKey]))
+        } else if (Schema[whereKey]) {
+          if (where[whereKey] !== null && typeof where[whereKey] === 'object') {
+            whereStaments.push(
+              formatWhereOperator(
+                whereKey,
+                where[whereKey],
+                Schema[whereKey].type
+              )
             )
-          )
+          } else {
+            const value = Model.formatValue(
+              where[whereKey],
+              Schema[whereKey].type,
+              true
+            )
+            whereStaments.push(`"${whereKey}" = ${value}`)
+          }
         } else {
-          const value = Model.formatValue(
-            where[whereKey],
-            Schema[whereKey].type,
-            true
-          )
-          whereStaments.push(`"${whereKey}" = ${value}`)
-        }
-      } else {
-        // Basura
-        delete where[whereKey]
-      }
-    }
-    return whereStaments.join(' and ')
-  }
-
-  Model.columnStament = function(columns) {
-    const Schema = this === Model ? this.Schema : Model.prototype.Schema
-
-    const columnStaments = []
-    for (let column of columns) {
-      if (Array.isArray(column)) {
-        if (column.length !== 2) {
-          throw new Error('Columns as espera 2 paramatros [A, B] => A as B')
-        } else if (!Schema.hasOwnProperty(column[0])) {
-          throw new Error(`Columna ${column[0]} no definida en Schema`)
-        } else {
-          columnStaments.push(
-            `"${column[0]}" as "${column[1].replace("'", "''")}"`
-          )
-        }
-      } else {
-        if (!Schema.hasOwnProperty(column)) {
-          throw new Error(`Columna ${column} no definida en Schema`)
-        } else {
-          columnStaments.push(`"${column}"`)
+          // Basura
+          delete where[whereKey]
         }
       }
+      return whereStaments.join(' and ')
     }
-    return columnStaments.join(' , ')
-  }
 
-  Model.findById = async function(id, raw = true) {
-    console.log(Model.Options.id)
-    const columId = Array.isArray(Model.Options.id)
-      ? Model.Options.id.find(primaryKey => {
-          return !Model.Schema[primaryKey].required
+    static columnStament(columns) {
+      const Schema = Model.Schema
+
+      const columnStaments = []
+      for (let column of columns) {
+        if (Array.isArray(column)) {
+          if (column.length !== 2) {
+            throw new Error('Columns as espera 2 paramatros [A, B] => A as B')
+          } else if (!Schema.hasOwnProperty(column[0])) {
+            throw new Error(`Columna ${column[0]} no definida en Schema`)
+          } else {
+            columnStaments.push(
+              `"${column[0]}" as "${column[1].replace("'", "''")}"`
+            )
+          }
+        } else {
+          if (!Schema.hasOwnProperty(column)) {
+            throw new Error(`Columna ${column} no definida en Schema`)
+          } else {
+            columnStaments.push(`"${column}"`)
+          }
+        }
+      }
+      return columnStaments.join(' , ')
+    }
+
+    static async findById(id, raw = true) {
+      const columId = Array.isArray(Model.Options.id)
+        ? Model.Options.id.find(primaryKey => {
+            return !Model.Schema[primaryKey].required
+          })
+        : Model.Options.id
+
+      const query = `select * from "${
+        Model.Table
+      }" where "${columId}" = ${Model.formatValueToSql(
+        id,
+        Model.Schema[columId].type
+      )}`
+
+      const {
+        rows: [result]
+      } = await database.query(query)
+      console.log(query)
+      return raw ? result : new Model(result, false)
+    }
+
+    /**
+     * @return Items
+     */
+    static async findAll() {
+      const table = Model.Table
+      const query = `SELECT * from "${table}"`
+      console.log(query)
+      const { rows } = await database.query(query)
+      return rows
+    }
+
+    static async findOne(options) {
+      options.limit = 1
+      const [result = null] = await Model.find(options)
+      return result
+    }
+
+    // Select [static]
+    static async find(_options = {}) {
+      const { where = null, columns = [], options = {} } = _options
+      const { limit = null, offset = null, page = 0, raw = true } = options
+
+      const table = Model.Table
+      const Schema = Model.Schema
+      const whereStament = Model.whereStament
+      const columnStament = Model.columnStament
+
+      const selectedColumns =
+        columns.length !== 0 ? columnStament(columns) : '*'
+      const whereConditions =
+        where && Object.keys(where).length ? 'where ' + whereStament(where) : ''
+
+      let query = `select ${selectedColumns} from "${table}" ${whereConditions}`
+
+      if (limit || offset) {
+        if (limit) {
+          query += ` offset ${Number(offset) || 0}`
+        }
+        if (limit) {
+          query += ` limit ${Number(limit) || 'all'}`
+        }
+      }
+
+      const { rows } = await database.query(query)
+      return raw ? rows : rows.map(item => new Model(item, false))
+    }
+
+    /**
+     * Update Element
+     * @return Promise(Element)
+     */
+    static async findOneAndUpadate(where, _values) {
+      const primaryKeys = []
+      const Schema = Model._Schema
+      const Options = Model._Options
+      const formatValueToSql = Model.formatValueToSql
+      const options = { limit: 1, raw: true }
+      // Model Object
+      const [current = null] = await Model.find({ where, options })
+
+      if (current) {
+        const values = {}
+        const updateColumn = []
+        const primaryKeys = Array.isArray(Options.id)
+          ? Options.id
+          : [Options.id]
+        const whereColumns = []
+
+        if (Object.keys(_values).length <= 0) {
+          throw new Error('Datos no validos sin criterios de actulizacion')
+        }
+
+        for (let key in Schema) {
+          if (_values.hasOwnProperty(key)) {
+            if (_values[key] !== current[key]) {
+              console.log(key)
+              if (primaryKeys.indexOf(key) === -1) {
+                values[key] = _values[key]
+                updateColumn.push(key)
+              } else {
+                values[key] = current[key]
+                whereColumns.push(`
+                  "${key}" = ${formatValueToSql(
+                  current[key],
+                  Schema[key].type
+                )}`)
+              }
+            }
+          } else {
+            if (primaryKeys.indexOf(key) !== -1) {
+              values[key] = current[key]
+              whereColumns.push(`
+                  "${key}" = ${formatValueToSql(
+                current[key],
+                Schema[key].type
+              )}`)
+            }
+          }
+        }
+
+        if (Object.keys(values).length - primaryKeys.length <= 0) {
+          throw new Error('Datos no validos informacion duplicada')
+        }
+
+        // Validation methods should need other properterty of the data
+        Model.validation({
+          ...current,
+          ...values
         })
-      : Model.Options.id
 
-    const query = `select * from "${
-      Model.prototype.Table
-    }" where "${columId}" = ${Model.formatValueToSql(
-      id,
-      Model.prototype.Schema[columId].type
-    )}`
+        const columnNames = updateColumn.map(column => {
+          // Produce "column_name" = 'value'
+          return `"${column}" = ${
+            values[column] !== null
+              ? formatValueToSql(values[column], Schema[column].type)
+              : 'default'
+          }
+          `
+        })
 
-    const {
-      rows: [result]
-    } = await database.query(query)
-    console.log(query)
-    return raw ? result : new Model(result, false)
-  }
+        const query = `update "${Model._Table}" set ${columnNames.join(
+          ' , '
+        )} where ${whereColumns.join(' and ')} RETURNING *;`
+        console.log(query)
 
-  /**
-   * @return Items
-   */
-  Model.findAll = async function() {
-    const table = Model.prototype.Table
-    const query = `SELECT * from "${table}"`
-    console.log(query)
-    const { rows } = await database.query(query)
-    return rows
-  }
-
-  Model.findOne = async function(options) {
-    options.limit = 1
-    const [result = null] = await Model.find(options)
-    return result
-  }
-
-  // Select [static]
-  Model.find = async function(options = {}) {
-    const {
-      where = null,
-      columns = [],
-      limit = null,
-      offset = null,
-      page = 0,
-      raw = true
-    } = options
-
-    const table = Model.Table
-    const Schema = Model.Schema
-    const whereStament = Model.whereStament
-    const columnStament = Model.columnStament
-
-    const selectedColumns = columns.length !== 0 ? columnStament(columns) : '*'
-    const whereConditions =
-      where && Object.keys(where).length ? 'where ' + whereStament(where) : ''
-
-    let query = `select ${selectedColumns} from "${table}" ${whereConditions}`
-
-    if (limit || offset) {
-      if (limit) {
-        query += ` offset ${Number(offset) || 0}`
-      }
-      if (limit) {
-        query += ` limit ${Number(limit) || 'all'}`
-      }
-    }
-    console.log(query)
-    const { rows } = await database.query(query)
-    return raw ? rows : rows.map(item => new Model(item, false))
-  }
-
-  Model.prototype.update = async function() {
-    const primaryKeys = this.Options.id || 'id'
-    const model = this.data
-    const formatValueToSql = this.constructor.formatValueToSql
-
-    const columnNames = Object.keys(model).map(column => {
-      // Produce "column_name" = 'value'
-      return `"${column}" = ${
-        model[column] !== null
-          ? formatValueToSql(model[column], this.Schema[column].type)
-          : 'default'
-      }
-      `
-    })
-
-    const statement = `update "${this.Table}" set ${columnNames.join(' , ')}`
-    const whereStatement = []
-    if (Array.isArray(primaryKeys)) {
-      for (let primaryKey of primaryKeys) {
-        // Produce "id" = "1" and "username" = "foo"
-        whereStatement.push(`
-          "${primaryKey}" = ${formatValueToSql(
-          model[primaryKey],
-          this.Schema[primaryKey].type
-        )}
-        `)
+        const {
+          rows: [result]
+        } = await database.query(query)
+        return result
+      } else {
+        return null
       }
     }
 
-    return (
-      statement + ' where ' + whereStatement.join(' and ') + ' RETURNING *;'
-    )
-  }
+    /**
+     * Delete Element
+     * @return Promise
+     */
+    async delete() {
+      const Table = this.constructor.Table
+      const Schema = this.constructor.Schema
+      const primaryKeys = this.constructor.Options.id || 'id'
+      const whereStatement = []
 
-  /**
-   * Update Element
-   * @return Promise(Element)
-   */
-  Model.findOneAndUpadate = async function(where, values) {
-    const options = { limit: 1 }
-    // Model Object
-    const [result = null] = await Model.find({ where, options }, false)
-    if (result) {
-      if (Array.isArray(this.Options.id)) {
-        for (let primaryKey of this.Options.id) {
-          delete values[primaryKey]
+      if (Array.isArray(primaryKeys)) {
+        for (let primaryKey of primaryKeys) {
+          // Produce "id" = "1" and "username" = "foo"
+          whereStatement.push(`
+            "${primaryKey}" = ${formatValueToSql(
+            model[primaryKey],
+            Schema[primaryKey].type
+          )}
+          `)
         }
       } else {
-        delete values[this.Options.id]
-      }
-      console.log(result.data)
-      result.data = result.constructor.validation({ ...result.data, ...values })
-      return result.data
-    } else {
-      return null
-    }
-  }
-
-  /**
-   * Delete Element
-   * @return Promise
-   */
-  Model.prototype.delete = async function() {
-    const primaryKeys = this.Options.id || 'id'
-    const whereStatement = []
-
-    if (Array.isArray(primaryKeys)) {
-      for (let primaryKey of primaryKeys) {
-        // Produce "id" = "1" and "username" = "foo"
         whereStatement.push(`
-          "${primaryKey}" = ${formatValueToSql(
-          model[primaryKey],
-          this.Schema[primaryKey].type
+          "${primaryKeys}" = ${formatValueToSql(
+          model[primaryKeys],
+          Schema[primaryKeys].type
         )}
         `)
       }
-    } else {
-      whereStatement.push(`
-        "${primaryKeys}" = ${formatValueToSql(
-        model[primaryKeys],
-        this.Schema[primaryKeys].type
-      )}
-      `)
+
+      let statement = `delete from "${Model._Table}" ${whereStatement.join(
+        ' and '
+      )};`
+      return true
     }
 
-    let statement = `delete from "${this.Table}" ${whereStatement.join(
-      ' and '
-    )}`
-    return true
+    static async delete(where) {
+      const Table = Model._Table
+      const Schema = Model._Schema
+      const primaryKeys = Model._Options.id || 'id'
+      const formatValueToSql = Model.formatValueToSql
+      const whereStatement = []
+
+      const model = where
+
+      if (Array.isArray(primaryKeys)) {
+        for (let primaryKey of primaryKeys) {
+          // Produce "id" = "1" and "username" = "foo"
+          whereStatement.push(`
+            "${primaryKey}" = ${formatValueToSql(
+            model[primaryKey],
+            Schema[primaryKey].type
+          )}
+          `)
+        }
+      } else {
+        whereStatement.push(`
+          "${primaryKeys}" = ${formatValueToSql(
+          model[primaryKeys],
+          Schema[primaryKeys].type
+        )}
+        `)
+      }
+
+      const query = `delete from "${Table}" where ${whereStatement.join(
+        ' and '
+      )};`
+      const { rowCount } = await database.query(query)
+      return rowCount
+    }
+
+    constructor(data, validate = true) {
+      const Schema = this.constructor._Schema
+      const Options = this.constructor._Options
+      const primaryKeys = Options.id || 'id'
+
+      // Static Method
+      const model = this.constructor.validation(data)
+      // Remove autogenerate primaryKey
+      if (Array.isArray(primaryKeys)) {
+        for (let primaryKey of primaryKeys) {
+          if (!Schema[primaryKey].required) {
+            model[primaryKey] = null
+          }
+        }
+      }
+
+      this.data = {}
+      for (let column in Schema) {
+        const type = Schema[column].type
+        const validate = Schema[column].validate || null
+        this.data[column] = model[column]
+        const property = column.charAt(0).toLocaleUpperCase() + column.substr(1)
+        this[`set${property}`] = function(value) {
+          // Call static method
+          this.data[column] = this.constructor.formatValue(
+            value,
+            type,
+            validate
+          )
+        }
+        this[`get${property}`] = function() {
+          return this.data[column]
+        }
+      }
+      // Return validated model
+    }
   }
+
+  Model._Table = table
+  Model._Schema = Schema
+  Model._Options = options
 
   return Model
 }
-
-/*
-Model.formatValueStament = function(value, onNull = 'null') {
-  if (value !== null) {
-    return onNull
-  } else {
-    return typeof value === 'string' ? `'${value}'` : value
-  }
-}
-*/
