@@ -1,8 +1,9 @@
+import consola from 'consola'
 import express from 'express'
 import bodyParser from 'body-parser'
 const port = process.env.PORT || 3000
 
-import { UserApi, CatalogTypeApi } from './web/router/api'
+import { UserApi, Catalog, Repository } from './web/router/api'
 import LoginAPI from './web/router/login'
 
 const app = express()
@@ -14,9 +15,13 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 app.use('/api/user', UserApi)
-app.use('/api/type', CatalogTypeApi)
+for (let catalog in Catalog) {
+  app.use(`/api/catalog/${catalog}`, Catalog[catalog])
+}
+// app.use('/api/type', CatalogTypeApi)
 app.use('/login', LoginAPI)
+app.use('/api/repo', Repository)
 
 app.listen(port, () => {
-  console.log('Server Running in Port ' + port)
+  consola.success('Server Running in Port ' + port)
 })

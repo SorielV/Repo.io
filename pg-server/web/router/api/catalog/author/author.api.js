@@ -1,9 +1,10 @@
 import Api from './../_gen/basic.api'
 
-export default Api('CatalogType')
+export default Api('CatalogAuthor')
 
-/*import { Router } from 'express'
-import { CatalogType as Item } from '../../../../../models/catalogs'
+/*
+import { Router } from 'express'
+import { CatalogAuthor as Item } from '../../../../../models/catalogs'
 import {
   catchException,
   getAuth,

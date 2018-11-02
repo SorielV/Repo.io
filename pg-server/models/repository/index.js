@@ -6,7 +6,7 @@ import RepositoryEditorial from './editorial'
 import RepositoryComment from './comment'
 import RepositoryScore from './score'
 
-exports(
+export {
   Repository,
   RepositoryAuthor,
   RepositoryTopic,
@@ -14,4 +14,4 @@ exports(
   RepositoryEditorial,
   RepositoryComment,
   RepositoryScore
-)
+}

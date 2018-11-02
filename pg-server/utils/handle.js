@@ -44,7 +44,7 @@ const isAuth = async (req, res, next) => {
   }
 }
 
-const isAdmin = async (req, res, next) => {
+const isAdminAuth = async (req, res, next) => {
   try {
     const user = await getAuth(req)
     if (user.type === ADMIN) {
@@ -76,4 +76,4 @@ const catchException = fn => (req, res, next) => {
   })
 }
 
-export { catchException, getAuth, isAuth, isAdmin }
+export { catchException, getAuth, isAuth, isAdminAuth }

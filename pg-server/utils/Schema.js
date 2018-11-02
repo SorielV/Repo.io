@@ -137,13 +137,12 @@ module.exports = function Schema(
       // Handle Validation
       for (let key in Schema) {
         if (Schema[key].validate) {
-          console.log(Schema[key].validate)
           if (!Schema[key].validate.apply(model)) {
             throw new Error(`${key} Validacion Fallida`)
           }
         }
       }
-      console.log(model)
+
       return model
     }
 
@@ -173,11 +172,11 @@ module.exports = function Schema(
         ' , '
       )}) values (${columnValues.join(' , ')}) RETURNING *;`
 
-      console.log(query)
+      consola.info(query)
 
       const {
         rows: [row]
-      } = await database.query(query)
+      } = await Model._database.query(query)
       return row
     }
 
@@ -289,10 +288,31 @@ module.exports = function Schema(
       return whereStaments.join(' and ')
     }
 
+    static excludeColumnStament(exclude) {
+      if (!Array.isArray(exclude) || exclude.length === 0) {
+        return '*'
+      }
+
+      const Schema = Model.Schema
+      const columns = []
+      const column = Object.keys(Model.Schema).map(column => {
+        if (exclude.indexOf(column) === -1) {
+          columns.push(`"${column}"`)
+        }
+      })
+
+      return columns.join(' , ')
+    }
+
     static columnStament(columns) {
       const Schema = Model.Schema
 
+      if (columns.length === 0) {
+        return '*'
+      }
+
       const columnStaments = []
+
       for (let column of columns) {
         if (Array.isArray(column)) {
           if (column.length !== 2) {
@@ -307,11 +327,11 @@ module.exports = function Schema(
         } else {
           if (!Schema.hasOwnProperty(column)) {
             throw new Error(`Columna ${column} no definida en Schema`)
-          } else {
-            columnStaments.push(`"${column}"`)
           }
+          columnStaments.push(`"${column}"`)
         }
       }
+
       return columnStaments.join(' , ')
     }
 
@@ -331,8 +351,8 @@ module.exports = function Schema(
 
       const {
         rows: [result]
-      } = await database.query(query)
-      console.log(query)
+      } = await Model._database.query(query)
+      consola.info(query)
       return raw ? result : new Model(result, false)
     }
 
@@ -342,8 +362,8 @@ module.exports = function Schema(
     static async findAll() {
       const table = Model.Table
       const query = `SELECT * from "${table}"`
-      console.log(query)
-      const { rows } = await database.query(query)
+      consola.info(query)
+      const { rows } = await Model._database.query(query)
       return rows
     }
 
@@ -355,16 +375,28 @@ module.exports = function Schema(
 
     // Select [static]
     static async find(_options = {}) {
-      const { where = null, columns = [], options = {} } = _options
+      const { where = [], columns = [], options = {}, exclude = [] } = _options
       const { limit = null, offset = null, page = 0, raw = true } = options
+
+      const hasExclude = Array.isArray(exclude) && exclude.length > 0
+      const hasColumns = Array.isArray(where) && where.length > 0
+
+      if (hasExclude && hasColumns) {
+        throw new Error('Invalid columns & exclude')
+      }
 
       const table = Model.Table
       const Schema = Model.Schema
       const whereStament = Model.whereStament
       const columnStament = Model.columnStament
+      const excludeColumnStament = Model.excludeColumnStament
 
-      const selectedColumns =
-        columns.length !== 0 ? columnStament(columns) : '*'
+      const selectedColumns = hasColumns
+        ? columnStament(columns)
+        : hasExclude
+          ? excludeColumnStament(exclude)
+          : '*'
+
       const whereConditions =
         where && Object.keys(where).length ? 'where ' + whereStament(where) : ''
 
@@ -379,7 +411,9 @@ module.exports = function Schema(
         }
       }
 
-      const { rows } = await database.query(query)
+      consola.info(query)
+
+      const { rows } = await Model._database.query(query)
       return raw ? rows : rows.map(item => new Model(item, false))
     }
 
@@ -411,7 +445,6 @@ module.exports = function Schema(
         for (let key in Schema) {
           if (_values.hasOwnProperty(key)) {
             if (_values[key] !== current[key]) {
-              console.log(key)
               if (primaryKeys.indexOf(key) === -1) {
                 values[key] = _values[key]
                 updateColumn.push(key)
@@ -459,11 +492,12 @@ module.exports = function Schema(
         const query = `update "${Model._Table}" set ${columnNames.join(
           ' , '
         )} where ${whereColumns.join(' and ')} RETURNING *;`
-        console.log(query)
+
+        consola.info(query)
 
         const {
           rows: [result]
-        } = await database.query(query)
+        } = await Model._database.query(query)
         return result
       } else {
         return null
@@ -536,7 +570,7 @@ module.exports = function Schema(
       const query = `delete from "${Table}" where ${whereStatement.join(
         ' and '
       )};`
-      const { rowCount } = await database.query(query)
+      const { rowCount } = await Model._database.query(query)
       return rowCount
     }
 
@@ -581,6 +615,7 @@ module.exports = function Schema(
   Model._Table = table
   Model._Schema = Schema
   Model._Options = options
+  Model._database = database
 
   return Model
 }
