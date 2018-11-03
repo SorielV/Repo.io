@@ -14,7 +14,7 @@ const router = Router()
 router.post(
   '/',
   catchException(async (req, res) => {
-    const { username = 'Soriel', password = 'Hacks' } = req.body
+    const { username = 'Soriel', password = 'JS' } = req.body
     const user = await User.findOne({
       where: {
         username,
@@ -24,7 +24,7 @@ router.post(
 
     if (!user) {
       return res
-        .status(error ? 500 : 200)
+        .status(400)
         .json({ message: 'Usuario y/o Password Incorrecto' })
         .end()
     }

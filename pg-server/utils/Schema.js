@@ -87,6 +87,13 @@ module.exports = function Schema(
       if (type === String) {
         return `'${value}'`
       } else if (type === Date) {
+        /*
+        if (value instanceof Date) {
+          if (isNaN(value.getTime())) {
+            return 'null'
+          }
+        }
+        */
         return `'${new Date(value).formatDate()}'`
       } else {
         return value

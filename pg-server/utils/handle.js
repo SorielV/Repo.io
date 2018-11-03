@@ -46,10 +46,11 @@ const isAuth = async (req, res, next) => {
 
 const isAdminAuth = async (req, res, next) => {
   try {
-    const user = await getAuth(req)
+    const user = await getAuthUser(req)
     if (user.type === ADMIN) {
       req.user = user
-      next()
+      console.log('isAdmin')
+      return next()
     } else {
       return res
         .status(403)
@@ -57,7 +58,7 @@ const isAdminAuth = async (req, res, next) => {
         .end()
     }
 
-    next()
+    return next()
   } catch (error) {
     return res
       .status(403)
@@ -68,7 +69,6 @@ const isAdminAuth = async (req, res, next) => {
 
 const catchException = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(err => {
-    console.log(err)
     return res
       .status(500)
       .json({ message: err.message })
