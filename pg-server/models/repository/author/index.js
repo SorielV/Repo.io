@@ -1,28 +1,27 @@
-
 import database from './../../../config/database'
 import Schema from './../../../utils/Schema'
 
 const AuthorSchema = {
-  "table": "RepositoryAuthors",
-  "columns": {
-    "id": {
-      "type": Number,
-      "required": false,
-      "updatable": true
+  table: 'RepositoryAuthors',
+  columns: {
+    id: {
+      type: Number,
+      required: false,
+      updatable: true
     },
-    "idRepository": {
-      "type": Number,
-      "required": true,
-      "updatable": true
+    idRepository: {
+      type: Number,
+      required: true,
+      updatable: true
     },
-    "idAuthor": {
-      "type": Number,
-      "required": true,
-      "updatable": true
+    idAuthor: {
+      type: Number,
+      required: true,
+      updatable: true
     }
   },
-  "options": {
-    "id": "id"
+  options: {
+    id: 'id'
   }
 }
 

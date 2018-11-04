@@ -260,7 +260,7 @@ module.exports = function Schema(
       }
     }
 
-    static whereStament(where) {
+    static whereStament(where, array = false) {
       const Schema = Model.Schema
       const formatWhereOperator = Model.formatWhereOperator
       const whereStament = Model.whereStament
@@ -292,7 +292,7 @@ module.exports = function Schema(
           delete where[whereKey]
         }
       }
-      return whereStaments.join(' and ')
+      return array ? whereStaments : whereStaments.join(' and ')
     }
 
     static excludeColumnStament(exclude) {
@@ -380,7 +380,12 @@ module.exports = function Schema(
       return result
     }
 
-    // Select [static]
+    static async query(query) {
+      consola.info(query)
+      const { rows } = await Model._database.query(query)
+      return rows
+    }
+
     static async find(_options = {}) {
       const { where = [], columns = [], options = {}, exclude = [] } = _options
       const { limit = null, offset = null, page = 0, raw = true } = options

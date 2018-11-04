@@ -5,11 +5,13 @@ import Score from './score'
 import Topic from './topic'
 import Type from './type'
 
-export {
-  Author as author,
-  Comment as comment,
-  Editorial as editorial,
-  Score as score,
-  Topic as topic,
-  Type as type
+const Model = {
+  author: Author,
+  comment: Comment,
+  editorial: Editorial,
+  score: Score,
+  topic: Topic,
+  type: Type
 }
+
+export default Model

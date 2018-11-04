@@ -45,14 +45,114 @@ router.param(':model', (req, res, next) => {
 })
 
 router.get(
-  '/:id/:model/',
+  '/:idR/:model/',
   catchException(async (req, res, next) => {
-    const results = await Repository.getRepositories()
+    const {
+      params: { idR: idRepository }
+    } = req
+
+    const results = await Model[req.model].getAll(
+      {
+        idRepository
+      },
+      true
+    )
     return res.json(results)
   })
 )
 
+router.get(
+  '/:idR/:model/:id',
+  catchException(async (req, res, next) => {
+    const {
+      params: { idR: idRepository, id }
+    } = req
+
+    const results = await Model[req.model].find({
+      where: {
+        id,
+        idRepository
+      }
+    })
+    return res
+      .status(200)
+      .json(results)
+      .end()
+  })
+)
+
 router.use(isAdminAuth)
+
+router.post(
+  '/:idR/:model/',
+  catchException(async (req, res, next) => {
+    const { username, id: idUser } = req.user
+    const {
+      params: { idR: idRepository }
+    } = req
+
+    const results = await new Model[req.model]({
+      ...req.body,
+      idRepository,
+      username,
+      idUser
+    }).save()
+
+    return res
+      .status(201)
+      .json(results)
+      .end()
+  })
+)
+
+router.put(
+  '/:idR/:model/:id',
+  catchException(async (req, res, next) => {
+    const { username, id: idUser } = req.user
+    const {
+      params: { idR: idRepository, id }
+    } = req
+
+    const results = await Model[req.model]
+      .findOneAndUpdate(
+        {
+          id,
+          idRepository
+        },
+        {
+          ...req.body,
+          id,
+          idRepository,
+          username,
+          idUser
+        }
+      )
+      .save()
+
+    return res
+      .status(201)
+      .json(results)
+      .end()
+  })
+)
+
+router.delete(
+  '/:idR/:model/:id',
+  catchException(async (req, res, next) => {
+    // Logger
+    const { username, id: idUser } = req.user
+    const {
+      params: { idR: idRepository, id }
+    } = req
+
+    const results = await Model[req.model].delete({
+      id,
+      idRepository
+    })
+
+    return res.status(204).end()
+  })
+)
 
 router.post(
   '/',
