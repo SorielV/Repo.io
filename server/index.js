@@ -44,7 +44,7 @@ async function start() {
   app.use('/api/type', CatTypes)
   app.use('/api/topic', CatTopics)
   app.use(nuxt.render)
-  
+
   // Listen the server
   app.listen(port, host)
   consola.ready({

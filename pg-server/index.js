@@ -1,27 +1,68 @@
 import consola from 'consola'
 import express from 'express'
 import bodyParser from 'body-parser'
-const port = process.env.PORT || 3000
-
+import { Nuxt, Builder } from 'nuxt'
 import { UserApi, Catalog, Repository } from './web/router/api'
 import LoginAPI from './web/router/login'
 
+const host = process.env.HOST || '127.0.0.1'
+const port = process.env.PORT || 3000
+
 const app = express()
 
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
+if (process.env.NUXT) {
+  let config = require('../nuxt.config.js')
+  config.dev = !(process.env.NODE_ENV === 'production')
 
-// parse application/json
-app.use(bodyParser.json())
+  async function start() {
+    const nuxt = new Nuxt(config)
 
-app.use('/api/user', UserApi)
-for (let catalog in Catalog) {
-  app.use(`/api/catalog/${catalog}`, Catalog[catalog])
+    // Build only in dev mode
+    if (config.dev) {
+      const builder = new Builder(nuxt)
+      await builder.build()
+    }
+
+    // parse application/x-www-form-urlencoded
+    app.use(bodyParser.urlencoded({ extended: false }))
+
+    // parse application/json
+    app.use(bodyParser.json())
+
+    app.use('/api/user', UserApi)
+    for (let catalog in Catalog) {
+      app.use(`/api/catalog/${catalog}`, Catalog[catalog])
+    }
+    // app.use('/api/type', CatalogTypeApi)
+    app.use('/login', LoginAPI)
+    app.use('/api/repo', Repository)
+
+    app.use(nuxt.render)
+
+    app.listen(port, () => {
+      consola.success('Server Running in Port ' + port)
+    })
+  }
+  start()
+} else {
+  async function start() {
+    // parse application/x-www-form-urlencoded
+    app.use(bodyParser.urlencoded({ extended: false }))
+
+    // parse application/json
+    app.use(bodyParser.json())
+
+    app.use('/api/user', UserApi)
+    for (let catalog in Catalog) {
+      app.use(`/api/catalog/${catalog}`, Catalog[catalog])
+    }
+    // app.use('/api/type', CatalogTypeApi)
+    app.use('/login', LoginAPI)
+    app.use('/api/repo', Repository)
+
+    app.listen(port, () => {
+      consola.success('Server Running in Port ' + port)
+    })
+  }
+  start()
 }
-// app.use('/api/type', CatalogTypeApi)
-app.use('/login', LoginAPI)
-app.use('/api/repo', Repository)
-
-app.listen(port, () => {
-  consola.success('Server Running in Port ' + port)
-})

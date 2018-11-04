@@ -15,13 +15,10 @@ const router = Router()
 router.get(
   '/',
   catchException(async (req, res, next) => {
-    try {
-      const results = await Repository.getRepositories()
-      return res.json(results)
-    } catch (err) {
-      console.error(err)
-      return res.status(500)
-    }
+    const api =
+      req.protocol + '://' + req.get('host') + req.originalUrl.split('?')[0]
+    const items = await Repository.getRepositories({ ...req.query, api })
+    return res.json({ data: items })
   })
 )
 
@@ -30,7 +27,7 @@ router.get(
  * @param {:model} => Model [comment, type, topic, author, editorial, score, ...]
  */
 
-router.param(':model', (req, res, next) => {
+router.param('model', (req, res, next) => {
   const {
     params: { model }
   } = req

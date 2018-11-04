@@ -48,7 +48,7 @@ export default {
     try {
       if (Object.keys(params).length) {
         const {
-          data: { data: repositories }
+          data: { data: repositories = [] }
         } = await app.$axios.get(`/api/repo/?search=${params}`)
         return {
           params,
@@ -58,7 +58,7 @@ export default {
         }
       } else {
         const {
-          data: { data: repositories }
+          data: { data: repositories = [] }
         } = await app.$axios.get('/api/repo')
         return {
           params,

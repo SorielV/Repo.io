@@ -1,4 +1,5 @@
 import { Repository } from './../../../../models/repository'
+import { Pagination } from './../../../../utils/pagination'
 
 const groupBy = (arr, fn) => {
   let currentId = arr[0][0]
@@ -26,17 +27,52 @@ function Make(keys, values) {
   }, {})
 }
 
-Repository.getRepositories = async function() {
+Repository.getRepositories = async function(_options = {}) {
+  let {
+    limit = 100,
+    offset = 100,
+    page = 0,
+    all = false,
+    api = '',
+    ...where
+  } = _options
+
+  // Validaciones Rango, etc ...
+  if (!all) {
+    limit = Number(limit) || 100
+    page = Number(page) || 0
+    page = page > 0 ? page - 1 : 0
+    offset = Number(offset) || 100
+  }
+
   /**
    El campo nested debera tener el formato '{key}.{subkey}
    */
+  const tableAs = 'R'
+  const whereStament = Repository.whereStament
+
+  // Inside
+  const whereConditions =
+    where && Object.keys(where).length
+      ? 'where ' + whereStament(where, true).join(` , `)
+      : ''
+
+  /* Out
+  const whereConditions =
+    where && Object.keys(where).length
+      ? 'where R.' + whereStament(where, true).join(`, ${tableAs}.`)
+      : ''
+  */
+
+  const limitStament = all ? '' : ` limit ${limit} offset ${offset * page} `
+
   const query = `
     SELECT Repo.*,
       Topic.id as "topic.id", Topic.value as "topic.value",
       Type.id as "type.id", Type.value as "type.value",
       Editorial.id as "editorial.id", Editorial.name as "editorial.name",
       Author.id as "author.id ", Author."firstName" as "author.firstName", Author."lastName" as "author.lastName"
-    from (select * from "Repositories" limit 100) as Repo
+    from (select * from "Repositories" ${whereConditions} ${limitStament} ) as Repo
       left join "RepositoryTopics" as RET on Repo.id = RET."idRepository"
         left join "CatalogTopics" as Topic on RET."idCatalog" = Topic.id
       left join "RepositoryTypes" as RETy on Repo.id = RETy."idRepository"
@@ -47,10 +83,25 @@ Repository.getRepositories = async function() {
         left join "CatalogAuthors" as Author on REA."idAuthor" = Author.id;
   `
 
-  const { rows, fields } = await Repository._database.query({
-    text: query,
-    rowMode: 'array'
-  })
+  console.log(query)
+
+  const promises = [
+    Repository._database.query({
+      text: `select count(*) from "${Repository._Table}"`,
+      rowMode: 'array'
+    }),
+    Repository._database.query({
+      text: query,
+      rowMode: 'array'
+    })
+  ]
+
+  const [
+    {
+      rows: [[total]]
+    },
+    { rows, fields }
+  ] = await Promise.all(promises)
 
   // Nested Positions
   const pos = []
@@ -111,7 +162,13 @@ Repository.getRepositories = async function() {
     return obj
   })
 
-  return groups
+  return new Pagination(api, groups, {
+    total: Number(total),
+    limit,
+    offset,
+    page,
+    where
+  })
 }
 
 export default Repository
