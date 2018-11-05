@@ -6,8 +6,12 @@ export class Pagination {
     this.offset = offset
     this.page = page + 1
     this.params = params
-    this.nextPage = `${api}?page=${page}limit=${limit}&offset=${offset}`
-    this.prevPage = `${api}?page=${page + 2}limit=${limit}&offset=${offset}`
+    this.prevPage =
+      page > 0 ? `${api}?page=${page}&limit=${limit}&offset=${offset}` : null
+    this.nextPage =
+      (page + 1) * offset < total
+        ? `${api}?page=${page + 2}&limit=${limit}&offset=${offset}`
+        : null
     this.data = data
   }
 }

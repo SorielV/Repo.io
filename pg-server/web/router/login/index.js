@@ -2,12 +2,7 @@ import { Router } from 'express'
 import { User } from './../../../models/user'
 import jwt from 'jsonwebtoken'
 import jwtConfig from './../../../config/jwt.json'
-import {
-  catchException,
-  getAuth,
-  isAuth,
-  isAdmin
-} from './../../../utils/handle'
+import { catchException, getAuth, isAuth, isAdmin } from './../../middleware'
 
 const router = Router()
 

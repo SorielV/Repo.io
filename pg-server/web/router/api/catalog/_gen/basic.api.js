@@ -1,9 +1,5 @@
 import { Router } from 'express'
-import {
-  catchException,
-  getAuth,
-  isAdminAuth
-} from '../../../../../utils/handle'
+import { catchException, getAuth, isAdminAuth } from './../../../../middleware'
 
 export default function(model) {
   const router = Router()

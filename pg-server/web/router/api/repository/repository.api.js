@@ -4,11 +4,7 @@ import Repository from './/repository.controller'
 // Model Controllers
 import Model from './model'
 
-import {
-  catchException,
-  getAuth,
-  isAdminAuth
-} from './../../../../utils/handle'
+import { catchException, getAuth, isAdminAuth } from './../../../middleware'
 
 const router = Router()
 

@@ -27,7 +27,8 @@ function Make(keys, values) {
   }, {})
 }
 
-Repository.getRepositories = async function(_options = {}) {
+Repository.getRepositories = async function(options = {}) {
+  console.log(options)
   let {
     limit = 100,
     offset = 100,
@@ -35,7 +36,7 @@ Repository.getRepositories = async function(_options = {}) {
     all = false,
     api = '',
     ...where
-  } = _options
+  } = options
 
   // Validaciones Rango, etc ...
   if (!all) {
@@ -83,14 +84,12 @@ Repository.getRepositories = async function(_options = {}) {
         left join "CatalogAuthors" as Author on REA."idAuthor" = Author.id;
   `
 
-  console.log(query)
-
   const promises = [
-    Repository._database.query({
+    Repository.query({
       text: `select count(*) from "${Repository._Table}"`,
       rowMode: 'array'
     }),
-    Repository._database.query({
+    Repository.query({
       text: query,
       rowMode: 'array'
     })
@@ -172,83 +171,3 @@ Repository.getRepositories = async function(_options = {}) {
 }
 
 export default Repository
-
-/**
-results = [{
-      "id": 3,
-      "idUser": 2,
-      "username": "Soriel",
-      "title": "1",
-      "description": "1",
-      "url": "1",
-      "file": "11",
-      "image": "111",
-      "tags": "1,2,3",
-      "visibility": 1,
-      "createdAt": "2018-10-23T17:26:50.489Z",
-      "updatedAt": null,
-      "Topic.id": null,
-      "Topic.value": null,
-      "Type.id": null,
-      "Type.value": null,
-      "Editorial.value": null,
-      "Author.id ": 1,
-      "Author.firstName": "q",
-      "Author.lastName": "q"
-    }]
-
-const groups = {"3":[{"id":3,"idUser":2,"username":"Soriel","title":"1","description":"1","url":"1","file":"11","image":"111","tags":"1,2,3","visibility":1,"createdAt":"2018-10-23T17:26:50.489Z","updatedAt":null,"Topic.id":null,"Topic.value":null,"Type.id":null,"Type.value":null,"Editorial.value":null,"Author.id ":1,"Author.firstName":"q","Author.lastName":"q"},{"id":3,"idUser":2,"username":"Soriel","title":"1","description":"1","url":"1","file":"11","image":"111","tags":"1,2,3","visibility":1,"createdAt":"2018-10-23T17:26:50.489Z","updatedAt":null,"Topic.id":null,"Topic.value":null,"Type.id":null,"Type.value":null,"Editorial.value":null,"Author.id ":2,"Author.firstName":"q","Author.lastName":"q"}],"4":[{"id":4,"idUser":2,"username":"Soriel","title":"1","description":"1","url":"1","file":"11","image":"111","tags":"1,2,3","visibility":1,"createdAt":"2018-10-23T17:26:50.489Z","updatedAt":null,"Topic.id":null,"Topic.value":null,"Type.id":null,"Type.value":null,"Editorial.value":null,"Author.id ":null,"Author.firstName":null,"Author.lastName":null}],"5":[{"id":5,"idUser":2,"username":"Soriel","title":"1","description":"1","url":"1","file":"11","image":"111","tags":"1,2,3","visibility":1,"createdAt":"2018-10-23T17:26:50.489Z","updatedAt":null,"Topic.id":null,"Topic.value":null,"Type.id":null,"Type.value":null,"Editorial.value":null,"Author.id ":null,"Author.firstName":null,"Author.lastName":null}],"6":[{"id":6,"idUser":2,"username":"Soriel","title":"1","description":"1","url":"1","file":"11","image":"111","tags":"1,2,3","visibility":1,"createdAt":"2018-10-23T17:26:50.489Z","updatedAt":null,"Topic.id":null,"Topic.value":null,"Type.id":null,"Type.value":null,"Editorial.value":null,"Author.id ":null,"Author.firstName":null,"Author.lastName":null}],"7":[{"id":7,"idUser":2,"username":"Soriel","title":"1","description":"1","url":"1","file":"11","image":"111","tags":"1,2,3","visibility":1,"createdAt":"2018-10-23T17:26:50.489Z","updatedAt":null,"Topic.id":null,"Topic.value":null,"Type.id":null,"Type.value":null,"Editorial.value":null,"Author.id ":null,"Author.firstName":null,"Author.lastName":null}],"8":[{"id":8,"idUser":2,"username":"Soriel","title":"1","description":"1","url":"1","file":"11","image":"111","tags":"1,2,3","visibility":1,"createdAt":"2018-10-23T17:26:50.489Z","updatedAt":null,"Topic.id":null,"Topic.value":null,"Type.id":null,"Type.value":null,"Editorial.value":null,"Author.id ":null,"Author.firstName":null,"Author.lastName":null}],"9":[{"id":9,"idUser":2,"username":"Soriel","title":"1","description":"1","url":"1","file":"11","image":"111","tags":"1,2,3","visibility":1,"createdAt":"2018-10-23T17:26:50.489Z","updatedAt":null,"Topic.id":null,"Topic.value":null,"Type.id":null,"Type.value":null,"Editorial.value":null,"Author.id ":null,"Author.firstName":null,"Author.lastName":null}],"10":[{"id":10,"idUser":2,"username":"Soriel","title":"1","description":"1","url":"1","file":"11","image":"111","tags":"1,2,3","visibility":1,"createdAt":"2018-10-23T17:26:50.489Z","updatedAt":null,"Topic.id":null,"Topic.value":null,"Type.id":null,"Type.value":null,"Editorial.value":null,"Author.id ":null,"Author.firstName":null,"Author.lastName":null}],"11":[{"id":11,"idUser":2,"username":"Soriel","title":"1","description":"1","url":"1","file":"11","image":"111","tags":"1,2,3","visibility":1,"createdAt":"2018-10-23T17:26:50.489Z","updatedAt":null,"Topic.id":null,"Topic.value":null,"Type.id":null,"Type.value":null,"Editorial.value":null,"Author.id ":null,"Author.firstName":null,"Author.lastName":null}],"12":[{"id":12,"idUser":2,"username":"Soriel","title":"1","description":"1","url":"1","file":"11","image":"111","tags":"1,2,3","visibility":1,"createdAt":"2018-10-23T17:26:50.489Z","updatedAt":null,"Topic.id":null,"Topic.value":null,"Type.id":null,"Type.value":null,"Editorial.value":null,"Author.id ":null,"Author.firstName":null,"Author.lastName":null}]}
-
-
-const nested = {}
-
-Object.keys(results[0]).forEach(columm => {
-  console.log(columm)
-  let hasNested = columm.indexOf('.') !== -1
-  if (hasNested) {
-    const [obj, key] = columm.split('.')
-    if (!nested.hasOwnProperty(obj)) {
-      nested[obj] = [key]
-    } else {
-      nested[obj].push(key)
-    }
-  }
-})
-
-const nestedGrops = Object.keys(nested)
-
-const nestedData = []
-for(let id in groups) {
-  const rows = groups[id]
-  for (let nestedGroup of nestedGrops) {
-    rows[0][nestedGroup] = []
-  }
-
-  const head = rows[0]
-  const parse = {}
-
-  for (let row of rows) {
-    
-  }
-}
-  
-
- */
-
-/*
-const groupBy = (arr, fn) => {
-  let currentId = arr[0].id
-  let pos = 0
-  return arr
-    .map(typeof fn === 'function' ? fn : val => val[fn])
-    .reduce((acc, val, i) => {
-      if (arr[i].id === currentId) {
-        acc[pos] = (acc[pos] || []).concat(arr[i])
-      } else {
-        acc[++pos] = (acc[pos] || []).concat(arr[i])
-        currentId = arr[i].id
-      }
-      return acc
-    }, [])
-}
-*/

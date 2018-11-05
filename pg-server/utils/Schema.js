@@ -179,11 +179,10 @@ module.exports = function Schema(
         ' , '
       )}) values (${columnValues.join(' , ')}) RETURNING *;`
 
-      consola.info(query)
-
       const {
         rows: [row]
-      } = await Model._database.query(query)
+      } = await Model.query(query)
+
       return row
     }
 
@@ -358,8 +357,7 @@ module.exports = function Schema(
 
       const {
         rows: [result]
-      } = await Model._database.query(query)
-      consola.info(query)
+      } = await Model.query(query)
       return raw ? result : new Model(result, false)
     }
 
@@ -369,8 +367,7 @@ module.exports = function Schema(
     static async findAll() {
       const table = Model.Table
       const query = `SELECT * from "${table}"`
-      consola.info(query)
-      const { rows } = await Model._database.query(query)
+      const { rows } = await Model.query(query)
       return rows
     }
 
@@ -380,10 +377,9 @@ module.exports = function Schema(
       return result
     }
 
-    static async query(query) {
-      consola.info(query)
-      const { rows } = await Model._database.query(query)
-      return rows
+    static query(query) {
+      consola.info(query.text || query)
+      return Model._database.query(query)
     }
 
     static async find(_options = {}) {
@@ -423,9 +419,7 @@ module.exports = function Schema(
         }
       }
 
-      consola.info(query)
-
-      const { rows } = await Model._database.query(query)
+      const { rows } = await Model.query(query)
       return raw ? rows : rows.map(item => new Model(item, false))
     }
 
@@ -505,11 +499,9 @@ module.exports = function Schema(
           ' , '
         )} where ${whereColumns.join(' and ')} RETURNING *;`
 
-        consola.info(query)
-
         const {
           rows: [result]
-        } = await Model._database.query(query)
+        } = await Model.query(query)
         return result
       } else {
         return null
@@ -582,7 +574,7 @@ module.exports = function Schema(
       const query = `delete from "${Table}" where ${whereStatement.join(
         ' and '
       )};`
-      const { rowCount } = await Model._database.query(query)
+      const { rowCount } = await Model.query(query)
       return rowCount
     }
 

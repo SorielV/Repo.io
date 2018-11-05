@@ -1,9 +1,20 @@
 import jwt from 'jsonwebtoken'
-import jwtConfig from './../config/jwt.json'
+import jwtConfig from './../../config/jwt.json'
 
 const ADMIN = 1
 
 const getAuthUser = req => {
+  if (process.env.NODE_ENV === 'development') {
+    return {
+      username: 'Admin',
+      email: 'admin@repo.io',
+      firstName: 'Admin',
+      lastName: 'God',
+      profileImage:
+        'https://raw.githubusercontent.com/voodootikigod/logo.js/master/js.png'
+    }
+  }
+
   return new Promise((resolve, reject) => {
     const header = req.headers.authorization
     if (!header) {
@@ -30,6 +41,9 @@ const getAuth = async (req, res, next) => {
   }
 }
 
+// Required
+
+// Basic
 const isAuth = async (req, res, next) => {
   try {
     const user = await getAuthUser(req)
@@ -44,6 +58,7 @@ const isAuth = async (req, res, next) => {
   }
 }
 
+// Admin
 const isAdminAuth = async (req, res, next) => {
   try {
     const user = await getAuthUser(req)
@@ -67,13 +82,4 @@ const isAdminAuth = async (req, res, next) => {
   }
 }
 
-const catchException = fn => (req, res, next) => {
-  Promise.resolve(fn(req, res, next)).catch(err => {
-    return res
-      .status(500)
-      .json({ message: err.message })
-      .end()
-  })
-}
-
-export { catchException, getAuth, isAuth, isAdminAuth }
+export { getAuth, isAuth, isAdminAuth }
