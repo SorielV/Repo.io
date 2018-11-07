@@ -20,7 +20,7 @@ const groupBy = (arr, fn) => {
     }, [])
 }
 
-function Make(keys, values) {
+function CreateObject(keys, values) {
   return keys.reduce((acc, key, i) => {
     acc[key] = values[i]
     return acc
@@ -126,12 +126,12 @@ Repository.getRepositories = async function(options = {}) {
   const nestedColumns = Object.keys(nested)
 
   const groups = groupBy(rows, ([id]) => id).map(([head, ...tail]) => {
-    const obj = Make(columnNames.slice(0, pos[0]), head)
+    const obj = CreateObject(columnNames.slice(0, pos[0]), head)
     for (let i = 0; i < nestedColumns.length; i++) {
       obj[nestedColumns[i]] = []
       if (head[pos[i]] !== null) {
         obj[nestedColumns[i]].push(
-          Make(nested[nestedColumns[i]], head.slice(pos[i], pos[i + 1]))
+          CreateObject(nested[nestedColumns[i]], head.slice(pos[i], pos[i + 1]))
         )
       }
     }
@@ -151,7 +151,10 @@ Repository.getRepositories = async function(options = {}) {
 
             if (isUnique) {
               obj[nestedColumns[i]].push(
-                Make(nested[nestedColumns[i]], row.slice(pos[i], pos[i + 1]))
+                CreateObject(
+                  nested[nestedColumns[i]],
+                  row.slice(pos[i], pos[i + 1])
+                )
               )
             }
           }
@@ -168,6 +171,97 @@ Repository.getRepositories = async function(options = {}) {
     page,
     where
   })
+}
+
+Repository.getRepositoryById = async function(id) {
+  const whereStament = Repository.whereStament
+  const whereConditions = 'where ' + whereStament({ id }, true).join(` , `)
+
+  const query = `
+  SELECT Repo.*,
+    Topic.id as "topic.id", Topic.value as "topic.value",
+    Type.id as "type.id", Type.value as "type.value",
+    Editorial.id as "editorial.id", Editorial.name as "editorial.name",
+    Author.id as "author.id ", Author."firstName" as "author.firstName", Author."lastName" as "author.lastName"
+  from (select * from "Repositories" ${whereConditions}) as Repo
+    left join "RepositoryTopics" as RET on Repo.id = RET."idRepository"
+      left join "CatalogTopics" as Topic on RET."idCatalog" = Topic.id
+    left join "RepositoryTypes" as RETy on Repo.id = RETy."idRepository"
+      left join "CatalogTypes" as Type on RETy."idCatalog" = Type.id
+    left join "RepositoryEditorials" as REE on Repo.id = REE."idRepository"
+      left join "CatalogEditorials" as Editorial on REE."idCatalog" = Editorial.id
+    left join "RepositoryAuthors" as REA on Repo.id = REA."idRepository"
+      left join "CatalogAuthors" as Author on REA."idAuthor" = Author.id;
+  `
+
+  const { rows, fields } = await Repository.query({
+    text: query,
+    rowMode: 'array'
+  })
+
+  // Nested Positions
+  const pos = []
+
+  // Nested Keys
+  const nested = {}
+  const columnNames = fields.map(({ name }) => name)
+  columnNames.forEach((columm, i) => {
+    const hasNested = columm.indexOf('.') !== -1
+    if (hasNested) {
+      const [obj, key] = columm.split('.')
+      if (!nested.hasOwnProperty(obj)) {
+        nested[obj] = [key]
+        pos.push(i)
+      } else {
+        nested[obj].push(key)
+      }
+    }
+  })
+  pos.push(fields.length)
+
+  // Nestesd Columns (Arrays)
+  const nestedColumns = Object.keys(nested)
+
+  const groups = groupBy(rows, ([id]) => id).map(([head, ...tail]) => {
+    const obj = CreateObject(columnNames.slice(0, pos[0]), head)
+    for (let i = 0; i < nestedColumns.length; i++) {
+      obj[nestedColumns[i]] = []
+      if (head[pos[i]] !== null) {
+        obj[nestedColumns[i]].push(
+          CreateObject(nested[nestedColumns[i]], head.slice(pos[i], pos[i + 1]))
+        )
+      }
+    }
+
+    if (tail.length > 0) {
+      for (let row of tail) {
+        for (let i = 0; i < nestedColumns.length; i++) {
+          if (row[pos[i]] !== null && row[pos[i]] != undefined) {
+            const isUnique =
+              obj[nestedColumns[i]].length === 0
+                ? true
+                : obj[nestedColumns[i]].findIndex(
+                    ({ id }) => id === row[pos[i]]
+                  ) === -1
+                  ? true
+                  : false
+
+            if (isUnique) {
+              obj[nestedColumns[i]].push(
+                CreateObject(
+                  nested[nestedColumns[i]],
+                  row.slice(pos[i], pos[i + 1])
+                )
+              )
+            }
+          }
+        }
+      }
+    }
+    return obj
+  })
+
+  return groups[0] || {}
 }
 
 export default Repository

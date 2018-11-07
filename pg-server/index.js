@@ -1,5 +1,6 @@
 import consola from 'consola'
 import express from 'express'
+import cors from 'cors'
 import bodyParser from 'body-parser'
 import { Nuxt, Builder } from 'nuxt'
 import { UserApi, Catalog, Repository } from './web/router/api'
@@ -23,6 +24,7 @@ if (process.env.NUXT) {
       await builder.build()
     }
 
+    app.use(cors)
     // parse application/x-www-form-urlencoded
     app.use(bodyParser.urlencoded({ extended: false }))
 

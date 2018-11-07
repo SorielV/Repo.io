@@ -13,8 +13,19 @@ router.get(
   catchException(async (req, res, next) => {
     const api =
       req.protocol + '://' + req.get('host') + req.originalUrl.split('?')[0]
-    const items = await Repository.getRepositories({ ...req.query, api })
-    return res.json({ data: items })
+    const data = await Repository.getRepositories({ ...req.query, api })
+    return res.json(data)
+  })
+)
+
+router.get(
+  '/:id',
+  catchException(async (req, res, next) => {
+    const {
+      params: { id }
+    } = req
+    const data = await Repository.getRepositoryById(id)
+    return res.json({ data })
   })
 )
 

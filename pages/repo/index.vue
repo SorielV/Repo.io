@@ -30,10 +30,11 @@
           .container(style="padding: 1%")
             .card-columns
               .b-card(v-for="(repo, index) in filtered" :key="index")
-                .card-image-top(v-if="repo.image")
+                pre(@click="handleViewRepo(repo)") {{ repo }}
+                //-.card-image-top(v-if="repo.image")
                   figure.image.is-4by3
                     img(:src='repo.image' :alt='repo.image')
-                .card-body
+                //-.card-body
                   .content
                     p.title(v-text='repo.title' @click="handleViewRepo(repo)")
                     .tags
@@ -100,9 +101,12 @@ export default {
       if (types.length === 0) {
         this.filtered = this.repositories
       } else {
-        this.filtered = Array.from(this.repositories).filter(
-          ({ type }) => types.indexOf(type) !== -1
-        )
+        this.filtered = Array.from(this.repositories).filter(({ type }) => {
+          return type.find(({ id }) => {
+            console.log(id, types, types.indexOf(id))
+            return types.indexOf(id) !== -1
+          })
+        })
       }
     },
     filter(_filter, _oldFilter) {
@@ -130,9 +134,11 @@ export default {
   },
   methods: {
     getType(type) {
-      const { text = 'Otro' } = Array.apply(null, this.catalog.types).find(
-        ({ value }) => value === type
-      )
+      const { text = 'Otro' } =
+        Array.apply(null, this.catalog.types).find(
+          ({ value }) => value === type
+        ) || {}
+
       return text
     },
     handleSelectType(event, type) {

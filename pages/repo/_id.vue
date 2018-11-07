@@ -43,12 +43,12 @@ export default {
     RepoD,
     RepoDI
   },
-  async asyncData({ params }) {
+  async asyncData({ app, params }) {
     const { id } = params
     try {
       const {
         data: { data }
-      } = await axios.get(`/api/repo/${id}`)
+      } = await app.$axios.get(`/api/repo/${id}`)
       return {
         repository: data
       }
