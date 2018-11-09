@@ -34,7 +34,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import RepoD from './../../components/RepoD.vue'
 import RepoDI from './../../components/RepoDI.vue'
 
@@ -53,7 +52,7 @@ export default {
         repository: data
       }
     } catch (error) {
-      console.log(error)
+      console.log(error.message)
       return {
         comments: [],
         repository: []
@@ -71,10 +70,10 @@ export default {
       try {
         const {
           data: { data }
-        } = await axios.get(`/api/repo/${this.repository.id}/comment`)
+        } = await this.$axios.get(`/api/repo/${this.repository.id}/comment`)
         this.comments = data
       } catch (error) {
-        console.log(error)
+        console.log(error.message)
       }
     }
   },
@@ -90,13 +89,13 @@ export default {
         const { id: idRepository } = this.repository
         const {
           data: { data }
-        } = await axios.post(`/api/repo/${this.repository.id}/comment`, {
+        } = await this.$axios.post(`/api/repo/${this.repository.id}/comment`, {
           idRepository,
           comment
         })
         this.comments.push(data)
       } catch (error) {
-        console.log(error)
+        console.log(error.message)
       }
       handle.enable = true
       comment.enable = true

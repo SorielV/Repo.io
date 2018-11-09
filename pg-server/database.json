@@ -1,9 +1,23 @@
 {
   "development": {
-    "host" : "127.0.0.1",
+    "host" : "159.203.184.223",
     "port": 5432,
-    "user" : "postgres",
-    "database" : "repos",
-    "password" : "postgres"
+    "user" : "admin",
+    "database" : "repo-development",
+    "password" : "5510e72328be4b1b516c5afd92719402"
+  },
+  "testing": {
+    "host" : "159.203.184.223",
+    "port": 5432,
+    "user" : "admin",
+    "database" : "repo-testing",
+    "password" : "5510e72328be4b1b516c5afd92719402"
+  },
+  "production": {
+    "host" : "159.203.184.223",
+    "port": 5432,
+    "user" : "admin",
+    "database" : "repo-production",
+    "password" : "5510e72328be4b1b516c5afd92719402"
   }
 }

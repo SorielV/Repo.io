@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import Repository from './../repository.controller'
+import Comment from './comment.controller'
 
 // Model Controllers
 import Model from './../model'
@@ -18,7 +18,7 @@ router.get(
   catchException(async (req, res, next) => {
     const api =
       req.protocol + '://' + req.get('host') + req.originalUrl.split('?')[0]
-    const data = await Repository.getRepositories({ ...req.query, api })
+    const data = await Comment.getComments({ ...req.query, api })
     return res.json(data)
   })
 )
@@ -29,7 +29,7 @@ router.get(
     const {
       params: { id }
     } = req
-    const data = await Repository.getRepositoryById(id)
+    const data = await Comment.getRepositoryById(id)
     return res.json({ data })
   })
 )

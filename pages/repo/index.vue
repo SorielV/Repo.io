@@ -68,7 +68,7 @@ export default {
         }
       }
     } catch (error) {
-      console.error(error)
+      console.error(error.message)
     }
   },
   data() {
@@ -97,16 +97,12 @@ export default {
   },
   watch: {
     types(types) {
-      console.log(types)
       if (types.length === 0) {
         this.filtered = this.repositories
       } else {
-        this.filtered = Array.from(this.repositories).filter(({ type }) => {
-          return type.find(({ id }) => {
-            console.log(id, types, types.indexOf(id))
-            return types.indexOf(id) !== -1
-          })
-        })
+        this.filtered = Array.from(this.repositories).filter(({ type }) =>
+          type.find(({ id }) => types.indexOf(id) !== -1)
+        )
       }
     },
     filter(_filter, _oldFilter) {
@@ -155,7 +151,6 @@ export default {
       }
     },
     handleViewRepo(repo) {
-      console.log(repo)
       this.$router.push('/repo/' + repo.id)
     }
   }

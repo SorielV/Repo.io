@@ -28,7 +28,6 @@ function CreateObject(keys, values) {
 }
 
 Repository.getRepositories = async function(options = {}) {
-  console.log(options)
   let {
     limit = 100,
     offset = 100,

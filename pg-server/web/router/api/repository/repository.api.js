@@ -4,6 +4,9 @@ import Repository from './/repository.controller'
 // Model Controllers
 import Model from './model'
 
+// Comment Controller
+import Comment from './comment/comment.controller'
+
 import { catchException, getAuth, isAdminAuth } from './../../../middleware'
 
 const router = Router()
@@ -28,6 +31,47 @@ router.get(
     return res.json({ data })
   })
 )
+
+// API Comment
+
+router.get(
+  '/:idR/comment/',
+  catchException(async (req, res, next) => {
+    const {
+      params: { idR: idRepository }
+    } = req
+
+    const results = await Comment.getComments(
+      {
+        idRepository
+      },
+      true
+    )
+    return res.json(results)
+  })
+)
+
+router.get(
+  '/:idR/comment/:id',
+  catchException(async (req, res, next) => {
+    const {
+      params: { idR: idRepository, id }
+    } = req
+
+    const results = await Comment.find({
+      where: {
+        id,
+        idRepository
+      }
+    })
+    return res
+      .status(200)
+      .json(results)
+      .end()
+  })
+)
+
+// API Catalogs
 
 /**
  * @param {:id} => IdRepository
@@ -86,6 +130,79 @@ router.get(
 )
 
 router.use(isAdminAuth)
+
+router.post(
+  '/:idR/comment/',
+  catchException(async (req, res, next) => {
+    const { username, id: idUser } = req.user
+    const {
+      params: { idR: idRepository }
+    } = req
+
+    const results = await new Comment({
+      ...req.body,
+      idRepository,
+      username,
+      idUser
+    }).save()
+
+    return res
+      .status(201)
+      .json(results)
+      .end()
+  })
+)
+
+router.put(
+  '/:idR/comment/:id',
+  catchException(async (req, res, next) => {
+    const { username, id: idUser } = req.user
+    const {
+      params: { idR: idRepository, id }
+    } = req
+
+    const results = await Comment.findOneAndUpdate(
+      {
+        id,
+        idRepository,
+        username,
+        idUser
+      },
+      {
+        ...req.body,
+        id,
+        idRepository,
+        username,
+        idUser
+      }
+    ).save()
+
+    return res
+      .status(201)
+      .json(results)
+      .end()
+  })
+)
+
+router.delete(
+  '/:idR/comment/:id',
+  catchException(async (req, res, next) => {
+    // Logger
+    const { username, id: idUser } = req.user
+    const {
+      params: { idR: idRepository, id }
+    } = req
+
+    const results = await Comment.delete({
+      id,
+      idRepository,
+      username,
+      idUser
+    })
+
+    return res.status(204).end()
+  })
+)
 
 router.post(
   '/:idR/:model/',
@@ -158,6 +275,8 @@ router.delete(
   })
 )
 
+// Repository API
+
 router.post(
   '/',
   catchException(async (req, res, next) => {
@@ -219,5 +338,7 @@ router.delete(
       .end()
   })
 )
+
+// Commnet API
 
 export default router
