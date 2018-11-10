@@ -12,7 +12,7 @@ const port = process.env.PORT || 3000
 const app = express()
 
 if (process.env.NUXT) {
-  let config = require('../nuxt.config.js')
+  const config = require('./../nuxt.config.js')
   config.dev = !(process.env.NODE_ENV === 'production')
 
   async function start() {
@@ -24,7 +24,7 @@ if (process.env.NUXT) {
       await builder.build()
     }
 
-    app.use(cors)
+    // app.use(cors)
     // parse application/x-www-form-urlencoded
     app.use(bodyParser.urlencoded({ extended: false }))
 
@@ -32,22 +32,24 @@ if (process.env.NUXT) {
     app.use(bodyParser.json())
 
     app.use('/api/user', UserApi)
+
     for (let catalog in Catalog) {
       app.use(`/api/catalog/${catalog}`, Catalog[catalog])
     }
-    // app.use('/api/type', CatalogTypeApi)
+
     app.use('/login', LoginAPI)
     app.use('/api/repo', Repository)
-
     app.use(nuxt.render)
 
     app.listen(port, () => {
       consola.success('Server Running in Port ' + port)
     })
   }
+
   start()
 } else {
   async function start() {
+    app.use(cors)
     // parse application/x-www-form-urlencoded
     app.use(bodyParser.urlencoded({ extended: false }))
 

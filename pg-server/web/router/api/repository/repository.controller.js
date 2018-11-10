@@ -104,6 +104,16 @@ Repository.getRepositories = async function(options = {}) {
   // Nested Positions
   const pos = []
 
+  if (rows.length === 0) {
+    return new Pagination(api, [], {
+      total: Number(total),
+      limit,
+      offset,
+      page,
+      where
+    })
+  }
+
   // Nested Keys
   const nested = {}
   const columnNames = fields.map(({ name }) => name)

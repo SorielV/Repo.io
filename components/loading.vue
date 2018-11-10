@@ -1,8 +1,14 @@
 <template>
   <div
     v-if="loading"
-    class="loading-page">
-    <p>Loading...</p>
+    class="something-semantic">
+    <div class="something-else-semantic">
+      <figure
+        class="image">
+        <img
+          src="http://www.nyan.cat/cats/original.gif">
+      </figure>
+    </div>
   </div>
 </template>
 
@@ -23,16 +29,14 @@ export default {
 </script>
 
 <style scoped>
-.loading-page {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
+.something-semantic {
   height: 100%;
-  background: rgba(10, 10, 10, 0.86);
+  display: table;
+  width: 100%;
+}
+.something-else-semantic {
+  display: table-cell;
   text-align: center;
-  padding-top: 200px;
-  font-size: 30px;
-  font-family: sans-serif;
+  vertical-align: middle;
 }
 </style>

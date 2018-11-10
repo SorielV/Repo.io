@@ -578,7 +578,13 @@ module.exports = function Schema(
       return rowCount
     }
 
-    constructor(data, validate = true) {
+    constructor(data = {}, validate = true) {
+      if (typeof data !== 'object' || Array.isArray(data)) {
+        throw new Error('Data no valida')
+      }
+
+      console.log(data)
+
       const Schema = this.constructor._Schema
       const Options = this.constructor._Options
       const primaryKeys = Options.id || 'id'

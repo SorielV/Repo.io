@@ -6,7 +6,8 @@ const ADMIN = 1
 const getAuthUser = req => {
   if (process.env.NODE_ENV === 'development') {
     return {
-      username: 'Admin',
+      id: 1,
+      username: 'admin',
       email: 'admin@repo.io',
       firstName: 'Admin',
       lastName: 'God',

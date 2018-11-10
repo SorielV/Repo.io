@@ -7,7 +7,12 @@ import Model from './model'
 // Comment Controller
 import Comment from './comment/comment.controller'
 
-import { catchException, getAuth, isAdminAuth } from './../../../middleware'
+import {
+  catchException,
+  getAuth,
+  isAdminAuth,
+  isAuth
+} from './../../../middleware'
 
 const router = Router()
 
@@ -83,7 +88,7 @@ router.param('model', (req, res, next) => {
     params: { model }
   } = req
 
-  if (Model.hasOwnProperty(model)) {
+  if (model === 'comment' || Model.hasOwnProperty(model)) {
     req.model = model
     return next()
   } else {
@@ -129,17 +134,18 @@ router.get(
   })
 )
 
-router.use(isAdminAuth)
+router.use(isAuth)
 
 router.post(
   '/:idR/comment/',
   catchException(async (req, res, next) => {
-    const { username, id: idUser } = req.user
+    console.log(req.user)
+    const { username, id: idUser, profileImage } = req.user
     const {
       params: { idR: idRepository }
     } = req
 
-    const results = await new Comment({
+    const result = await new Comment({
       ...req.body,
       idRepository,
       username,
@@ -148,7 +154,7 @@ router.post(
 
     return res
       .status(201)
-      .json(results)
+      .json({ data: { ...result, profileImage } })
       .end()
   })
 )
@@ -203,6 +209,8 @@ router.delete(
     return res.status(204).end()
   })
 )
+
+router.use(isAdminAuth)
 
 router.post(
   '/:idR/:model/',
