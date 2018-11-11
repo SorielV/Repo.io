@@ -1,5 +1,8 @@
 import consola from 'consola'
 import express from 'express'
+import { Server } from 'http'
+import SocketIO from 'socket.io'
+
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import { Nuxt, Builder } from 'nuxt'
@@ -10,8 +13,11 @@ const host = process.env.HOST || '127.0.0.1'
 const port = process.env.PORT || 3000
 
 const app = express()
+const server = Server(app)
+const io = SocketIO(server)
+require('./socket.io/rooms/repository/repository.room')(io)
 
-if (process.env.NUXT) {
+if (process.env.NUXT === 'true') {
   const config = require('./../nuxt.config.js')
   config.dev = !(process.env.NODE_ENV === 'production')
 
@@ -41,7 +47,7 @@ if (process.env.NUXT) {
     app.use('/api/repo', Repository)
     app.use(nuxt.render)
 
-    app.listen(port, () => {
+    server.listen(port, () => {
       consola.success('Server Running in Port ' + port)
     })
   }
@@ -49,7 +55,8 @@ if (process.env.NUXT) {
   start()
 } else {
   async function start() {
-    app.use(cors)
+    console.log('Server Only')
+
     // parse application/x-www-form-urlencoded
     app.use(bodyParser.urlencoded({ extended: false }))
 
@@ -64,7 +71,7 @@ if (process.env.NUXT) {
     app.use('/login', LoginAPI)
     app.use('/api/repo', Repository)
 
-    app.listen(port, () => {
+    server.listen(port, () => {
       consola.success('Server Running in Port ' + port)
     })
   }

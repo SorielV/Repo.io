@@ -11,8 +11,7 @@ const getAuthUser = req => {
       email: 'admin@repo.io',
       firstName: 'Admin',
       lastName: 'God',
-      profileImage:
-        'https://raw.githubusercontent.com/voodootikigod/logo.js/master/js.png'
+      profileImage: 'http://www.nyan.cat/cats/original.gif'
     }
   }
 

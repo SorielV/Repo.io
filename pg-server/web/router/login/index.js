@@ -54,9 +54,11 @@ router.use(isAuth)
 
 router.get('/status', (req, res) => {
   const user = req.user
+  const jwt = req.headers.authorization.substr(7).trim()
+
   return res
     .status(200)
-    .json(user)
+    .json({ user, jwt })
     .end()
 })
 

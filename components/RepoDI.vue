@@ -2,7 +2,7 @@
   section.block(style="padding: 1% 0% 1% 0%;")
     .columns
       .column.is-8
-        iframe(:src="'https://docs.google.com/viewer?embedded=true&url=' + repository.file")
+        iframe(:src="'https://docs.google.com/viewer?embedded=true&url=' + repository.resource.lenght !== 0 ? repository.resource[0].file : ''")
       .column.is-4
         .card
           .card-image(v-if="repository.image")

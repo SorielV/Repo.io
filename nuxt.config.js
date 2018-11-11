@@ -47,7 +47,12 @@ module.exports = {
   ** Axios module configuration
   */
   axios: {
-    baseURL: process.env.API_URL || 'http://localhost:3000'
+    proxyHeaders: true,
+    credentials: true,
+    baseURL: process.env.API_URL || 'http://localhost:3000',
+    init(axios, context) {
+      axios.defaults.baseURL = context.env.API_URL || 'http://localhost:3000'
+    }
     // See https://github.com/nuxt-community/axios-module#options
   },
 

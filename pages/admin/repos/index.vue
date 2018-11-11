@@ -83,16 +83,16 @@
                   label="Tipo"
                   :visible="true"
                   :sortable="true"
-                ) {{ props.row['type'] }}
-                
+                ) {{ props.row['type'].map(({ value }) => value).join(',') }}
+
 
                 b-table-column(
                   field="topic"
                   label="Tema"
                   :visible="true"
                   :sortable="true"
-                ) {{ props.row['topic'] }}
-                
+                ) {{ props.row['topic'].map(({ value }) => value).join(',') }}
+
 
                 b-table-column(
                   field="tags"
@@ -112,13 +112,13 @@
                   :sortable="true"
                 ) {{ props.row['visibility'] }}
 
-                b-table-column(
+                //-b-table-column(
                   field="file"
                   label="Archivo"
                   :visible="true"
                   :sortable="true"
-                )
-                  a(v-if="props.row['file']" :href="props.row['file']" download)
+                //-)
+                //-  a(v-if="props.row['file']" :href="props.row['file']" download)
                     i.mdi.mdi-file-download
                   a(v-else)
                     i.mdi.mdi-file-times

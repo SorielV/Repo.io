@@ -284,3 +284,16 @@ create table "BundleComment"
   "createdAt" timestamp default CURRENT_TIMESTAMP,
   "updatedAt" timestamp
 );
+
+create table "RepositoryResources"
+(
+  id             serial       not null primary key,
+  "idUser"       integer      not null references "Users" (id),
+  username       varchar(20)  not null references "Users" (username),
+  "idRepository" integer      not null references "Repositories",
+  file varchar(200) not null,
+  type smallint default 0,
+  uploaded bool default false,
+  "createdAt"    timestamp default CURRENT_TIMESTAMP,
+  "updatedAt"    timestamp default null
+);

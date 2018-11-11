@@ -68,11 +68,13 @@ Repository.getRepositories = async function(options = {}) {
 
   const query = `
     SELECT Repo.*,
+      RS.id as "resource.id", RS.file as "resource.file", RS.type as "resource.type", RS.uploaded as "resource.uploaded",
       Topic.id as "topic.id", Topic.value as "topic.value",
       Type.id as "type.id", Type.value as "type.value",
       Editorial.id as "editorial.id", Editorial.name as "editorial.name",
-      Author.id as "author.id ", Author."firstName" as "author.firstName", Author."lastName" as "author.lastName"
+      Author.id as "author.id", Author."firstName" as "author.firstName", Author."lastName" as "author.lastName"
     from (select * from "Repositories" ${whereConditions} ${limitStament} ) as Repo
+      left join "RepositoryResources" as RS on Repo.id = RS."idRepository"
       left join "RepositoryTopics" as RET on Repo.id = RET."idRepository"
         left join "CatalogTopics" as Topic on RET."idCatalog" = Topic.id
       left join "RepositoryTypes" as RETy on Repo.id = RETy."idRepository"
@@ -188,11 +190,13 @@ Repository.getRepositoryById = async function(id) {
 
   const query = `
   SELECT Repo.*,
+    RS.id as "resource.id", RS.file as "resource.file", RS.type as "resource.type", RS.uploaded as "resource.uploaded",
     Topic.id as "topic.id", Topic.value as "topic.value",
     Type.id as "type.id", Type.value as "type.value",
     Editorial.id as "editorial.id", Editorial.name as "editorial.name",
-    Author.id as "author.id ", Author."firstName" as "author.firstName", Author."lastName" as "author.lastName"
+    Author.id as "author.id", Author."firstName" as "author.firstName", Author."lastName" as "author.lastName"
   from (select * from "Repositories" ${whereConditions}) as Repo
+    left join "RepositoryResources" as RS on Repo.id = RS."idRepository"
     left join "RepositoryTopics" as RET on Repo.id = RET."idRepository"
       left join "CatalogTopics" as Topic on RET."idCatalog" = Topic.id
     left join "RepositoryTypes" as RETy on Repo.id = RETy."idRepository"
@@ -233,6 +237,7 @@ Repository.getRepositoryById = async function(id) {
 
   const groups = groupBy(rows, ([id]) => id).map(([head, ...tail]) => {
     const obj = CreateObject(columnNames.slice(0, pos[0]), head)
+
     for (let i = 0; i < nestedColumns.length; i++) {
       obj[nestedColumns[i]] = []
       if (head[pos[i]] !== null) {
