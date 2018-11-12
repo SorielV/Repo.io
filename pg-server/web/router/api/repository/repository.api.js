@@ -21,7 +21,12 @@ router.get(
   catchException(async (req, res, next) => {
     const api =
       req.protocol + '://' + req.get('host') + req.originalUrl.split('?')[0]
-    const data = await Repository.getRepositories({ ...req.query, api })
+
+    const {
+      query: { full = false }
+    } = req
+
+    const data = await Repository.getRepositories({ ...req.query, api, full })
     return res.json(data)
   })
 )
@@ -104,13 +109,13 @@ router.get(
       params: { idR: idRepository }
     } = req
 
-    const results = await Model[req.model].getAll(
+    const { rows: results } = await Model[req.model].getAll(
       {
         idRepository
       },
       true
     )
-    return res.json(results)
+    return res.json({ data: results })
   })
 )
 
@@ -229,7 +234,7 @@ router.post(
 
     return res
       .status(201)
-      .json(results)
+      .json({ data: results })
       .end()
   })
 )
@@ -260,7 +265,7 @@ router.put(
 
     return res
       .status(201)
-      .json(results)
+      .json({ data: results })
       .end()
   })
 )

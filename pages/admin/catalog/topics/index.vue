@@ -62,11 +62,11 @@
               ) {{ props.row['id'] }}
 
               b-table-column(
-                field="text"
+                field="value"
                 label="Texto"
                 :visible="true"
                 sortable
-              ) {{ props.row['text'] }}
+              ) {{ props.row['value'] }}
                   
 
               b-table-column(
@@ -110,7 +110,7 @@
               label="Tema"
             )
               b-input(type="text"
-                v-model="create.text"
+                v-model="create.value"
                 value=""
                 maxlength="60"
                 :required="true"
@@ -133,7 +133,7 @@
               label="Tema"
             )
               b-input(type="text"
-                v-model="update.data.text"
+                v-model="update.data.value"
                 value=""
                 maxlength="60"
                 :required="true"
@@ -186,14 +186,14 @@ export default {
   layout: 'admin',
   head() {
     return {
-      title: 'Autores'
+      title: 'Temas'
     }
   },
   async asyncData({ app }) {
     try {
       const {
         data: { data }
-      } = await app.$axios.get('/api/topic')
+      } = await app.$axios.get('/api/catalog/topic?full=true')
       return {
         data: data,
         table: {
@@ -283,7 +283,7 @@ export default {
       try {
         const {
           data: { data: topic }
-        } = await this.$axios.post('/api/topic', this.create)
+        } = await this.$axios.post('/api/catalog/topic', this.create)
         this.create = {}
         this.data.push(topic)
         const index = Array.apply(null, this.table.data).findIndex(
@@ -317,7 +317,7 @@ export default {
       const topic = this.update.data
       try {
         const { data } = await this.$axios.put(
-          '/api/topic/' + topic.id,
+          '/api/catalog/topic/' + topic.id,
           this.update.data
         )
         this.update.index = null
@@ -345,7 +345,9 @@ export default {
     },
     async removeAuthor(row) {
       try {
-        const { data } = await this.$axios.delete('/api/topic/' + row.id)
+        const { data } = await this.$axios.delete(
+          '/api/catalog/topic/' + row.id
+        )
         this.data.splice(this.data.indexOf(row), 1) // General
         const dataIndex = this.table.data.indexOf(row) // Subbusqueda
 

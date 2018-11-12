@@ -32,18 +32,6 @@ const RepositoySchema = {
       updatable: true,
       length: 200
     },
-    url: {
-      type: String,
-      required: false,
-      updatable: true,
-      length: 100
-    },
-    file: {
-      type: String,
-      required: false,
-      updatable: true,
-      length: 100
-    },
     image: {
       type: String,
       required: false,

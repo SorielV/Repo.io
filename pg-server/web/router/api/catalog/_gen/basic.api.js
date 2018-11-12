@@ -19,7 +19,7 @@ export default function(model) {
           }
 
       const items = await Item.find(params)
-      return res.json(items).end()
+      return res.json({ data: items }).end()
     })
   )
 
@@ -30,7 +30,7 @@ export default function(model) {
         params: { id }
       } = req
       const item = await Item.findById(id)
-      return res.json(item).end()
+      return res.json({ data: item }).end()
     })
   )
 
@@ -42,7 +42,7 @@ export default function(model) {
       const newItem = await new Item(req.body).save()
       return res
         .status(201)
-        .json(newItem)
+        .json({ data: newItem })
         .end()
     })
   )
@@ -63,7 +63,7 @@ export default function(model) {
         req.body
       )
 
-      return res.json(item).end()
+      return res.json({ data: item }).end()
     })
   )
 

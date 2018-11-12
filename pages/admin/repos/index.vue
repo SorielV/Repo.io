@@ -54,6 +54,26 @@
               :total="table.total"
               @page-change="onPageChange"
             )
+
+              //-
+                {
+                  "id": 1,
+                  "idUser": 1,
+                  "username": "admin",
+                  "title": "Example",
+                  "description": "Is only an example",
+                  "image": "http://www.nyan.cat/cats/original.gif",
+                  "tags": "example,developt",
+                  "visibility": 0,
+                  "createdAt": "2018-11-11T02:23:34.339Z",
+                  "updatedAt": null,
+                  "resource": [],
+                  "topic": [],
+                  "type": [],
+                  "editorial": [],
+                  "author": []
+                }
+
               template(slot-scope="props")
                 b-table-column(
                   field="id"
@@ -69,14 +89,24 @@
                   :sortable="true"
                 ) {{ props.row['title'] }}
 
-                b-table-column(
+                //-b-table-column(
                   field="url"
                   label="Enlace"
                   :visible="true"
                   :sortable="true"
-                )
+                //-)
                   a(:href="props.row['url']" :disabled="props.row['url']" target="_blank")
                     i.mdi.mdi-external-link-alt
+
+                b-table-column(
+                  field="resource"
+                  label="Archivos"
+                  :visible="true"
+                  :sortable="true"
+                  centered
+                ) 
+                  .buttons.is-centered(@click="handleShowAddResources")
+                    .button.is-danger.is-small {{ props.row['resource'].length }}
 
                 b-table-column(
                   field="type"
@@ -99,10 +129,12 @@
                   label="Tags"
                   :visible="true"
                   :sortable="true"
+                  centered
                 )
-                  b-tooltip(:label="props.row.tags" position="is-bottom")
-                    span.tag.is-primary
-                      | {{ props.row['tags'] ? props.row['tags'].split(',').length : 0}}
+                  .buttons.is-centered
+                    b-tooltip(:label="props.row.tags" position="is-bottom")
+                      span.tag.is-primary
+                        | {{ props.row['tags'] ? props.row['tags'].split(',').length : 0}}
 
 
                 b-table-column(
@@ -143,10 +175,12 @@
                   label="Autores"
                   :visible="true"
                   :sortable="true"
+                  centered
                 ) 
-                  b-tooltip(:label="props.row.author.map(author => author.firstName + ' ' + author.lastName).join(' , ')" position="is-bottom")
-                    span.tag.is-warning
-                      | {{ props.row['author'].length }}
+                  .buttons.is-centered(@click="handleShowCreateAuthor")
+                    b-tooltip(:label="props.row.author.map(author => author.firstName + ' ' + author.lastName).join(' , ')" position="is-bottom")
+                      span.tag.is-warning
+                        | {{ props.row['author'].length }}
 
                 b-table-column(
                   field="username"
@@ -223,7 +257,7 @@
                           | Busqueda: {{ search.param }}
                         iframe.container(src="http://wayou.github.io/t-rex-runner/" style="height: 150px")
         // Crear
-        b-tab-item(label="Crear")
+        b-tab-item(label="Crear Base (?)")
           form.block(v-on:submit.prevent="handleSubmitCreate")
 
             b-field(
@@ -237,7 +271,7 @@
                 :required="true"
               )
 
-            .field.is-grouped
+            //-.field.is-grouped
               .field
                 label.label Tipo
                 .control
@@ -250,6 +284,7 @@
                   .select
                     select(v-model="create.topic")
                       option(v-for="(type, key) in catalog.topics" v-text="type.text" :value="type.value")
+
             b-field(
               label="Descripcion"
             )
@@ -262,17 +297,6 @@
               )
 
             b-field(
-              label="Enlace"
-            )
-              b-input(
-                type="url"
-                v-model="create.url"
-                value=""
-                maxlength="80"
-                :required="false"
-              )
-
-            b-field(
               label="Tags"
             )
               b-input(
@@ -280,6 +304,17 @@
                 v-model="create.tags"
                 value=""
                 maxlength="200"
+                :required="false"
+              )
+
+            b-field(
+              label="Imagen"
+            )
+              b-input(
+                type="text"
+                v-model="create.image"
+                value=""
+                maxlength="80"
                 :required="false"
               )
 
@@ -296,9 +331,9 @@
                 false-value="Number(1)"
               ) Publico 
 
-            b-field(
+            //-b-field(
               label="Archivo"
-            )
+              )
               b-input(
                 type="text"
                 v-model="create.file"
@@ -307,21 +342,11 @@
                 :required="false"
               )
 
-            b-field(
-              label="Imagen"
-            )
-              b-input(
-                type="text"
-                v-model="create.image"
-                value=""
-                maxlength="80"
-                :required="false"
-              )
-
             .buttons.is-centered
               button.button.is-danger(@click="handleCancelEvent") Cancelar
-              button.button.is-dark(type="submit") Crear Repositorio
+              button.button.is-dark(type="submit") Crear Repositorio Base
           pre {{ create }}
+
         // Actualizar
         b-tab-item(:label='`Actualizar (id: ${update.data.id})`' :disabled="update.index === null")
           form.block(v-on:submit.prevent="handleSubmitUpdate")
@@ -337,7 +362,49 @@
                 :required="true"
               )
 
-            .field.is-grouped
+
+            b-field(label='Tipos')
+              b-taginput(
+                v-model='update.data.type'
+                :data='catalog.filteredTypes'
+                autocomplete
+                :allow-new='false'
+                field='value'
+                icon='label'
+                @typing='getFilteredTypes'
+                @remove="removeType"
+                @add="addType"
+              )
+
+            b-field(label='Temas')
+              b-taginput(
+                v-model='update.data.topic'
+                :data='catalog.filteredTopics'
+                autocomplete
+                :allow-new='false'
+                field='value'
+                icon='label'
+                @typing='getFilteredTopics'
+                @remove="removeTopic"
+                @add="addTopic"
+              )
+
+            b-field(label='Autores')
+              b-taginput(
+                v-model='update.data.author'
+                :data='catalog.filteredAuthors'
+                autocomplete
+                :allow-new='false'
+                field='lastName'
+                icon='label'
+                @typing='getFilterAuthors'
+              )
+
+              //-
+                @remove="removeType"
+                @add="addType"
+
+            //-.field.is-grouped
               .field
                 label.label Tipo
                 .control
@@ -359,17 +426,6 @@
                 value=""
                 maxlength="400"
                 :required="true"
-              )
-
-            b-field(
-              label="Enlace"
-            )
-              b-input(
-                type="url"
-                v-model="update.data.url"
-                value=""
-                maxlength="80"
-                :required="false"
               )
 
             b-field(
@@ -442,30 +498,6 @@
                       button.button.is-success.is-small(v-if="props.row.id === null" @click="handleSaveAuthorDialog(props.row)")
                         i.mdi.mdi-check
 
-            .field
-              label.label Visibilidad
-              .control
-                .select
-                  select(v-model="update.data.visibility")
-                    option(v-for="(type, key) in catalog.visibility" v-text="type.text" :value="type.value")
-            //.field
-              b-checkbox(
-                v-model="update.data.visibility" 
-                true-value="Number(2)"
-                false-value="Number(1)"
-              ) Publico 
-
-            b-field(
-              label="Archivo"
-            )
-              b-input(
-                type="text"
-                v-model="update.data.file"
-                value=""
-                maxlength="60"
-                :required="false"
-              )
-
             b-field(
               label="Imagen"
             )
@@ -477,10 +509,18 @@
                 :required="false"
               )
 
+            .field
+              label.label Visibilidad
+              .control
+                .select
+                  select(v-model="update.data.visibility")
+                    option(v-for="(type, key) in catalog.visibility" v-text="type.text" :value="type.value")
+
             .buttons.is-centered
               button.button.is-danger(@click="handleCancelEvent") Cancelar
               button.button.is-dark(type="submit") Actualizar Repositorio
-    // Agregar Author [Repo]
+
+    // Agregar Resources [Repo]
     b-modal(:active.sync="update.showModalAuthor" :width="640" scroll="keep")
       section.card(style="padding: 10%; width: auto; height: 400px;")
         b-field(label="Busca Autores")
@@ -546,6 +586,69 @@
                   i.mdi.mdi-window-close
                 button.button.is-success.is-small(v-if="props.row.id === null" @click="handleSaveAuthorDialog(props.row)")
                   i.mdi.mdi-check
+
+    // Agregar Author [Repo]
+    b-modal(:active.sync="update.showModalResource" :width="640" scroll="keep")
+      section.card(style="padding: 6%; width: auto; height: 400px;")
+        b-table(
+          :data="update.data.resource"
+          :loading="false"
+          mobile-cards
+          :total="update.data.resource ? update.data.resource.length : 0"
+        )
+          template(slot-scope="props")
+            b-table-column(
+              field="id"
+              label="Id"
+              :visible="true"
+              :sortable="true"
+            ) {{ props.row['id'] }}
+
+            b-table-column(
+              field="file"
+              label="Enlace"
+              :visible="true"
+              :sortable="true"
+            ) {{ props.row['file'] }}
+
+            b-table-column(
+              field="idRepository"
+              label="Id Repositorio"
+              :visible="false"
+              :sortable="true"
+            ) {{ props.row['idRepository'] }}
+
+            b-table-column(
+              field="type"
+              label="Type"
+              :visible="true"
+              :sortable="true"
+            ) {{ props.row['type'] }}
+
+            b-table-column(
+              field="uploaded"
+              label="Local"
+              :visible="true"
+              :sortable="true"
+            ) {{ props.row['uploaded'] ? false : true }}
+
+            b-table-column(
+              field="id" 
+              label="Acciones"
+            )
+              .buttons
+                button.button.is-danger.is-small(@click="handleRemoveDialog(props.row)")
+                  i.mdi.mdi-window-close
+                button.button.is-success.is-small(v-if="props.row.id === null" @click="handleSaveAuthorDialog(props.row)")
+                  i.mdi.mdi-check
+        //- Upload File
+        b-upload(v-model='update.dropFiles' type="is-black" multiple drag-drop style="width: 100%;")
+          section.section
+            center
+              .content.has-text-centered
+                p
+                  b-icon(icon='upload', size='is-large')
+                p Suelta tus Archivos
 </template>
 
 <script>
@@ -649,7 +752,7 @@ export default {
     try {
       const {
         data: { data }
-      } = await app.$axios.get('/api/repo')
+      } = await app.$axios.get('/api/repo?full=true')
       return {
         data: data,
         table: {
@@ -686,7 +789,9 @@ export default {
         filterAuthors: [],
         selected: [],
         filter: '',
+        dropFiles: [],
         showModalAuthor: false,
+        showModalResource: false,
         data: {
           author: [],
           id: 0
@@ -713,42 +818,45 @@ export default {
         total: 0
       },
       catalog: {
+        filteredTypes: [],
+        filteredTopics: [],
+        authors: [],
         types: [
-          { text: 'Papers', value: 1 },
-          { text: 'Books', value: 2 },
-          { text: 'Cursos', value: 3 },
-          { text: 'Videos', value: 4 },
-          { text: 'Portales Blogs', value: 5 },
-          { text: 'Tools Software', value: 6 },
-          { text: 'PPTs SlideShare', value: 7 },
-          { text: 'Infografias y Memes', value: 8 },
-          { text: 'People To Follow', value: 9 },
-          { text: 'Comunidades', value: 10 },
-          { text: 'APIs', value: 11 },
-          { text: 'DataSets', value: 12 }
+          { value: 'Papers', idCatalog: 1 },
+          { value: 'Books', idCatalog: 2 },
+          { value: 'Cursos', idCatalog: 3 },
+          { value: 'Videos', idCatalog: 4 },
+          { value: 'Portales Blogs', idCatalog: 5 },
+          { value: 'Tools Software', idCatalog: 6 },
+          { value: 'PPTs SlideShare', idCatalog: 7 },
+          { value: 'Infografias y Memes', idCatalog: 8 },
+          { value: 'People To Follow', idCatalog: 9 },
+          { value: 'Comunidades', idCatalog: 10 },
+          { value: 'APIs', idCatalog: 11 },
+          { value: 'DataSets', idCatalog: 12 }
         ],
         topics: [
-          { text: 'Arte', value: 1 },
-          { text: 'Comics', value: 2 },
-          { text: 'Cultura', value: 3 },
-          { text: 'Comida', value: 4 },
-          { text: 'Videojuegos', value: 5 },
-          { text: 'Humor', value: 6 },
-          { text: 'Musica', value: 7 },
-          { text: 'Fotografia', value: 8 },
-          { text: 'Deportes', value: 9 },
-          { text: 'Estilo', value: 10 },
-          { text: 'TV', value: 11 },
-          { text: 'Negocios', value: 12 },
-          { text: 'Disenio', value: 13 },
-          { text: 'Negocios', value: 14 },
-          { text: 'Econimia', value: 16 },
-          { text: 'Javascript', value: 17 },
-          { text: 'Machine Learning', value: 19 },
-          { text: 'Programing', value: 20 },
-          { text: 'Sotfware', value: 21 },
-          { text: 'Tecnologia', value: 22 },
-          { text: 'Otros', value: 23 }
+          { value: 'Arte', idCatalog: 1 },
+          { value: 'Comics', idCatalog: 2 },
+          { value: 'Cultura', idCatalog: 3 },
+          { value: 'Comida', idCatalog: 4 },
+          { value: 'Videojuegos', idCatalog: 5 },
+          { value: 'Humor', idCatalog: 6 },
+          { value: 'Musica', idCatalog: 7 },
+          { value: 'Fotografia', idCatalog: 8 },
+          { value: 'Deportes', idCatalog: 9 },
+          { value: 'Estilo', idCatalog: 10 },
+          { value: 'TV', idCatalog: 11 },
+          { value: 'Negocios', idCatalog: 12 },
+          { value: 'Disenio', idCatalog: 13 },
+          { value: 'Negocios', idCatalog: 14 },
+          { value: 'Econimia', idCatalog: 16 },
+          { value: 'Javascript', idCatalog: 17 },
+          { value: 'Machine Learning', idCatalog: 19 },
+          { value: 'Programing', idCatalog: 20 },
+          { value: 'Sotfware', idCatalog: 21 },
+          { value: 'Tecnologia', idCatalog: 22 },
+          { value: 'Otros', idCatalog: 23 }
         ],
         visibility: [
           { text: 'Visible', value: 1 },
@@ -760,20 +868,19 @@ export default {
   },
   computed: {
     filterAuthors() {
-      if (this.author === null) {
+      if (this.catalog.authors === null) {
         this.getAuthors()
       }
 
       const filter = this.update.filter
       if (filter.length > 1) {
-        const filtered = Array.apply(null, this.author).filter(author => {
+        const filtered = Array.from(this.catalog.authors).filter(author => {
           return (
             `${author.firstName} ${author.lastName}`
               .toLowerCase()
               .indexOf(filter.toLowerCase()) >= 0
           )
         })
-        console.log(filtered, Array.apply(null, this.author))
         return filtered
       } else {
         return []
@@ -805,9 +912,200 @@ export default {
           })
         }
       }
+    },
+    'update.dropFiles'(newFile, oldFile) {
+      console.log(oldFile, newFile)
+      const newFiles =
+        oldFile.length !== 0
+          ? newFile.filter(file => oldFile.indexOf(file) === -1)
+          : newFile
+
+      console.log(newFiles, newFile, oldFile.length)
     }
   },
   methods: {
+    getFilterAuthors(param) {
+      this.catalog.filterAuthors = Array.from(this.catalog.authors).filter(
+        author => {
+          return (
+            `${author.firstName} ${author.lastName}`
+              .toLowerCase()
+              .indexOf(param.toLowerCase()) >= 0
+          )
+        }
+      )
+    },
+    addType(type) {
+      this.$dialog.confirm({
+        iconPack: 'mdi',
+        message: `<pre>${JSON.stringify(type, undefined, 2)}</pre>`,
+        title: 'Agregar Tipo a Repositorio',
+        confirmText: 'Agregar',
+        type: 'is-success',
+        hasIcon: false,
+        onConfirm: async () => {
+          const { id } = this.update.data
+          const { idCatalog } = type
+
+          // API Call
+          try {
+            const {
+              data: { data: item }
+            } = await this.$axios.post(`/api/repo/${id}/type`, { idCatalog })
+
+            const index = Array.from(this.table.data).findIndex(
+              ({ id }) => id === this.update.data.id
+            )
+
+            if (index !== -1) {
+              type.id = item.id
+              const { value = 'otro' } = Array.from(this.catalog.types).find(
+                ({ idCatalog }) => idCatalog === item.idCatalog
+              )
+              item.value = value
+              this.table.data[index].type.push(item)
+            }
+          } catch (err) {
+            console.log(err.message)
+          }
+        },
+        onCancel: () => {}
+      })
+    },
+    addTopic(topic) {
+      this.$dialog.confirm({
+        iconPack: 'mdi',
+        message: `<pre>${JSON.stringify(topic, undefined, 2)}</pre>`,
+        title: 'Agregar Tipo a Repositorio',
+        confirmText: 'Agregar',
+        type: 'is-success',
+        hasIcon: false,
+        onConfirm: async () => {
+          const { id } = this.update.data
+          const { idCatalog } = topic
+
+          // API Call
+          try {
+            const {
+              data: { data: item }
+            } = await this.$axios.post(`/api/repo/${id}/topic`, { idCatalog })
+
+            const index = Array.from(this.table.data).findIndex(
+              ({ id }) => id === this.update.data.id
+            )
+
+            if (index !== -1) {
+              topic.id = item.id
+              const { value = 'otro' } = Array.from(this.catalog.topics).find(
+                ({ idCatalog }) => idCatalog === item.idCatalog
+              )
+              item.value = value
+              this.table.data[index].topic.push(item)
+            }
+          } catch (err) {
+            console.log(err.message)
+          }
+        },
+        onCancel: () => {}
+      })
+    },
+    removeType(type) {
+      if (type.id) {
+        this.$dialog.confirm({
+          iconPack: 'mdi',
+          message: `<pre>${JSON.stringify(type, undefined, 2)}</pre>`,
+          title: 'Eliminar Tipo en Repositorio',
+          confirmText: 'Eliminar',
+          type: 'is-danger',
+          hasIcon: false,
+          onConfirm: () => {
+            // API Call
+
+            // Then
+            const index = Array.from(this.table.data).findIndex(
+              ({ id }) => id === this.update.data.id
+            )
+
+            const itemIndex =
+              index !== -1
+                ? Array.from(this.table.data[index].type).findIndex(
+                    ({ id }) => id === type.id
+                  )
+                : null
+
+            if (itemIndex !== null) {
+              console.log(
+                'Removed',
+                this.table.data[index].type.splice(itemIndex)
+              )
+            }
+          },
+          onCancel: () => {
+            this.update.data.type.push(type)
+          }
+        })
+      }
+    },
+    removeTopic(topic) {
+      if (topic.id) {
+        this.$dialog.confirm({
+          iconPack: 'mdi',
+          message: `<pre>${JSON.stringify(topic, undefined, 2)}</pre>`,
+          title: 'Eliminar Tema de Repositorio',
+          confirmText: 'Eliminar',
+          type: 'is-danger',
+          hasIcon: false,
+          onConfirm: () => {
+            // API Call
+
+            // Then
+            const index = Array.from(this.table.data).findIndex(
+              ({ id }) => id === this.update.data.id
+            )
+
+            const itemIndex =
+              index !== -1
+                ? Array.from(this.table.data[index].topic).findIndex(
+                    ({ id }) => id === topic.id
+                  )
+                : null
+
+            if (itemIndex !== null) {
+              console.log(
+                'Removed',
+                this.table.data[index].topic.splice(itemIndex)
+              )
+            }
+          },
+          onCancel: () => {
+            this.update.data.topic.push(topic)
+          }
+        })
+      }
+    },
+    getFilteredTopics(param) {
+      this.catalog.filteredTopics = Array.from(this.catalog.topics).filter(
+        ({ value }) => {
+          return value
+            .toString()
+            .toLowerCase()
+            .includes(param.toLowerCase())
+        }
+      )
+    },
+    getFilteredTypes(param) {
+      this.catalog.filteredTypes = Array.from(this.catalog.types).filter(
+        ({ value }) => {
+          return value
+            .toString()
+            .toLowerCase()
+            .includes(param.toLowerCase())
+        }
+      )
+    },
+    dropFile(files) {
+      console.log(files)
+    },
     hadleSelectAuthor(data) {
       if (data !== null) {
         const author = data
@@ -831,14 +1129,14 @@ export default {
     async getAuthors() {
       try {
         const { data } = await this.$axios.get('/public/authors.json')
-        this.author = data
+        this.catalog.authors = data
       } catch (error) {
         console.error(error)
         this.$toast.open({
           message: 'Error al obtener lista de autores',
           type: 'is-danger'
         })
-        this.author = []
+        this.catalog.authors = []
       }
     },
     onPageChange(page) {
@@ -900,7 +1198,7 @@ export default {
       } catch (error) {
         console.error(error)
         this.$toast.open({
-          message: 'Erro al actualizar Autor de Repositorio',
+          message: 'Error al actualizar Autor de Repositorio',
           type: 'is-danger'
         })
       }
@@ -926,6 +1224,10 @@ export default {
           type: 'is-danger'
         })
       }
+    },
+    handleShowAddResources(ev) {
+      ev.preventDefault()
+      this.update.showModalResource = true
     },
     handleShowCreateAuthor(ev) {
       ev.preventDefault()
@@ -1005,3 +1307,9 @@ export default {
   }
 }
 </script>
+
+<style>
+div.upload-draggable.is-black {
+  width: 100%;
+}
+</style>

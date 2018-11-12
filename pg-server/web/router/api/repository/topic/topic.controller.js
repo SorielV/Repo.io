@@ -12,7 +12,7 @@ RepositoryTopic.getAll = function(where, include = false) {
 
   const tableAs = 'R'
   const base_query = `
-    select * from "${
+    select R.*, Cat.value, Cat.description from "${
       RepositoryTopic._Table
     }" as R inner join "${TopicTable}" as Cat
     on R."idCatalog" = Cat.id

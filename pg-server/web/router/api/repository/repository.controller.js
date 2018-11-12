@@ -33,6 +33,7 @@ Repository.getRepositories = async function(options = {}) {
     offset = 100,
     page = 0,
     all = false,
+    full = false,
     api = '',
     ...where
   } = options
@@ -68,11 +69,23 @@ Repository.getRepositories = async function(options = {}) {
 
   const query = `
     SELECT Repo.*,
-      RS.id as "resource.id", RS.file as "resource.file", RS.type as "resource.type", RS.uploaded as "resource.uploaded",
-      Topic.id as "topic.id", Topic.value as "topic.value",
-      Type.id as "type.id", Type.value as "type.value",
-      Editorial.id as "editorial.id", Editorial.name as "editorial.name",
-      Author.id as "author.id", Author."firstName" as "author.firstName", Author."lastName" as "author.lastName"
+      ${
+        !full
+          ? `
+          RS.id as "resource.id", RS.file as "resource.file", RS.type as "resource.type", RS.uploaded as "resource.uploaded",
+          Topic.id as "topic.id", Topic.value as "topic.value",
+          Type.id as "type.id", Type.value as "type.value",
+          Editorial.id as "editorial.id", Editorial.name as "editorial.name",
+          Author.id as "author.id", Author."firstName" as "author.firstName", Author."lastName" as "author.lastName"
+          `
+          : `
+          RS.id as "resource.id", RS.file as "resource.file", RS.type as "resource.type", RS.uploaded as "resource.uploaded",
+          RET.id as "topic.id", Topic.id as "topic.idCatalog", Topic.value as "topic.value",
+          RETy.id as "type.id", Type.id as "type.idCatalog", Type.value as "type.value",
+          REE.id as "editorial.id", Editorial.id as "editorial.idCatalog", Editorial.name as "editorial.name",
+          REA.id as "author.id", Author.id as "author.idAuthor", Author."firstName" as "author.firstName", Author."lastName" as "author.lastName"
+          `
+      }
     from (select * from "Repositories" ${whereConditions} ${limitStament} ) as Repo
       left join "RepositoryResources" as RS on Repo.id = RS."idRepository"
       left join "RepositoryTopics" as RET on Repo.id = RET."idRepository"

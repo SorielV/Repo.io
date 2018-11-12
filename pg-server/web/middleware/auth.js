@@ -11,7 +11,8 @@ const getAuthUser = req => {
       email: 'admin@repo.io',
       firstName: 'Admin',
       lastName: 'God',
-      profileImage: 'http://www.nyan.cat/cats/original.gif'
+      profileImage: 'http://www.nyan.cat/cats/original.gif',
+      type: 1
     }
   }
 
