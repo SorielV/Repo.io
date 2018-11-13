@@ -24,7 +24,7 @@
                     .container.is-fluid
                       .columns
                         .column
-                          h1.title.is-6.is-mega-menu-title Tematicas
+                          nuxt-link.title.is-6.is-mega-menu-title(to='/repo/topics') Tematicas
                           a.navbar-item(href='#')
                             .navbar-content
                               p New feature: list of tags
@@ -47,7 +47,7 @@
                           a.navbar-item(href='http://bulma.io/documentation/columns/basics/')
                             | Columns
                         .column
-                          h1.title.is-6.is-mega-menu-title Tipos
+                          nuxt-link.title.is-6.is-mega-menu-title(to='/repo/types') Tipos
                           a.navbar-item(href='#')
                             .navbar-content
                               p New feature: list of tags

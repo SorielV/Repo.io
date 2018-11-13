@@ -34,8 +34,6 @@
                   button.button.is-light Buscar {{ search.local }}
           section.block
             b-table(
-              style="overflow: auto"
-              icon-pack="fa"
               :data="table.data"
               :loading="table.loading"
               :page="search.page"
@@ -362,61 +360,6 @@
                 :required="true"
               )
 
-
-            b-field(label='Tipos')
-              b-taginput(
-                v-model='update.data.type'
-                :data='catalog.filteredTypes'
-                autocomplete
-                :allow-new='false'
-                field='value'
-                icon='label'
-                @typing='getFilteredTypes'
-                @remove="removeType"
-                @add="addType"
-              )
-
-            b-field(label='Temas')
-              b-taginput(
-                v-model='update.data.topic'
-                :data='catalog.filteredTopics'
-                autocomplete
-                :allow-new='false'
-                field='value'
-                icon='label'
-                @typing='getFilteredTopics'
-                @remove="removeTopic"
-                @add="addTopic"
-              )
-
-            b-field(label='Autores')
-              b-taginput(
-                v-model='update.data.author'
-                :data='catalog.filteredAuthors'
-                autocomplete
-                :allow-new='false'
-                field='lastName'
-                icon='label'
-                @typing='getFilterAuthors'
-              )
-
-              //-
-                @remove="removeType"
-                @add="addType"
-
-            //-.field.is-grouped
-              .field
-                label.label Tipo
-                .control
-                  .select
-                    select(v-model="update.data.type")
-                      option(v-for="(type, key) in catalog.types" v-text="type.text" :value="type.value")
-              .field
-                label.label Tema
-                .control
-                  .select
-                    select(v-model="update.data.topic")
-                      option(v-for="(type, key) in catalog.topics" v-text="type.text" :value="type.value")
             b-field(
               label="Descripcion"
             )
@@ -439,7 +382,121 @@
                 :required="false"
               )
 
-            section
+            b-field(
+              label="Imagen"
+            )
+              b-input(
+                type="text"
+                v-model="update.data.image"
+                value=""
+                maxlength="80"
+                :required="false"
+              )
+
+            .field
+              label.label Visibilidad
+              .control
+                .select
+                  select(v-model="update.data.visibility")
+                    option(v-for="(type, key) in catalog.visibility" v-text="type.text" :value="type.value")
+
+            .buttons.is-centered
+              button.button.is-danger(@click="handleCancelEvent") Cancelar
+              button.button.is-dark(type="submit") Actualizar Repositorio
+
+          b-field(label='Tipos')
+            b-taginput(
+              v-model='update.data.type'
+              :data='catalog.filteredTypes'
+              autocomplete
+              :allow-new='false'
+              field='value'
+              icon='label'
+              @typing='getFilteredTypes'
+              @remove="removeType"
+              @add="addType"
+            )
+
+          b-field(label='Temas')
+            b-taginput(
+              v-model='update.data.topic'
+              :data='catalog.filteredTopics'
+              autocomplete
+              :allow-new='false'
+              field='value'
+              icon='label'
+              @typing='getFilteredTopics'
+              @remove="removeTopic"
+              @add="addTopic"
+            )
+
+          .control
+            label.label Autores
+            b-autocomplete(
+              v-model="catalog.authorFilter"
+              :data="filterAuthors"
+              placeholder="Agregar Autores"
+              @select='author => addAuthor(author)'
+            )
+              template(slot-scope='props')
+                .media
+                  .media-left
+                    img(width='32' :src="props.option.image || 'https://bulma.io/images/placeholders/128x128.png'")
+                  .media-content
+                    | {{ props.option.firstName + ' ' + props.option.lastName }}
+                    br
+                    small
+                      | rated
+
+            section.has-my-1
+              .columns.is-multiline
+                .column.is-4(v-for='(author, index) in update.data.author' :key='index')
+                  .box
+                    article.media
+                      .media-left
+                        figure.image.is-64x64
+                          img(:src="author.image || 'https://bulma.io/images/placeholders/128x128.png'" alt='Image')
+                      .media-content
+                        .content
+                          p
+                            strong {{ author.firstName + ' ' + author.lastName }}
+                        nav.level.is-mobile
+                          .level-left
+                            a.button.is-danger.is-small.level-item(aria-label='reply')
+                              span.icon.is-small
+                                i.mdi.mdi-window-close(aria-hidden='true')
+
+
+            //-b-field(label='Autores')
+              b-taginput(
+                v-model='update.data.author'
+                :data='catalog.filteredAuthors'
+                autocomplete
+                :allow-new='false'
+                field='lastName'
+                icon='label'
+                @typing='filterAuthors'
+              )
+
+              //-
+                @remove="removeType"
+                @add="addType"
+
+            //-.field.is-grouped
+              .field
+                label.label Tipo
+                .control
+                  .select
+                    select(v-model="update.data.type")
+                      option(v-for="(type, key) in catalog.types" v-text="type.text" :value="type.value")
+              .field
+                label.label Tema
+                .control
+                  .select
+                    select(v-model="update.data.topic")
+                      option(v-for="(type, key) in catalog.topics" v-text="type.text" :value="type.value")
+
+            //-section
               .block.has-text-centered
                 div
                   h1.subtitle Autores
@@ -489,7 +546,7 @@
                   ) {{ props.row['lastName'] }}
 
                   b-table-column(
-                    field="id" 
+                    field="id"
                     label="Acciones"
                   ) 
                     .buttons.block
@@ -498,49 +555,28 @@
                       button.button.is-success.is-small(v-if="props.row.id === null" @click="handleSaveAuthorDialog(props.row)")
                         i.mdi.mdi-check
 
-            b-field(
-              label="Imagen"
-            )
-              b-input(
-                type="text"
-                v-model="update.data.image"
-                value=""
-                maxlength="80"
-                :required="false"
-              )
-
-            .field
-              label.label Visibilidad
-              .control
-                .select
-                  select(v-model="update.data.visibility")
-                    option(v-for="(type, key) in catalog.visibility" v-text="type.text" :value="type.value")
-
-            .buttons.is-centered
-              button.button.is-danger(@click="handleCancelEvent") Cancelar
-              button.button.is-dark(type="submit") Actualizar Repositorio
-
     // Agregar Resources [Repo]
     b-modal(:active.sync="update.showModalAuthor" :width="640" scroll="keep")
       section.card(style="padding: 10%; width: auto; height: 400px;")
         b-field(label="Busca Autores")
           b-autocomplete(
-            v-model="update.filter"
-            :data="filterAuthors"
+            v-model="catalog.authorFilter"
+            :data="catalog.authors"
             field="lastName"
             :open-on-focus="true"
             :clear-on-select="true"
             placeholder="Buscar Autor"
-            @select="hadleSelectAuthor"
+            @select="filterAuthors"
           )
             template(slot-scope="props")
               p {{ props.option.lastName + ' ' + props.option.firstName }}
-        b-table(
+
+        //-b-table(
           :data="update.data.author"
           :loading="false"
           mobile-cards
           :total="update.data.author ? update.data.author.length : 0"
-        )
+        //-)
           template(slot-scope="props")
             b-table-column(
               field="id"
@@ -818,22 +854,71 @@ export default {
         total: 0
       },
       catalog: {
+        authorFilter: '',
         filteredTypes: [],
         filteredTopics: [],
         authors: [],
         types: [
-          { value: 'Papers', idCatalog: 1 },
-          { value: 'Books', idCatalog: 2 },
-          { value: 'Cursos', idCatalog: 3 },
-          { value: 'Videos', idCatalog: 4 },
-          { value: 'Portales Blogs', idCatalog: 5 },
-          { value: 'Tools Software', idCatalog: 6 },
-          { value: 'PPTs SlideShare', idCatalog: 7 },
-          { value: 'Infografias y Memes', idCatalog: 8 },
-          { value: 'People To Follow', idCatalog: 9 },
-          { value: 'Comunidades', idCatalog: 10 },
-          { value: 'APIs', idCatalog: 11 },
-          { value: 'DataSets', idCatalog: 12 }
+          {
+            image: 'http://www.nyan.cat/cats/original.gif',
+            value: 'Papers',
+            idCatalog: 1
+          },
+          {
+            image: 'http://www.nyan.cat/cats/original.gif',
+            value: 'Books',
+            idCatalog: 2
+          },
+          {
+            image: 'http://www.nyan.cat/cats/original.gif',
+            value: 'Cursos',
+            idCatalog: 3
+          },
+          {
+            image: 'http://www.nyan.cat/cats/original.gif',
+            value: 'Videos',
+            idCatalog: 4
+          },
+          {
+            image: 'http://www.nyan.cat/cats/original.gif',
+            value: 'Portales Blogs',
+            idCatalog: 5
+          },
+          {
+            image: 'http://www.nyan.cat/cats/original.gif',
+            value: 'Tools Software',
+            idCatalog: 6
+          },
+          {
+            image: 'http://www.nyan.cat/cats/original.gif',
+            value: 'PPTs SlideShare',
+            idCatalog: 7
+          },
+          {
+            image: 'http://www.nyan.cat/cats/original.gif',
+            value: 'Infografias y Memes',
+            idCatalog: 8
+          },
+          {
+            image: 'http://www.nyan.cat/cats/original.gif',
+            value: 'People To Follow',
+            idCatalog: 9
+          },
+          {
+            image: 'http://www.nyan.cat/cats/original.gif',
+            value: 'Comunidades',
+            idCatalog: 10
+          },
+          {
+            image: 'http://www.nyan.cat/cats/original.gif',
+            value: 'APIs',
+            idCatalog: 11
+          },
+          {
+            image: 'http://www.nyan.cat/cats/original.gif',
+            value: 'DataSets',
+            idCatalog: 12
+          }
         ],
         topics: [
           { value: 'Arte', idCatalog: 1 },
@@ -868,17 +953,20 @@ export default {
   },
   computed: {
     filterAuthors() {
-      if (this.catalog.authors === null) {
+      console.log(this.catalog.authors)
+      if (this.catalog.authors.length === 0) {
         this.getAuthors()
       }
 
-      const filter = this.update.filter
+      console.log(this.catalog.authors, this.catalog.authorFilter)
+      const filter = this.catalog.authorFilter || ''
+
       if (filter.length > 1) {
         const filtered = Array.from(this.catalog.authors).filter(author => {
           return (
             `${author.firstName} ${author.lastName}`
               .toLowerCase()
-              .indexOf(filter.toLowerCase()) >= 0
+              .indexOf(filter.toLowerCase()) !== -1
           )
         })
         return filtered
@@ -924,7 +1012,8 @@ export default {
     }
   },
   methods: {
-    getFilterAuthors(param) {
+    /*
+    filterAuthors(param) {
       this.catalog.filterAuthors = Array.from(this.catalog.authors).filter(
         author => {
           return (
@@ -935,6 +1024,7 @@ export default {
         }
       )
     },
+    */
     addType(type) {
       this.$dialog.confirm({
         iconPack: 'mdi',
@@ -1265,6 +1355,51 @@ export default {
       this.update.data = data
       this.selectedTab = 2
     },
+    addAuthor(author) {
+      this.$dialog.confirm({
+        message: `<pre>${JSON.stringify(author, undefined, 2)}</pre>`,
+        title: 'Borrar Author',
+        confirmText: 'Agregar',
+        type: 'is-warning',
+        hasIcon: true,
+        onConfirm: async () => {
+          const {
+            data: { id: idRepository }
+          } = this.update
+          const { firstName, lastName, image, idAuthor } = author
+
+          try {
+            const index = Array.from(this.table.data).findIndex(
+              ({ id }) => id === this.update.data.id
+            )
+
+            const {
+              data: { data: catalog }
+            } = await this.$axios.post(`/api/repo/${idRepository}/author`, {
+              idAuthor
+            })
+
+            if (index !== -1) {
+              this.table.data[index].author.push({
+                ...catalog,
+                firstName,
+                lastName,
+                image
+              })
+            }
+
+            this.update.data.author.push({
+              ...catalog,
+              firstName,
+              lastName,
+              image
+            })
+          } catch (err) {
+            console.log(err)
+          }
+        }
+      })
+    },
     async handleSaveAuthorDialog({
       idRepository,
       idAuthor,
@@ -1309,6 +1444,10 @@ export default {
 </script>
 
 <style>
+.has-my-1 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
 div.upload-draggable.is-black {
   width: 100%;
 }

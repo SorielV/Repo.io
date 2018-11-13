@@ -83,7 +83,7 @@ Repository.getRepositories = async function(options = {}) {
           RET.id as "topic.id", Topic.id as "topic.idCatalog", Topic.value as "topic.value",
           RETy.id as "type.id", Type.id as "type.idCatalog", Type.value as "type.value",
           REE.id as "editorial.id", Editorial.id as "editorial.idCatalog", Editorial.name as "editorial.name",
-          REA.id as "author.id", Author.id as "author.idAuthor", Author."firstName" as "author.firstName", Author."lastName" as "author.lastName"
+          REA.id as "author.id", Author.id as "author.idAuthor", Author.image as "author.image", Author."firstName" as "author.firstName", Author."lastName" as "author.lastName"
           `
       }
     from (select * from "Repositories" ${whereConditions} ${limitStament} ) as Repo
