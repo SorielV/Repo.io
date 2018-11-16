@@ -61,6 +61,17 @@ module.exports = {
   ** Build configuration
   */
   build: {
+    minify: {
+      collapseBooleanAttributes: true,
+      decodeEntities: true,
+      minifyCSS: true,
+      minifyJS: true,
+      processConditionalComments: true,
+      removeEmptyAttributes: true,
+      removeRedundantAttributes: true,
+      trimCustomFragments: true,
+      useShortDoctype: true
+    },
     /*
     ** You can extend webpack config here
     */

@@ -1,4 +1,5 @@
 import consola from 'consola'
+import path from 'path'
 import express from 'express'
 import { Server } from 'http'
 import SocketIO from 'socket.io'
@@ -66,6 +67,9 @@ if (process.env.NUXT === 'true') {
 } else {
   async function start() {
     console.log('Server Only')
+
+    app.use(express.static(path.join(__dirname + './../dist')))
+    console.log(path.join(__dirname + './../dist'))
 
     // parse application/x-www-form-urlencoded
     app.use(bodyParser.urlencoded({ extended: false }))
