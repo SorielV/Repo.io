@@ -85,7 +85,7 @@ module.exports = function Schema(
      */
     static formatValueToSql(value, type) {
       if (type === String) {
-        return `'${value}'`
+        return `'${value.replace("'", "''")}'`
       } else if (type === Date) {
         /*
         if (value instanceof Date) {

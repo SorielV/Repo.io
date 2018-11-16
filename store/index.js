@@ -45,35 +45,46 @@ const store = () => {
       }
     },
     actions: {
-      async loadAuth({ commit }) {
-        if (!process.browser) return
-        try {
-          let currentToken = window.sessionStorage.getItem('token') || null
-          if (!currentToken) {
-            console.log('loadAuth::Fail')
-            return
-          }
-          this.$axios.defaults.headers.common[
-            'Authorization'
-          ] = `Bearer ${currentToken}`
-          let {
-            data: { user = {}, token = null }
-          } = await this.$axios.get('/login/status')
-          this.$axios.defaults.headers.common[
-            'Authorization'
-          ] = `Bearer ${token}`
-          commit('login', { token, user })
-        } catch (error) {
-          if (error.response) {
+      loadAuth({ commit, state }) {
+        return new Promise(async (resolve, reject) => {
+          if (!process.browser) return reject()
+
+          try {
+            const currentToken = window.sessionStorage.getItem('token') || null
+            if (!currentToken) {
+              console.log('loadAuth::Fail')
+              return
+            }
+
+            this.$axios.defaults.headers.common[
+              'Authorization'
+            ] = `Bearer ${currentToken}`
+
             const {
-              response: { data }
-            } = error
-            if (data.code && data.code === 400) {
-              commit('clearAuth')
-              $nuxt.$router.push('/login')
+              data: { user = {}, token = null }
+            } = await this.$axios.get('/login/status')
+
+            this.$axios.defaults.headers.common[
+              'Authorization'
+            ] = `Bearer ${token}`
+
+            commit('login', { token, user })
+          } catch (error) {
+            if (error.response) {
+              const {
+                response: { data }
+              } = error
+
+              if (data.code && data.code === 400) {
+                commit('clearAuth')
+                $nuxt.$router.push('/login')
+                return resolve()
+              }
+
+              return resolve()
             }
           }
-        }
+        })
       },
       async logout({ commit }) {
         try {
@@ -89,9 +100,11 @@ const store = () => {
             const {
               data: { user, token }
             } = await this.$axios.post('/login', { username, password })
+
             this.$axios.defaults.headers.common[
               'Authorization'
             ] = `Bearer ${token}`
+
             commit('login', { user, token })
             return resolve()
           } catch (error) {

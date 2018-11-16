@@ -7,14 +7,38 @@
         p.control
           a.button.is-info
             | Buscar
-    section.block
-      .tabs.is-centered
-        ul
-          li(v-for="(type, key) in catalog.types" :key="key")
-            a(@click='handleSelectType($event, type.value)' v-text="type.text")
+    section.has-my-1rem
+      .container
+        center
+          b-dropdown
+            button.button.is-primary(slot='trigger')
+              | Tipos
+              b-icon(icon='menu-down')
+            section.columns.is-multiline(style="padding: 1rem; margin: auto;")
+              .column.is-6(v-for="(catalog, key) in catalog.types" :key="key" style="padding: 0")
+                b-checkbox(:value='catalog.selected' @click='handleSelectType($event, catalog.value)' type="is-danger")
+                  | {{ catalog.value }}
+
+          b-dropdown
+            button.button.is-primary(slot='trigger')
+              | Tipos
+              b-icon(icon='menu-down')
+            section.columns.is-multiline(style="padding: 1rem; margin: auto;")
+              .column.is-6(v-for="(catalog, key) in catalog.topics" :key="key" style="padding: 0")
+                b-checkbox(:value='catalog.selected' @click='handleSelectType($event, catalog.value)' type="is-danger")
+                  | {{ catalog.value }}
+
+          b-dropdown
+            button.button.is-primary(slot='trigger')
+              | Editoriales
+              b-icon(icon='menu-down')
+            section.columns.is-multiline(style="padding: 1rem; margin: auto;")
+              .column.is-6(v-for="(catalog, key) in catalog.editorials" :key="key" style="padding: 0")
+                b-checkbox(:value='catalog.selected' @click='handleSelectType($event, catalog.value)' type="is-danger")
+                  | {{ catalog.value }}
     section
-      .columns.is-multiline.is-centered
-        .column.is-12(v-if="filtered.length === 0")
+      .columns.is-centered(v-if="filtered.length === 0")
+        .column.is-12
           section.hero.has-text-centered
             .hero-body
               .container
@@ -26,21 +50,21 @@
                   | Busqueda: {{ filter }}
                 iframe.container(src="http://wayou.github.io/t-rex-runner/" style="height: 150px")
                 //img(src="https://i.gifer.com/7WOr.gif")
-        .columns.is-12(v-else)
-          .container(style="padding: 1%")
-            .card-columns
-              .b-card(v-for="(repo, index) in filtered" :key="index")
-                pre(@click="handleViewRepo(repo)") {{ repo }}
-                //-.card-image-top(v-if="repo.image")
-                  figure.image.is-4by3
-                    img(:src='repo.image' :alt='repo.image')
-                //-.card-body
-                  .content
-                    p.title(v-text='repo.title' @click="handleViewRepo(repo)")
-                    .tags
-                      span.tag(v-text="getType(repo.type)" :class="'is-' + getType(repo.type)")
-                    p(v-text='repo.description')
-                    time(datetime='2016-1-1') 11:09 PM - 1 Jan 2016
+      .container(v-else)
+        .columns.is-multiline.is-centered
+          .column.is-3(v-for="(repo, index) in filtered" :key="index")
+            .card
+              .card-image-top(v-if="repo.image" @click="handleViewRepo(repo)")
+                figure.image.is-4by3
+                  img(:src='repo.image' :alt='repo.image')
+              .card-body
+                .content
+                  p.title(v-text='repo.title' @click="handleViewRepo(repo)")
+                  .tags
+                    span.tag(v-text="getType(repo.type)" :class="'is-' + getType(repo.type)")
+                  p(v-text='repo.description')
+                  time(datetime='2016-1-1') 11:09 PM - 1 Jan 2016
+          //- pre(@click="handleViewRepo(repo)") {{ repo }}
 </template>
 
 <script>
@@ -69,25 +93,21 @@ export default {
       }
     } catch (error) {
       console.error(error.message)
+      const repositories = []
+
+      return {
+        params,
+        repositories,
+        filtered: repositories
+      }
     }
   },
   data() {
     return {
       catalog: {
-        types: [
-          { text: 'Papers', value: 1 },
-          { text: 'Books', value: 2 },
-          { text: 'Cursos', value: 3 },
-          { text: 'Videos', value: 4 },
-          { text: 'Portales Blogs', value: 5 },
-          { text: 'Tools Software', value: 6 },
-          { text: 'PPTs SlideShare', value: 7 },
-          { text: 'Infografias y Memes', value: 8 },
-          { text: 'People To Follow', value: 9 },
-          { text: 'Comunidades', value: 10 },
-          { text: 'APIs', value: 11 },
-          { text: 'DataSets', value: 12 }
-        ]
+        types: [],
+        topics: [],
+        editorials: []
       },
       filter: '',
       types: [],
@@ -128,6 +148,29 @@ export default {
       }
     }
   },
+  async created() {
+    // fetch
+    const promises = [
+      this.$axios.get('/public/catalog/topics.json'),
+      this.$axios.get('/public/catalog/types.json')
+    ]
+
+    try {
+      const [{ data: topics }, { data: types }] = await Promise.all(promises)
+      topics.forEach(topic => {
+        topic.selected = false
+      })
+
+      types.forEach(type => {
+        type.selected = false
+      })
+
+      this.catalog.types = types
+      this.catalog.topics = topics
+    } catch (error) {
+      console.log(error)
+    }
+  },
   methods: {
     getType(type) {
       const { text = 'Otro' } =
@@ -157,7 +200,17 @@ export default {
 }
 </script>
 
+<style>
+.dropdown-menu {
+  min-width: 450px !important;
+}
+</style>
+
 <style scoped>
+.has-my-1rem {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
 .title {
   font-size: 1.5rem;
 }

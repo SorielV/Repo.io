@@ -53,9 +53,22 @@ export default {
   methods: {
     async handleSubmit() {
       try {
-        this.$store.dispatch('login', this.user)
+        await this.$store.dispatch('login', this.user)
         this.$router.push('/')
       } catch (error) {
+        const {
+          response: {
+            data: { message = null }
+          }
+        } = error
+
+        this.$snackbar.open({
+          message: message || error.message,
+          type: 'is-danger',
+          position: 'is-top',
+          actionText: 'Okay',
+          indefinite: true
+        })
         console.error(error)
       }
     }

@@ -2,6 +2,7 @@ import consola from 'consola'
 import express from 'express'
 import { Server } from 'http'
 import SocketIO from 'socket.io'
+import morgan from 'morgan'
 
 import cors from 'cors'
 import bodyParser from 'body-parser'
@@ -12,7 +13,16 @@ import LoginAPI from './web/router/login'
 const host = process.env.HOST || '127.0.0.1'
 const port = process.env.PORT || 3000
 
+const corsOptions = {
+  origin: 'http://localhost:8080',
+  optionsSuccessStatus: 200
+}
+
 const app = express()
+
+app.use(morgan('tiny'))
+app.use('*', cors(corsOptions))
+
 const server = Server(app)
 const io = SocketIO(server)
 require('./socket.io/rooms/repository/repository.room')(io)

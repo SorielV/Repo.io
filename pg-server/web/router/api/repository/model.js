@@ -1,3 +1,4 @@
+import Resource from './resource'
 import Author from './author'
 import Comment from './comment'
 import Editorial from './editorial'
@@ -6,6 +7,7 @@ import Topic from './topic'
 import Type from './type'
 
 const Model = {
+  resource: Resource,
   author: Author,
   comment: Comment,
   editorial: Editorial,

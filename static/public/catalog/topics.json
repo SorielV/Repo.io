@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "value": "Examples"
+  },
+  {
+    "id": 2,
+    "value": "Samples"
+  },
+  {
+    "id": 3,
+    "value": "Cultura"
+  },
+  {
+    "id": 4,
+    "value": "Comida"
+  },
+  {
+    "id": 5,
+    "value": "Videojuegos"
+  },
+  {
+    "id": 6,
+    "value": "Humor"
+  },
+  {
+    "id": 7,
+    "value": "Musica"
+  },
+  {
+    "id": 8,
+    "value": "Fotografia"
+  },
+  {
+    "id": 9,
+    "value": "Deportes"
+  },
+  {
+    "id": 10,
+    "value": "Estilo"
+  },
+  {
+    "id": 11,
+    "value": "TV"
+  },
+  {
+    "id": 12,
+    "value": "Negocios"
+  },
+  {
+    "id": 13,
+    "value": "Disenio"
+  },
+  {
+    "id": 16,
+    "value": "Economia"
+  },
+  {
+    "id": 17,
+    "value": "Javascript"
+  },
+  {
+    "id": 19,
+    "value": "Machine Learning"
+  },
+  {
+    "id": 20,
+    "value": "Programing"
+  },
+  {
+    "id": 21,
+    "value": "Sotfware"
+  },
+  {
+    "id": 22,
+    "value": "Tecnologia"
+  },
+  {
+    "id": 23,
+    "value": "Otros"
+  }
+]

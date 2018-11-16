@@ -1,7 +1,7 @@
 const pkg = require('./package')
 
 module.exports = {
-  mode: 'universal',
+  mode: 'spa',
   /*
   ** Headers of the page
   */
@@ -13,11 +13,12 @@ module.exports = {
       { hid: 'description', name: 'description', content: pkg.description }
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+    /*
     htmlAttrs: {
       class: 'has-navbar-fixed-top'
     },
-    script: [{ src: '/public/navbar.js' }],
-    class: 'has-navbar-fixed-top'
+    */
+    script: [{ src: '/public/navbar.js' }]
   },
 
   /*

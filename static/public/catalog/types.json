@@ -1,0 +1,54 @@
+[
+  {
+    "id": 1,
+    "value": "Example"
+  },
+  {
+    "id": 3,
+    "value": "Cursos"
+  },
+  {
+    "id": 4,
+    "value": "Videos"
+  },
+  {
+    "id": 5,
+    "value": "Portales Blogs"
+  },
+  {
+    "id": 6,
+    "value": "Tools Software"
+  },
+  {
+    "id": 7,
+    "value": "PPTs SlideShare"
+  },
+  {
+    "id": 8,
+    "value": "Infografias y Memes"
+  },
+  {
+    "id": 9,
+    "value": "People To Follow"
+  },
+  {
+    "id": 10,
+    "value": "Comunidades"
+  },
+  {
+    "id": 11,
+    "value": "APIs"
+  },
+  {
+    "id": 12,
+    "value": "DataSets"
+  },
+  {
+    "id": 13,
+    "value": "Papers"
+  },
+  {
+    "id": 14,
+    "value": "Books"
+  }
+]

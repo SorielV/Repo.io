@@ -46,9 +46,9 @@ const RepositoySchema = {
     },
     visibility: {
       type: Number,
-      required: true,
+      required: false,
       updatable: true,
-      default: '0'
+      default: 1
     },
     createdAt: {
       type: Date,

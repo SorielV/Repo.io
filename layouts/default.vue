@@ -28,6 +28,10 @@ export default {
 </script>
 
 <style>
+html,
+body {
+  height: 100%;
+}
 .Site {
   display: flex;
   min-height: 100vh;

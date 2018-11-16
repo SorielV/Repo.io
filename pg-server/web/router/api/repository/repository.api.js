@@ -22,6 +22,8 @@ router.get(
     const api =
       req.protocol + '://' + req.get('host') + req.originalUrl.split('?')[0]
 
+    console.log(req.query)
+
     const {
       query: { full = false }
     } = req
@@ -293,7 +295,9 @@ router.delete(
 router.post(
   '/',
   catchException(async (req, res, next) => {
+    delete req.body.id
     const { username, id: idUser } = req.user
+
     const repository = await new Repository({
       ...req.body,
       username,

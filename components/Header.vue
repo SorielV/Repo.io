@@ -2,7 +2,7 @@
   section.header
     section.hero.is-black.is-medium.is-bold
       .hero-head
-        nav.navbar.is-black.is-fixed-top
+        nav.navbar.is-black.iis-fixed-top
           .container
             .navbar-brand
               a.navbar-item(href='../')
@@ -90,15 +90,14 @@
                     b-dropdown(v-model='navigation', position='is-bottom-left')
                       img(:src="$store.state.user.profileImage || 'https://bulma.io/images/placeholders/128x128.png'" width="48" height="48" slot='trigger')
                       b-dropdown-item(custom='')
-                        | Logged as 
-                        b Rafael Beraldo
+                        b {{ $store.state.user.username }}
                       hr.dropdown-divider
                       b-dropdown-item(value='settings')
                         b-icon(icon='settings')
-                        |                         Settings
+                        |                          Settings
                       b-dropdown-item(value='logout')
                         b-icon(icon='logout')
-                        |                         Logout
+                        |                          Logout
                   span.navbar-item(v-else)
                     .buttons
                       nuxt-link(to="/login").button.is-info.is-outlined
