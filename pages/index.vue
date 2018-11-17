@@ -11,7 +11,7 @@
               .container.search
                 .field
                   p.control.has-icons-left
-                    input.input.is-rounded(placeholder='Repositorios')
+                    input.input.is-rounded(placeholder='Repositorios' @keyup.enter="search" v-model="filter")
                     span.icon.is-small.is-left
                       i.mdi.mdi-magnify
 
@@ -26,7 +26,14 @@ export default {
   layout: 'default',
   name: 'HomePage',
   data() {
-    return {}
+    return {
+      filter: ''
+    }
+  },
+  methods: {
+    search() {
+      this.$router.push('/repo?q=' + this.filter)
+    }
   }
 }
 </script>

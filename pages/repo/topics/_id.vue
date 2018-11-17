@@ -24,7 +24,7 @@ export default {
     try {
       const {
         data: { data: catalog }
-      } = await app.$axios.get('/api/catalog/type/' + id)
+      } = await app.$axios.get('/api/catalog/topic/' + id)
 
       console.log(id)
       return {
@@ -45,9 +45,11 @@ export default {
     }
   },
   async created() {
+    const { id: idTopic } = this.catalog
+
     const {
       data: { data: repositories }
-    } = await this.$axios.get('/api/repo')
+    } = await this.$axios.get('/api/repo?topic=' + idTopic)
     this.repositories = repositories
 
     console.log(this.repositories)

@@ -23,9 +23,7 @@
 <script>
 export default {
   async asyncData({ app }) {
-    const { data: catalog } = await app.$axios.get(
-      '/public/catalog/topics.json'
-    )
+    const { data: catalog } = await app.$axios.get('/public/catalog/types.json')
 
     return {
       catalog

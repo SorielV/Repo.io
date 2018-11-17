@@ -45,7 +45,21 @@ router.get(
         return res.status(400).json({ message: 'Parametro Topic no valido' })
       }
     } else if (req.query.type) {
-      return res.status(400).json({ message: 'Proximamente' })
+      const type = req.query.type
+      const isValid = Array.isArray(type)
+        ? type.every(type => !isNaN(type))
+        : !isNaN(type)
+
+      if (isValid) {
+        const data = await Repository.getRepositoriesByTypes({
+          ...req.query,
+          api,
+          full
+        })
+        return res.json(data)
+      } else {
+        return res.status(400).json({ message: 'Parametro Topic no valido' })
+      }
     }
 
     const data = await Repository.getRepositories({ ...req.query, api, full })

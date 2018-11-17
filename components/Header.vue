@@ -1,111 +1,121 @@
 <template lang="pug">
   section.header
-    section.hero.is-black.is-medium.is-bold
-      .hero-head
-        nav.navbar.is-black.iis-fixed-top
-          .container
-            .navbar-brand
-              a.navbar-item(href='../')
-                img(src='http://bulma.io/images/bulma-type-white.png', alt='Logo')
-              span.navbar-burger.burger(data-target='navbarMenu')
-                span
-                span
-                span
-            #navbarMenu.navbar-menu
-              .navbar-end
-                .navbar-item
-                  nuxt-link.has-text-white(to='/') Inicio
-                .navbar-item
-                  nuxt-link.has-text-white(to='/admin') Dashboard
-                .navbar-item.has-dropdown.is-hoverable.is-mega
-                  .navbar-link
-                    nuxt-link.has-text-white(to='/repo') Repositorios Digitales
-                  #nav-repo.navbar-dropdown(data-style='width: 18rem;')
-                    .container.is-fluid
-                      .columns
-                        .column
-                          nuxt-link.title.is-6.is-mega-menu-title(to='/repo/topics') Tematicas
-                          a.navbar-item(href='#')
-                            .navbar-content
-                              p New feature: list of tags
-                          a.navbar-item(href='#')
-                            .navbar-content
-                              p New feature: list of tags
-                          a.navbar-item(href='#')
-                            .navbar-content
-                              p New feature: list of tags
-                        .column
-                          a.navbar-item(href='#')
-                            .navbar-content
-                              p
-                                small.has-text-info 03 Aug 2017
-                              p New feature: list of tags
-                          a.navbar-item(href='/documentation/overview/start/')
-                            | Overview
-                          a.navbar-item(href='http://bulma.io/documentation/modifiers/syntax/')
-                            | Modifiers
-                          a.navbar-item(href='http://bulma.io/documentation/columns/basics/')
-                            | Columns
-                        .column
-                          nuxt-link.title.is-6.is-mega-menu-title(to='/repo/types') Tipos
-                          a.navbar-item(href='#')
-                            .navbar-content
-                              p New feature: list of tags
-                          a.navbar-item(href='#')
-                            .navbar-content
-                              p New feature: list of tags
-                          a.navbar-item(href='#')
-                            .navbar-content
-                              p New feature: list of tags
-                        .column
-                          a.navbar-item(href='/documentation/overview/start/')
-                            | Overview
-                          a.navbar-item(href='http://bulma.io/documentation/modifiers/syntax/')
-                            | Modifiers
-                          a.navbar-item(href='http://bulma.io/documentation/columns/basics/')
-                            | Columns
-                          a.navbar-item(href='http://bulma.io/documentation/layout/container/')
-                            | Layout
-                    hr.navbar-divider
-                    .navbar-item
-                      .navbar-content
-                        .level.is-mobile
-                          .level-left
-                            .level-item
-                              strong Stay up to date!
-                          .level-right
-                            .level-item
-                              a.button.bd-is-rss.is-small(href='http://bulma.io/atom.xml')
-                                span.icon.is-small
-                                  i.fa.fa-rss
-                                span Subscribe
-                .navbar-item
-                  nuxt-link.has-text-white(to='/homework') Tareas
-                .navbar-item
+    section
+      nav.navbar.is-black
+        .container
+          .navbar-brand
+            a.navbar-item(href='/')
+              img(src='/public/logo.png', alt='Logo')
+            span.navbar-burger.burger(data-target='navbarMenu')
+              span
+              span
+              span
+          #navbarMenu.navbar-menu
+            .navbar-end
+              .navbar-item
+                nuxt-link.has-text-white(to='/') Inicio
+              .navbar-item
+                nuxt-link.has-text-white(to='/admin') Dashboard
+              .navbar-item.has-dropdown.is-hoverable.is-mega
+                .navbar-link
+                  nuxt-link.has-text-white(to='/repo') Repositorios Digitales
+                #nav-repo.navbar-dropdown(data-style='width: 18rem;')
+                  .container.is-fluid
+                    .columns
+                      .column
+                        nuxt-link.title.is-6.is-mega-menu-title(to='/repo/topics') Tematicas
+                        a.navbar-item(href='#')
+                          .navbar-content
+                            p New feature: list of tags
+                        a.navbar-item(href='#')
+                          .navbar-content
+                            p New feature: list of tags
+                        a.navbar-item(href='#')
+                          .navbar-content
+                            p New feature: list of tags
+                      .column
+                        a.navbar-item(href='#')
+                          .navbar-content
+                            p
+                              small.has-text-info 03 Aug 2017
+                            p New feature: list of tags
+                        a.navbar-item(href='/documentation/overview/start/')
+                          | Overview
+                        a.navbar-item(href='http://bulma.io/documentation/modifiers/syntax/')
+                          | Modifiers
+                        a.navbar-item(href='http://bulma.io/documentation/columns/basics/')
+                          | Columns
+                      .column
+                        nuxt-link.title.is-6.is-mega-menu-title(to='/repo/types') Tipos
+                        a.navbar-item(href='#')
+                          .navbar-content
+                            p New feature: list of tags
+                        a.navbar-item(href='#')
+                          .navbar-content
+                            p New feature: list of tags
+                        a.navbar-item(href='#')
+                          .navbar-content
+                            p New feature: list of tags
+                      .column
+                        a.navbar-item(href='/documentation/overview/start/')
+                          | Overview
+                        a.navbar-item(href='http://bulma.io/documentation/modifiers/syntax/')
+                          | Modifiers
+                        a.navbar-item(href='http://bulma.io/documentation/columns/basics/')
+                          | Columns
+                        a.navbar-item(href='http://bulma.io/documentation/layout/container/')
+                          | Layout
+                  hr.navbar-divider
+                  .navbar-item
+                    .navbar-content
+                      .level.is-mobile
+                        .level-left
+                          .level-item
+                            strong Stay up to date!
+                        .level-right
+                          .level-item
+                            a.button.bd-is-rss.is-small(href='http://bulma.io/atom.xml')
+                              span.icon.is-small
+                                i.fa.fa-rss
+                              span Subscribe
+
+              .navbar-item.has-dropdown.is-hoverable
+                a.navbar-link
                   nuxt-link.has-text-white(to='/community') Comunidad
-                .navbar-item
-                  nuxt-link.has-text-white(to='/chat') Chat Room
-                .navbar-item
-                  span.navbar-item(v-if="$store.state.isAuth")
-                    b-dropdown(v-model='navigation', position='is-bottom-left')
-                      img(:src="$store.state.user.profileImage || 'https://bulma.io/images/placeholders/128x128.png'" width="48" height="48" slot='trigger')
-                      b-dropdown-item(custom='')
-                        b {{ $store.state.user.username }}
-                      hr.dropdown-divider
-                      b-dropdown-item(value='settings')
-                        b-icon(icon='settings')
-                        |                          Settings
-                      b-dropdown-item(value='logout')
-                        b-icon(icon='logout')
-                        |                          Logout
-                  span.navbar-item(v-else)
-                    .buttons
-                      nuxt-link(to="/login").button.is-info.is-outlined
-                        span(title='Ingresa C:') Ingresa
-                      nuxt-link(to="/singup").button.is-danger
-                        span.icon
-                          i.mdi.mdi-account
-                        span(title='Registro C:') Registro
+                .navbar-dropdown
+                  nuxt-link.navbar-item(to='/community') Blog
+                    span.tag.is-danger.beta-feacture Beta
+                  nuxt-link.navbar-item(to='/community') Cominidades
+                    span.tag.is-danger.beta-feacture Beta
+                  nuxt-link.navbar-item(to='/community') Tareas
+                    span.tag.is-danger.beta-feacture Beta
+                  nuxt-link.navbar-item(to='/chat') Chat Room
+                    span.tag.is-danger.beta-feacture Beta
+                  hr.navbar-divider
+                  a.navbar-item Pedir Nueva Feacture
+              .navbar-item
+                
+              .navbar-item
+                span.navbar-item(v-if="$store.state.isAuth")
+                  b-dropdown(v-model='navigation', position='is-bottom-left')
+                    img(:src="$store.state.user.profileImage || 'https://bulma.io/images/placeholders/128x128.png'" width="48" height="48" slot='trigger')
+                    b-dropdown-item(custom='')
+                      b {{ $store.state.user.username }}
+                    hr.dropdown-divider
+                    b-dropdown-item(value='settings')
+                      b-icon(icon='settings')
+                      |                          Settings
+                    b-dropdown-item(value='logout')
+                      b-icon(icon='logout')
+                      |                          Logout
+                span.navbar-item(v-else)
+                  .buttons
+                    nuxt-link(to="/login").button.is-info.is-outlined
+                      span(title='Ingresa C:') Ingresa
+                    nuxt-link(to="/singup").button.is-danger
+                      span.icon
+                        i.mdi.mdi-account
+                      span(title='Registro C:') Registro
 </template>
 
 <script>
@@ -118,20 +128,35 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.beta-feacture {
+  margin-right: 1rem;
+  margin-left: 1rem;
+}
+/*
 nav.navbar.is-black {
   background: #0a0a0a !important;
 }
 .nuxt-link-exact-active .nuxt-link-active {
   font-style: italic !important;
 }
+*/
 .is-purple {
   background-color: #4a4090;
   background-image: linear-gradient(to bottom, #4a4090, #372e6c);
 }
+.navbar-item.is-mega {
+  position: static;
+}
+.navbar-item.is-mega .is-mega-menu-title {
+  margin-bottom: 0;
+  padding: 0.375rem 1rem;
+}
+/*
 #nav-repo {
   background: black;
 }
+
 #nav-repo a.navbar-item {
   color: white;
 }
@@ -154,4 +179,5 @@ nav.navbar.is-black {
   position: fixed;
   background: rgba(10, 10, 10, 0.86);
 }
+*/
 </style>
