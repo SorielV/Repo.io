@@ -28,6 +28,26 @@ router.get(
       query: { full = false }
     } = req
 
+    if (req.query.topic) {
+      const topic = req.query.topic
+      const isValid = Array.isArray(topic)
+        ? topic.every(topic => !isNaN(topic))
+        : !isNaN(topic)
+
+      if (isValid) {
+        const data = await Repository.getRepositoriesByTopics({
+          ...req.query,
+          api,
+          full
+        })
+        return res.json(data)
+      } else {
+        return res.status(400).json({ message: 'Parametro Topic no valido' })
+      }
+    } else if (req.query.type) {
+      return res.status(400).json({ message: 'Proximamente' })
+    }
+
     const data = await Repository.getRepositories({ ...req.query, api, full })
     return res.json(data)
   })

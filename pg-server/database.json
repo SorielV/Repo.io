@@ -1,4 +1,11 @@
 {
+  "local": {
+    "host" : "localhost",
+    "port": 5432,
+    "user" : "postgres",
+    "database" : "repo-development",
+    "password" : "postgres"
+  },
   "development": {
     "host" : "159.203.184.223",
     "port": 5432,

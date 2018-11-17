@@ -1,54 +1,157 @@
 [
   {
-    "id": 1,
-    "value": "Example"
+    "idCatalog": 1,
+    "value": "Example",
+    "image": null
   },
   {
-    "id": 3,
-    "value": "Cursos"
+    "idCatalog": 3,
+    "value": "Cursos",
+    "image": null
   },
   {
-    "id": 4,
-    "value": "Videos"
+    "idCatalog": 4,
+    "value": "Videos",
+    "image": null
   },
   {
-    "id": 5,
-    "value": "Portales Blogs"
+    "idCatalog": 5,
+    "value": "Portales Blogs",
+    "image": null
   },
   {
-    "id": 6,
-    "value": "Tools Software"
+    "idCatalog": 6,
+    "value": "Tools Software",
+    "image": null
   },
   {
-    "id": 7,
-    "value": "PPTs SlideShare"
+    "idCatalog": 7,
+    "value": "PPTs SlideShare",
+    "image": null
   },
   {
-    "id": 8,
-    "value": "Infografias y Memes"
+    "idCatalog": 8,
+    "value": "Infografias y Memes",
+    "image": null
   },
   {
-    "id": 9,
-    "value": "People To Follow"
+    "idCatalog": 9,
+    "value": "People To Follow",
+    "image": null
   },
   {
-    "id": 10,
-    "value": "Comunidades"
+    "idCatalog": 10,
+    "value": "Comunidades",
+    "image": null
   },
   {
-    "id": 11,
-    "value": "APIs"
+    "idCatalog": 11,
+    "value": "APIs",
+    "image": null
   },
   {
-    "id": 12,
-    "value": "DataSets"
+    "idCatalog": 12,
+    "value": "DataSets",
+    "image": null
   },
   {
-    "id": 13,
-    "value": "Papers"
+    "idCatalog": 13,
+    "value": "Papers",
+    "image": null
   },
   {
-    "id": 14,
-    "value": "Books"
+    "idCatalog": 14,
+    "value": "Books",
+    "image": null
+  },
+  {
+    "idCatalog": 2,
+    "value": "grass",
+    "image": null
+  },
+  {
+    "idCatalog": 15,
+    "value": "water",
+    "image": null
+  },
+  {
+    "idCatalog": 16,
+    "value": "fire",
+    "image": null
+  },
+  {
+    "idCatalog": 17,
+    "value": "normal",
+    "image": null
+  },
+  {
+    "idCatalog": 18,
+    "value": "dark",
+    "image": null
+  },
+  {
+    "idCatalog": 19,
+    "value": "poison",
+    "image": null
+  },
+  {
+    "idCatalog": 20,
+    "value": "electric",
+    "image": null
+  },
+  {
+    "idCatalog": 21,
+    "value": "ice",
+    "image": null
+  },
+  {
+    "idCatalog": 22,
+    "value": "ground",
+    "image": null
+  },
+  {
+    "idCatalog": 23,
+    "value": "fairy",
+    "image": null
+  },
+  {
+    "idCatalog": 24,
+    "value": "fighting",
+    "image": null
+  },
+  {
+    "idCatalog": 25,
+    "value": "psychic",
+    "image": null
+  },
+  {
+    "idCatalog": 26,
+    "value": "rock",
+    "image": null
+  },
+  {
+    "idCatalog": 27,
+    "value": "ghost",
+    "image": null
+  },
+  {
+    "idCatalog": 28,
+    "value": "dragon",
+    "image": null
+  },
+  {
+    "idCatalog": 29,
+    "value": "steel",
+    "image": null
+  },
+  {
+    "idCatalog": 30,
+    "value": "flying",
+    "image": null
+  },
+  {
+    "idCatalog": 32,
+    "value": "bug",
+    "image": null
   }
 ]

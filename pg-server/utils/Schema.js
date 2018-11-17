@@ -350,9 +350,10 @@ module.exports = function Schema(
 
       const query = `select * from "${
         Model.Table
-      }" where "${columId}" = ${Model.formatValueToSql(
+      }" where "${columId}" = ${Model.formatValue(
         id,
-        Model.Schema[columId].type
+        Model.Schema[columId].type,
+        true
       )}`
 
       const {

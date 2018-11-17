@@ -1,82 +1,117 @@
 [
   {
-    "id": 1,
-    "value": "Examples"
+    "idCatalog": 1,
+    "value": "Examples",
+    "image": null
   },
   {
-    "id": 2,
-    "value": "Samples"
+    "idCatalog": 2,
+    "value": "Samples",
+    "image": null
   },
   {
-    "id": 3,
-    "value": "Cultura"
+    "idCatalog": 3,
+    "value": "Cultura",
+    "image": null
   },
   {
-    "id": 4,
-    "value": "Comida"
+    "idCatalog": 4,
+    "value": "Comida",
+    "image": null
   },
   {
-    "id": 5,
-    "value": "Videojuegos"
+    "idCatalog": 5,
+    "value": "Videojuegos",
+    "image": null
   },
   {
-    "id": 6,
-    "value": "Humor"
+    "idCatalog": 6,
+    "value": "Humor",
+    "image": null
   },
   {
-    "id": 7,
-    "value": "Musica"
+    "idCatalog": 7,
+    "value": "Musica",
+    "image": null
   },
   {
-    "id": 8,
-    "value": "Fotografia"
+    "idCatalog": 8,
+    "value": "Fotografia",
+    "image": null
   },
   {
-    "id": 9,
-    "value": "Deportes"
+    "idCatalog": 9,
+    "value": "Deportes",
+    "image": null
   },
   {
-    "id": 10,
-    "value": "Estilo"
+    "idCatalog": 10,
+    "value": "Estilo",
+    "image": null
   },
   {
-    "id": 11,
-    "value": "TV"
+    "idCatalog": 11,
+    "value": "TV",
+    "image": null
   },
   {
-    "id": 12,
-    "value": "Negocios"
+    "idCatalog": 12,
+    "value": "Negocios",
+    "image": null
   },
   {
-    "id": 13,
-    "value": "Disenio"
+    "idCatalog": 13,
+    "value": "Disenio",
+    "image": null
   },
   {
-    "id": 16,
-    "value": "Economia"
+    "idCatalog": 16,
+    "value": "Economia",
+    "image": null
   },
   {
-    "id": 17,
-    "value": "Javascript"
+    "idCatalog": 17,
+    "value": "Javascript",
+    "image": null
   },
   {
-    "id": 19,
-    "value": "Machine Learning"
+    "idCatalog": 19,
+    "value": "Machine Learning",
+    "image": null
   },
   {
-    "id": 20,
-    "value": "Programing"
+    "idCatalog": 20,
+    "value": "Programing",
+    "image": null
   },
   {
-    "id": 21,
-    "value": "Sotfware"
+    "idCatalog": 21,
+    "value": "Sotfware",
+    "image": null
   },
   {
-    "id": 22,
-    "value": "Tecnologia"
+    "idCatalog": 22,
+    "value": "Tecnologia",
+    "image": null
   },
   {
-    "id": 23,
-    "value": "Otros"
+    "idCatalog": 23,
+    "value": "Otros",
+    "image": null
+  },
+  {
+    "idCatalog": 24,
+    "value": "pokemon",
+    "image": null
+  },
+  {
+    "idCatalog": 25,
+    "value": "anime",
+    "image": null
+  },
+  {
+    "idCatalog": 26,
+    "value": "cartoons",
+    "image": null
   }
 ]

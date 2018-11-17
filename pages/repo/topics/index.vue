@@ -1,29 +1,42 @@
 <template lang="pug">
   section(style="padding: 2%;")
     div.container
-      h1.title Explora Temas
+      h1.title Explora Diferentes Recursos
       hr
       .container
         .columns.is-multiline.is-centered
-          .column(v-for="(catalog, index) in catalog" :key='index')
-            pre {{ catalog }}
+          .column.is-4(v-for="(catalog, index) in catalog" :key='index')
+            .card
+              header.card-header
+                p.card-header-title
+                  | {{ catalog.value }}
+                a.card-header-icon(href='#', aria-label='more options')
+                  span.icon
+                    i.mdi.mdi-facebook(aria-hidden='true')
+              .card-content
+                figure.image(@click="redirectToType(catalog)")
+                  img(:src="catalog.image || '/public/empty.webp'")
+              footer.card-footer
+
 </template>
 
 <script>
 export default {
+  async asyncData({ app }) {
+    const { data: catalog } = await app.$axios.get('/public/catalog/types.json')
+
+    return {
+      catalog
+    }
+  },
   data() {
     return {
       catalog: []
     }
   },
-  created() {
-    for (let i = 0; i < 25; i++) {
-      this.catalog.push({
-        id: i,
-        value: String.fromCharCode(i * 10),
-        image: '',
-        description: String.fromCharCode(i * 10)
-      })
+  methods: {
+    redirectToType({ idCatalog }) {
+      this.$router.push('/repo/topics/' + idCatalog)
     }
   }
 }

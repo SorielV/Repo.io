@@ -21,6 +21,12 @@ const TypeSchema = {
       updatable: true,
       length: 200,
       default: ''
+    },
+    image: {
+      type: String,
+      required: false,
+      updatable: true,
+      length: 100
     }
   },
   options: {
