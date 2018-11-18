@@ -36,6 +36,9 @@
               .column.is-6(v-for="(catalog, key) in catalog.editorials" :key="key" style="padding: 0")
                 b-checkbox(:value='catalog.selected' @click='handleSelectType($event, catalog.value)' type="is-danger")
                   | {{ catalog.value }}
+    .content.has-text-centered
+      span.small Mostrando {{ repositories.length }} de {{ pagination.total }}
+    hr
     section
       .columns.is-centered(v-if="filtered.length === 0")
         .column.is-12
@@ -65,18 +68,22 @@
                   p(v-text='repo.description')
                   time(datetime='2016-1-1') 11:09 PM - 1 Jan 2016
           //- pre(@click="handleViewRepo(repo)") {{ repo }}
+    pre {{ pagination }}
 </template>
 
 <script>
 export default {
-  async asyncData({ app, params }) {
+  async asyncData({ app, query }) {
+    const params = new URLSearchParams(window.location.search)
+
     try {
-      if (Object.keys(params).length) {
+      if (query['title']) {
         const {
-          data: { data: repositories = [] }
-        } = await app.$axios.get(`/api/repo/?search=${params}`)
+          data: { data: repositories = [], ...pagination }
+        } = await app.$axios.get(`/api/repo/?title=${query['title']}`)
         return {
-          params,
+          pagination,
+          filter: query['title'] || '',
           repositories,
           filtered: repositories,
           filter: ''
@@ -104,6 +111,7 @@ export default {
   },
   data() {
     return {
+      pagination: {},
       catalog: {
         types: [],
         topics: [],

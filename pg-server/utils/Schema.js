@@ -259,7 +259,7 @@ module.exports = function Schema(
       }
     }
 
-    static whereStament(where, array = false) {
+    static whereStament(where, array = false, strict = true) {
       const Schema = Model.Schema
       const formatWhereOperator = Model.formatWhereOperator
       const whereStament = Model.whereStament
@@ -279,12 +279,23 @@ module.exports = function Schema(
               )
             )
           } else {
-            const value = Model.formatValue(
-              where[whereKey],
-              Schema[whereKey].type,
-              true
-            )
-            whereStaments.push(`"${whereKey}" = ${value}`)
+            if (strict) {
+              const value = Model.formatValue(
+                where[whereKey],
+                Schema[whereKey].type,
+                true
+              )
+              whereStaments.push(`"${whereKey}" = ${value}`)
+            } else {
+              const value = Model.formatValue(
+                where[whereKey],
+                Schema[whereKey].type,
+                false
+              )
+              whereStaments.push(
+                `"${whereKey}"  like '%${value.replace("'", "''")}%'`
+              )
+            }
           }
         } else {
           // Basura

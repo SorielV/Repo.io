@@ -1,3 +1,5 @@
+#!/usr/bin/env nodejs
+
 import consola from 'consola'
 import path from 'path'
 import express from 'express'
