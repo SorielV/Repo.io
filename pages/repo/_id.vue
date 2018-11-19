@@ -17,7 +17,7 @@
             br
             small
               | {{ new Date(comment.createdAt).toDateString() }}
-    article.media
+    article.media(v-if='$store.state.isAuth')
       figure.media-left
         p.image.is-64x64
           img(src='https://bulma.io/images/placeholders/128x128.png')
@@ -29,7 +29,8 @@
           .field
             p.control
               button#handle.button Post comment
-
+    article.media(v-else)
+      | Login Event
     pre {{ repository }}
 </template>
 

@@ -31,9 +31,9 @@ function CreateObject(keys, values) {
 
 const pageOptions = options => {
   let {
-    limit = 100,
-    offset = 100,
-    page = 0,
+    limit = 50,
+    offset = 50,
+    page = 1,
     all = false, // All records
     full = false, // All information
     orderBy = null,
@@ -54,7 +54,7 @@ const pageOptions = options => {
     pagination: {
       limit: isNaN(limit) ? 100 : Number.parseInt(limit),
       offset: isNaN(offset) ? 100 : Number.parseInt(offset),
-      page: isNaN(page) ? 100 : Number.parseInt(page),
+      page: isNaN(page) ? 1 : page < 1 ? 1 : Number.parseInt(page),
       orderBy,
       orderDirection
     }
@@ -173,7 +173,7 @@ Repository.getRepositoriesByTypes = async function(_options) {
       group by RT."idRepository" having count(RT."idRepository") = ${
         types.length
       }
-      ${options.all ? '' : ` limit ${limit} offset ${offset * page} `}
+      ${options.all ? '' : ` limit ${limit} offset ${offset * (page - 1)} `}
   `
   const query = `
     SELECT Repo.*,
@@ -220,12 +220,20 @@ Repository.getRepositoriesByTypes = async function(_options) {
   ] = await Promise.all(promises)
 
   return Number.parseInt(total) === 0 || rows.length === 0
-    ? new Pagination(api, [], {
-        options,
+    ? new Pagination(options.api, [], {
+        limit,
+        offset,
+        page,
+        orderBy,
+        orderDirection,
         total: Number(total)
       })
-    : new Pagination(api, getNestedData(fields, rows), {
-        options,
+    : new Pagination(options.api, getNestedData(fields, rows), {
+        limit,
+        offset,
+        page,
+        orderBy,
+        orderDirection,
         total: Number(total)
       })
 }
@@ -262,7 +270,7 @@ Repository.getRepositoriesByTopics = async function(_options = {}) {
       group by RT."idRepository" having count(RT."idRepository") = ${
         topics.length
       }
-      ${options.all ? '' : ` limit ${limit} offset ${offset * page} `}
+      ${options.all ? '' : ` limit ${limit} offset ${offset * (page - 1)} `}
   `
   const query = `
     SELECT Repo.*,
@@ -309,12 +317,20 @@ Repository.getRepositoriesByTopics = async function(_options = {}) {
   ] = await Promise.all(promises)
 
   return Number.parseInt(total) === 0 || rows.length === 0
-    ? new Pagination(api, [], {
-        options,
+    ? new Pagination(options.api, [], {
+        limit,
+        offset,
+        page,
+        orderBy,
+        orderDirection,
         total: Number(total)
       })
-    : new Pagination(api, getNestedData(fields, rows), {
-        options,
+    : new Pagination(options.api, getNestedData(fields, rows), {
+        limit,
+        offset,
+        page,
+        orderBy,
+        orderDirection,
         total: Number(total)
       })
 }
@@ -347,7 +363,9 @@ Repository.getRepositories = async function(_options = {}) {
     select * from "Repositories" ${
       whereConditions ? 'where' : ''
     } ${whereConditions}
-    order by id ${options.all ? '' : ` limit ${limit} offset ${offset * page} `}
+    order by id ${
+      options.all ? '' : ` limit ${limit} offset ${offset * (page - 1)} `
+    }
   `
 
   const query = `
@@ -404,11 +422,19 @@ Repository.getRepositories = async function(_options = {}) {
 
   return Number.parseInt(total) === 0 || rows.length === 0
     ? new Pagination(options.api, [], {
-        options,
+        limit,
+        offset,
+        page,
+        orderBy,
+        orderDirection,
         total: Number(total)
       })
     : new Pagination(options.api, getNestedData(fields, rows), {
-        options,
+        limit,
+        offset,
+        page,
+        orderBy,
+        orderDirection,
         total: Number(total)
       })
 }

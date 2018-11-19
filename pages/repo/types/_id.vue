@@ -46,6 +46,7 @@
                     .column.is-6(v-for="(catalog, key) in catalog.editorials" :key="key" style="padding: 0")
                       b-checkbox(:value='catalog.selected' @click='handleSelectType($event, catalog.value)' type="is-danger")
                         | {{ catalog.value }}
+      hr
       .container
         .columns.is-centered(v-if="filtered.length === 0")
           .column.is-12
@@ -61,8 +62,19 @@
                   iframe.container(src="http://wayou.github.io/t-rex-runner/" style="height: 150px")
                   //img(src="https://i.gifer.com/7WOr.gif")
         .columns.is-centered.is-multiline(v-else)
-          .column.is-3(v-for="(repo, index) in repositories" :key="index")
-            CardRepository(:repo='repo')
+          .column.is-3(v-for="(repo, index) in filtered" :key="index")
+            CardRepository(:repository='repo')
+      hr
+      b-pagination.is-centered(
+        v-if="!filter || filter.length === 0"
+        :total='pagination.total'
+        :current.sync='pagination.page'
+        :simple='false'
+        :rounded='false'
+        :per-page='pagination.offset'
+      )
+      hr
+      pre {{ pagination }}
 </template>
 
 <script>
@@ -74,11 +86,13 @@ export default {
   async asyncData({ app, params: { id } }) {
     try {
       const {
-        data: { data: catalog }
+        data: { data: catalog = [] }
       } = await app.$axios.get('/api/catalog/type/' + id)
 
-      console.log(id)
       return {
+        query: {
+          type: id
+        },
         filtered: [],
         repositories: [],
         catalog
@@ -91,23 +105,73 @@ export default {
   },
   data() {
     return {
+      filter: '',
+      pagination: {},
       filtered: [],
       repositories: [],
       catalog: {},
       err: false
     }
   },
+  watch: {
+    filter(_filter, _oldFilter) {
+      const oldFilter = _oldFilter.trim().toUpperCase()
+      const filter = _filter.trim().toUpperCase()
+
+      if (filter.length === 0) {
+        this.filtered = this.repositories
+        return
+      }
+
+      const flag =
+        this.filtered.length === 0 || filter.length < oldFilter.length
+
+      this.filtered = Array.from(
+        flag ? this.repositories : this.filtered
+      ).filter(({ title }) => title.toUpperCase().includes(filter))
+    },
+    async 'pagination.page'(current, old) {
+      if (old === undefined || current === undefined) {
+        return
+      }
+
+      console.log(current, old)
+      if (current === old) {
+        return
+      }
+
+      const query = Object.keys(this.query || {})
+        .map(prop => {
+          return prop + '=' + this.query[prop]
+        })
+        .join('&')
+
+      const { limit, offset } = this.pagination
+      const url = `/api/repo?page=${current}&limt=${limit}&offset=${offset}&${query}`
+
+      try {
+        const {
+          data: { data: repositories = [], ...pagination }
+        } = await this.$axios.get(url)
+        this.repositories = repositories
+        this.pagination = pagination
+        this.filtered = repositories
+        window.scrollTo(0, 0)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  },
   async created() {
     const { id: idtype } = this.catalog
 
     const {
-      data: { data: repositories }
+      data: { data: repositories = [], ...pagination }
     } = await this.$axios.get('/api/repo?type=' + idtype)
 
+    this.pagination = pagination
     this.repositories = repositories
     this.filtered = repositories
-
-    console.log(this.repositories)
   }
 }
 </script>

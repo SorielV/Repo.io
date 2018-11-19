@@ -13,6 +13,11 @@ export default {
   components: {
     Header
   },
+  head: {
+    bodyAttrs: {
+      class: 'has-navbar-fixed-top'
+    }
+  },
   data() {
     return {
       items: [

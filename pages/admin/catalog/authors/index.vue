@@ -1,5 +1,5 @@
 <template lang="pug">
-  section(style="padding: 1%;")
+  section(style="padding: 1% 2% 2% 2%;")
     b-loading(:is-full-page="true" :active.sync="table.loading" :can-cancel="true")
     section.card
       b-tabs.block(
@@ -221,7 +221,7 @@ export default {
     try {
       const {
         data: { data }
-      } = await app.$axios.get('/api/author')
+      } = await app.$axios.get('/api/catalog/author')
       return {
         data: data,
         table: {
@@ -309,7 +309,11 @@ export default {
     },
     async onCreate() {
       try {
-        const { data } = await this.$axios.post('/api/author', this.create)
+        const { data } = await this.$axios.post(
+          '/api/catalog/author',
+          this.create
+        )
+
         const author = data.data
         this.create = {}
         this.data.push(author)
@@ -344,7 +348,7 @@ export default {
       const author = this.update.data
       try {
         const { data } = await this.$axios.put(
-          '/api/author/' + author.id,
+          '/api/catalog/author/' + author.id,
           this.update.data
         )
         this.update.index = null
@@ -372,7 +376,9 @@ export default {
     },
     async removeAuthor(row) {
       try {
-        const { data } = await this.$axios.delete('/api/author/' + row.id)
+        const { data } = await this.$axios.delete(
+          '/api/catalog/author/' + row.id
+        )
         this.data.splice(this.data.indexOf(row), 1) // General
         const dataIndex = this.table.data.indexOf(row) // Subbusqueda
 

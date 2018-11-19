@@ -1,5 +1,5 @@
 <template lang="pug">
-  section(style="padding: 2%;")
+  section(style="padding: 1% 2% 2% 2%;")
     section.card
       b-tabs.block(
         position="is-centered"

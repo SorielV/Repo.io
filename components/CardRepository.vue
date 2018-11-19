@@ -1,30 +1,29 @@
 <template lang="pug">
   .card
-    .card-image-top(@click="handleViewRepo(repo)")
+    .card-image-top(@click="handleViewRepo")
       figure.image.is-4by3
-        img(:src="repo.image || 'http://www.nyan.cat/cats/original.gif'")
+        img(:src="repository.image || 'http://www.nyan.cat/cats/original.gif'")
     .card-body
       .content
-        p.title(v-text='repo.title' @click="handleViewRepo(repo)")
+        p.title(v-text='repository.title' @click="handleViewRepo")
         .tags
-          span.tag(v-for="(type, index) in repo.type" :key='index')
+          span.tag(v-for="(type, index) in repository.type" :key='index')
             | {{ type.value }}
-          // span.tag(v-text="getType()" :class="'is-' + getType(repo.type)")
-        p(v-text='repo.description')
-        time(datetime='2016-1-1') 11:09 PM - 1 Jan 2016
+        p(v-text='repository.description')
+        time(datetime='2016-1-1') {{ new Date(repository.updatedAt || repository.createdAt).toLocaleString() }}
 </template>
 
 <script>
 export default {
   props: {
-    repo: {
+    repository: {
       type: Object,
       required: true
     }
   },
   methods: {
-    getType(type) {
-      return text
+    handleViewRepo() {
+      this.$emit('handleViewRepo', this.repository)
     }
   }
 }

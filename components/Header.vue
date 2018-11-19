@@ -1,7 +1,7 @@
 <template lang="pug">
   section.header
     section
-      nav.navbar.is-black
+      nav.navbar.is-black.is-fixed-top
         .container
           .navbar-brand
             a.navbar-item(href='/')
@@ -93,8 +93,7 @@
                     span.tag.is-danger.beta-feacture Beta
                   hr.navbar-divider
                   a.navbar-item Pedir Nueva Feacture
-              .navbar-item
-                
+  
               .navbar-item
                 span.navbar-item(v-if="$store.state.isAuth")
                   b-dropdown(v-model='navigation', position='is-bottom-left')

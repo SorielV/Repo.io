@@ -7,7 +7,7 @@
         p.control
           a.button.is-info
             | Buscar
-    section.has-my-1rem
+    section.has-py-1rem(style="border: solid 1px red;")
       .container
         center
           b-dropdown
@@ -37,7 +37,7 @@
                 b-checkbox(:value='catalog.selected' @click='handleSelectType($event, catalog.value)' type="is-danger")
                   | {{ catalog.value }}
     .content.has-text-centered
-      span.small Mostrando {{ repositories.length }} de {{ pagination.total }}
+      span.small Mostrando {{ repositories.length }} [{{ (pagination.page - 1 || 1) * pagination.offset }} a {{ (pagination.page || 1) * pagination.offset }}] de {{ pagination.total }}
     hr
     section
       .columns.is-centered(v-if="filtered.length === 0")
@@ -56,23 +56,30 @@
       .container(v-else)
         .columns.is-multiline.is-centered
           .column.is-3(v-for="(repo, index) in filtered" :key="index")
-            .card
-              .card-image-top(v-if="repo.image" @click="handleViewRepo(repo)")
-                figure.image.is-4by3
-                  img(:src='repo.image' :alt='repo.image')
-              .card-body
-                .content
-                  p.title(v-text='repo.title' @click="handleViewRepo(repo)")
-                  .tags
-                    span.tag(v-text="getType(repo.type)" :class="'is-' + getType(repo.type)")
-                  p(v-text='repo.description')
-                  time(datetime='2016-1-1') 11:09 PM - 1 Jan 2016
-          //- pre(@click="handleViewRepo(repo)") {{ repo }}
+            transition-group(name="component-fade" tag="section")
+              CardRepository(:repository='repo' @handleViewRepo="handleViewRepo" :key="repo.id")
+              // -pre(:key="index") {{ repo }}
+              //CardRepository(@repository="repo" )
+    hr
+    b-pagination.is-centered(
+      v-if="!filter || filter.length === 0"
+      :total='pagination.total'
+      :current.sync='pagination.page'
+      :simple='false'
+      :rounded='false'
+      :per-page='pagination.offset'
+    )
+    hr
     pre {{ pagination }}
 </template>
 
 <script>
+import CardRepository from './../../components/CardRepository.vue'
+
 export default {
+  components: {
+    CardRepository
+  },
   async asyncData({ app, query }) {
     const params = new URLSearchParams(window.location.search)
 
@@ -83,6 +90,7 @@ export default {
         } = await app.$axios.get(`/api/repo/?title=${query['title']}`)
         return {
           pagination,
+          query,
           filter: query['title'] || '',
           repositories,
           filtered: repositories,
@@ -90,10 +98,10 @@ export default {
         }
       } else {
         const {
-          data: { data: repositories = [] }
+          data: { data: repositories = [], ...pagination }
         } = await app.$axios.get('/api/repo')
         return {
-          params,
+          pagination,
           repositories,
           filtered: repositories
         }
@@ -111,6 +119,7 @@ export default {
   },
   data() {
     return {
+      query: {},
       pagination: {},
       catalog: {
         types: [],
@@ -124,6 +133,32 @@ export default {
     }
   },
   watch: {
+    async 'pagination.page'(current, old) {
+      if (current === old) {
+        return
+      }
+
+      const query = Object.keys(this.query)
+        .map(prop => {
+          return prop + '=' + this.query[prop]
+        })
+        .join('&')
+
+      const { limit, offset } = this.pagination
+      const url = `/api/repo?page=${current}&limt=${limit}&offset=${offset}&${query}`
+
+      try {
+        const {
+          data: { data: repositories = [], ...pagination }
+        } = await this.$axios.get(url)
+        this.repositories = repositories
+        this.pagination = pagination
+        this.filtered = repositories
+        window.scrollTo(0, 0)
+      } catch (error) {
+        console.error(error)
+      }
+    },
     types(types) {
       if (types.length === 0) {
         this.filtered = this.repositories
@@ -180,6 +215,9 @@ export default {
     }
   },
   methods: {
+    async changePage(page) {
+      this
+    },
     getType(type) {
       const { text = 'Otro' } =
         Array.apply(null, this.catalog.types).find(
@@ -218,6 +256,10 @@ export default {
 .has-my-1rem {
   margin-top: 1rem;
   margin-bottom: 1rem;
+}
+.has-py-1rem {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 .title {
   font-size: 1.5rem;
@@ -589,8 +631,16 @@ export default {
 .option-type-4.active {
   border-bottom: 3px solid #6610f2 !important;
 }
-
 .option-type-5.active {
   border-bottom: 3px solid #28a745 !important;
+}
+.component-fade-enter-active,
+.component-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.component-fade-enter,
+.component-fade-leave-to
+/* .component-fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>

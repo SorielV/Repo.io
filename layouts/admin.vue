@@ -13,6 +13,11 @@ export default {
   components: {
     AdminHeader
   },
+  head: {
+    bodyAttrs: {
+      class: 'has-navbar-fixed-top'
+    }
+  },
   created() {
     this.$store.dispatch('loadAuth')
   }

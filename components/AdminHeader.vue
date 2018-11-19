@@ -1,7 +1,7 @@
 <template lang="pug">
   section.header
     section
-      nav.navbar.is-black
+      nav.navbar.is-black.is-fixed-top
         .container
           .navbar-brand
             a.navbar-item(href='../')
@@ -20,20 +20,14 @@
                 nuxt-link.has-text-white(to='/admin/users') Usuarios
               .navbar-item
                 nuxt-link.has-text-white(to='/admin/repos') Repositorios
-              .navbar-item
-                nuxt-link.has-text-white(to='/admin/authors') Autores
-              .navbar-item
-                b-dropdown(v-model='navigation', position='is-bottom-left')
-                  button.button.is-danger(slot='trigger')
-                    span Catalogos
-                    b-icon(icon='menu-down')
-                  b-dropdown-item(value="types")
-                    nuxt-link.has-text-black(to='/admin/catalog/types')
-                    | Tipos De Repositorios
-                  b-dropdown-item(value="topics")
-                    nuxt-link.has-text-black(to='/admin/catalog/topics')
-                    | Temas
-                  //-b-dropdown
+              .navbar-item.has-dropdown.is-hoverable
+                  a.navbar-link
+                    nuxt-link.has-text-white(to='/admin/catalog') Catalogos
+                  .navbar-dropdown
+                    nuxt-link.navbar-item(to='/admin/catalog/authors') Autores
+                    nuxt-link.navbar-item(to='/admin/catalog/types') Tipos
+                    nuxt-link.navbar-item(to='/admin/catalog/topics') Tematicas
+                    nuxt-link.navbar-item(to='/admin/catalog/editorials') Editoriales
 
               .navbar-item
                 span.navbar-item(v-if="$store.state.isAuth")
