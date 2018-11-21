@@ -1,29 +1,46 @@
 import database from './../../../config/database'
 import Schema from './../../../utils/Schema'
 
-const RepositoySchema = {
-  table: 'BundleRepository',
+const CommentSchema = {
+  table: 'BlogComment',
   columns: {
     id: {
       type: Number,
       required: false,
       updatable: true
     },
+    idUser: {
+      type: Number,
+      required: false,
+      updatable: true
+    },
+    username: {
+      type: String,
+      required: false,
+      updatable: true,
+      length: 20
+    },
     idBundle: {
       type: Number,
       required: false,
       updatable: true
     },
-    idRepository: {
-      type: Number,
+    comment: {
+      type: String,
       required: false,
-      updatable: true
+      updatable: true,
+      length: 255
     },
     createdAt: {
       type: Date,
       required: true,
       updatable: true,
       default: 'CURRENT_TIMESTAMP'
+    },
+    updatedAt: {
+      type: Date,
+      required: true,
+      updatable: true
     }
   },
   options: {
@@ -31,6 +48,6 @@ const RepositoySchema = {
   }
 }
 
-const Repositoy = new Schema(database, RepositoySchema)
+const Comment = new Schema(database, CommentSchema)
 
-export default Repositoy
+export default Comment

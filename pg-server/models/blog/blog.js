@@ -1,8 +1,8 @@
 import database from './../../config/database'
 import Schema from './../../utils/Schema'
 
-const BundleSchema = {
-  table: 'Bundle',
+const BlogSchema = {
+  table: 'Blog',
   columns: {
     id: {
       type: Number,
@@ -14,7 +14,19 @@ const BundleSchema = {
       required: false,
       updatable: true
     },
+    username: {
+      type: String,
+      required: false,
+      updatable: true,
+      length: 20
+    },
     title: {
+      type: String,
+      required: false,
+      updatable: true,
+      length: 80
+    },
+    slug: {
       type: String,
       required: false,
       updatable: true,
@@ -26,27 +38,26 @@ const BundleSchema = {
       updatable: true,
       length: 200
     },
-    oficial: {
-      type: Boolean,
-      required: true,
-      updatable: true,
-      default: 'false'
-    },
     image: {
       type: String,
       required: false,
       updatable: true,
-      length: 120
+      length: 140
     },
-    username: {
+    content: {
+      type: String,
+      required: true,
+      updatable: true
+    },
+    tags: {
       type: String,
       required: false,
       updatable: true,
-      length: 20
+      length: 255
     },
     createdAt: {
       type: Date,
-      required: true,
+      required: false,
       updatable: true
     }
   },
@@ -55,6 +66,6 @@ const BundleSchema = {
   }
 }
 
-const Bundle = new Schema(database, BundleSchema)
+const Blog = new Schema(database, BlogSchema)
 
-export default Bundle
+export default Blog

@@ -1,5 +1,17 @@
-import { UserApi } from './user/index'
-import Catalog from './catalog'
-import Repository from './repository/repository.api'
+import { Router } from 'express'
+import UserAPI from './user'
+import RepoAPI from './repository'
+import Catalogs from './catalog'
+import CommunityAPI from './community'
 
-export { UserApi, Catalog, Repository }
+const router = Router()
+
+router.use('/user', UserAPI)
+router.use('/repo', RepoAPI)
+router.use('/community', CommunityAPI)
+
+for (const catalogAPI in Catalogs) {
+  router.use('/catalog/' + catalogAPI, Catalogs[catalogAPI])
+}
+
+export default router

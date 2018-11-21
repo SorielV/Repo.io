@@ -1,5 +1,5 @@
 <template lang="pug">
-  section()
+  section
     .type-head
       figure.image(style="max-height: inherit;")
         img(:src="catalog.image || '/public/empty.webp'" style="max-height: inherit;")
@@ -31,51 +31,42 @@
 
                 b-dropdown
                   button.button.is-primary(slot='trigger')
-                    | Tipos
-                    b-icon(icon='menu-down')
-                  section.columns.is-multiline(style="padding: 1rem; margin: auto;")
-                    .column.is-6(v-for="(catalog, key) in catalog.topics" :key="key" style="padding: 0")
-                      b-checkbox(:value='catalog.selected' @click='handleSelectType($event, catalog.value)' type="is-danger")
-                        | {{ catalog.value }}
-
-                b-dropdown
-                  button.button.is-primary(slot='trigger')
                     | Editoriales
                     b-icon(icon='menu-down')
                   section.columns.is-multiline(style="padding: 1rem; margin: auto;")
                     .column.is-6(v-for="(catalog, key) in catalog.editorials" :key="key" style="padding: 0")
                       b-checkbox(:value='catalog.selected' @click='handleSelectType($event, catalog.value)' type="is-danger")
                         | {{ catalog.value }}
-      hr
-      .container
-        .columns.is-centered(v-if="filtered.length === 0")
-          .column.is-12
-            section.hero.has-text-centered
-              .hero-body
-                .container
-                  h1.title
-                    | Error
-                  h2.subtitle
-                    | Repositorios no encontrados
-                  h2.subtitle(v-if="repositories.length !== 0")
-                    | Busqueda: {{ filter }}
-                  iframe.container(src="http://wayou.github.io/t-rex-runner/" style="height: 150px")
-                  //img(src="https://i.gifer.com/7WOr.gif")
-        .columns.is-centered.is-multiline(v-else)
-          .column.is-3(v-for="(repo, index) in filtered" :key="index")
-            CardRepository(:repository='repo')
+        hr
+        .container
+          .columns.is-centered(v-if="filtered.length === 0")
+            .column.is-12
+              section.hero.has-text-centered
+                .hero-body
+                  .container
+                    h1.title
+                      | Error
+                    h2.subtitle
+                      | Repositorios no encontrados
+                    h2.subtitle(v-if="repositories.length !== 0")
+                      | Busqueda: {{ filter }}
+                    iframe.container(src="http://wayou.github.io/t-rex-runner/" style="height: 150px")
+                    //img(src="https://i.gifer.com/7WOr.gif")
+          .columns.is-centered.is-multiline(v-else)
+            .column.is-3(v-for="(repo, index) in filtered" :key="index")
+              CardRepository(:repository='repo')
 
-      hr
-      b-pagination.is-centered(
-        v-if="!filter || filter.length === 0"
-        :total='pagination.total'
-        :current.sync='pagination.page'
-        :simple='false'
-        :rounded='false'
-        :per-page='pagination.offset'
-      )
-      hr
-      pre {{ pagination }}
+        hr
+        b-pagination.is-centered(
+          v-if="!filter || filter.length === 0"
+          :total='pagination.total'
+          :current.sync='pagination.page'
+          :simple='false'
+          :rounded='false'
+          :per-page='pagination.offset'
+        )
+        hr
+        pre {{ pagination }}
 </template>
 
 <script>

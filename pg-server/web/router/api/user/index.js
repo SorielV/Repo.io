@@ -1,3 +1,3 @@
-import UserApi from './user.api'
+import UserAPI from './user.api'
 
-export { UserApi }
+export default UserAPI

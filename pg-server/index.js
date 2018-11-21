@@ -10,7 +10,7 @@ import morgan from 'morgan'
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import { Nuxt, Builder } from 'nuxt'
-import { UserApi, Catalog, Repository } from './web/router/api'
+import APIs from './web/router/api'
 import LoginAPI from './web/router/login'
 
 const host = process.env.HOST || '127.0.0.1'
@@ -50,14 +50,8 @@ if (process.env.NUXT === 'true') {
     // parse application/json
     app.use(bodyParser.json())
 
-    app.use('/api/user', UserApi)
-
-    for (let catalog in Catalog) {
-      app.use(`/api/catalog/${catalog}`, Catalog[catalog])
-    }
-
+    app.use('/api', APIs)
     app.use('/login', LoginAPI)
-    app.use('/api/repo', Repository)
     app.use(nuxt.render)
 
     server.listen(port, () => {
@@ -79,13 +73,8 @@ if (process.env.NUXT === 'true') {
     // parse application/json
     app.use(bodyParser.json())
 
-    app.use('/api/user', UserApi)
-    for (let catalog in Catalog) {
-      app.use(`/api/catalog/${catalog}`, Catalog[catalog])
-    }
-    // app.use('/api/type', CatalogTypeApi)
+    app.use('/api', APIs)
     app.use('/login', LoginAPI)
-    app.use('/api/repo', Repository)
 
     server.listen(port, () => {
       consola.success('Server Running in Port ' + port)

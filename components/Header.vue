@@ -83,13 +83,15 @@
                 a.navbar-link
                   nuxt-link.has-text-white(to='/community') Comunidad
                 .navbar-dropdown
-                  nuxt-link.navbar-item(to='/community') Blog
+                  nuxt-link.navbar-item(to='/community/bundle') Bundles
+                    span.tag.is-danger.beta-feacture Beta
+                  nuxt-link.navbar-item(to='/community/blog') Blog
                     span.tag.is-danger.beta-feacture Beta
                   nuxt-link.navbar-item(to='/community') Cominidades
                     span.tag.is-danger.beta-feacture Beta
-                  nuxt-link.navbar-item(to='/community') Tareas
+                  nuxt-link.navbar-item(to='/community/homework') Tareas
                     span.tag.is-danger.beta-feacture Beta
-                  nuxt-link.navbar-item(to='/chat') Chat Room
+                  nuxt-link.navbar-item(to='/community/chat') Chat Room
                     span.tag.is-danger.beta-feacture Beta
                   hr.navbar-divider
                   a.navbar-item Pedir Nueva Feacture
