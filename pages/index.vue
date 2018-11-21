@@ -32,7 +32,7 @@ export default {
   },
   methods: {
     search() {
-      this.$router.push('/repo?title=' + this.filter)
+      this.$router.push('/repo?slug=' + this.filter)
     }
   }
 }

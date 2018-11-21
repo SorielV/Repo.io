@@ -26,6 +26,12 @@ const RepositoySchema = {
       updatable: true,
       length: 80
     },
+    slug: {
+      type: String,
+      required: false,
+      updatable: true,
+      length: 80
+    },
     description: {
       type: String,
       required: false,

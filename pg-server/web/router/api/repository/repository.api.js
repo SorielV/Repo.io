@@ -1,4 +1,6 @@
 import { Router } from 'express'
+import Path from 'path'
+import fileUpload from 'express-fileupload'
 import Repository from './/repository.controller'
 
 // Model Controllers
@@ -176,6 +178,11 @@ router.get(
 )
 
 router.use(isAuth)
+router.use(
+  fileUpload({
+    limits: { fileSize: 50 * 1024 * 1024 }
+  })
+)
 
 router.post(
   '/:idR/comment/',
@@ -324,6 +331,24 @@ router.delete(
   })
 )
 
+const saveFile = (file, name, path) => {
+  const extension = file.name.split('.').pop()
+  const fileName = (name || Date.now()) + '.' + extension
+  const fullFileName = Path.join(path, fileName)
+
+  console.log(fullFileName)
+
+  return new Promise((resolve, reject) => {
+    file.mv(fullFileName, err => {
+      if (err) {
+        console.log(err)
+        return resolve(null)
+      } else {
+        return resolve(fileName)
+      }
+    })
+  })
+}
 // Repository API
 
 router.post(
@@ -331,16 +356,31 @@ router.post(
   catchException(async (req, res, next) => {
     delete req.body.id
     const { username, id: idUser } = req.user
-
-    const repository = await new Repository({
+    let repository = new Repository({
       ...req.body,
       username,
       idUser
-    }).save()
+    })
+
+    if (req.files && req.files.image) {
+      const {
+        files: { image }
+      } = req
+
+      const client = '/public/repositories/images'
+
+      console.log(process.env.CLIENT_PATH, client)
+      console.log(Path.join(process.env.CLIENT_PATH, client))
+      const path = Path.join(process.env.CLIENT_PATH, client)
+      const fileName = await saveFile(image, null, path)
+      repository.setImage(fileName ? client + '/' + fileName : null)
+    }
+
+    repository = await repository.save()
 
     return res
       .status(201)
-      .json(repository)
+      .json({ data: repository })
       .end()
   })
 )

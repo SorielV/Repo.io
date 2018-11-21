@@ -53,25 +53,6 @@
               @page-change="onPageChange"
             )
 
-              //-
-                {
-                  "id": 1,
-                  "idUser": 1,
-                  "username": "admin",
-                  "title": "Example",
-                  "description": "Is only an example",
-                  "image": "http://www.nyan.cat/cats/original.gif",
-                  "tags": "example,developt",
-                  "visibility": 0,
-                  "createdAt": "2018-11-11T02:23:34.339Z",
-                  "updatedAt": null,
-                  "resource": [],
-                  "topic": [],
-                  "type": [],
-                  "editorial": [],
-                  "author": []
-                }
-
               template(slot-scope="props")
                 b-table-column(
                   field="id"
@@ -130,8 +111,12 @@
                   centered
                 )
                   .buttons.is-centered
-                    b-tooltip(:label="props.row.tags" position="is-bottom")
-                      span.tag.is-primary
+                    b-tooltip(
+                      :label="props.row.tags"
+                      position="is-bottom"
+                      type="is-info"
+                    )
+                      span.tag.is-info
                         | {{ props.row['tags'] ? props.row['tags'].split(',').length : 0}}
 
 
@@ -176,7 +161,11 @@
                   centered
                 ) 
                   .buttons.is-centered(@click="handleShowCreateAuthor")
-                    b-tooltip(:label="props.row.author.map(author => author.firstName + ' ' + author.lastName).join(' , ')" position="is-bottom")
+                    b-tooltip(
+                      :label="props.row.author.map(author => author.firstName + ' ' + author.lastName).join(' , ')"
+                      position="is-bottom"
+                      type="is-warning"
+                    )
                       span.tag.is-warning
                         | {{ props.row['author'].length }}
 
@@ -208,40 +197,9 @@
                       i.mdi.fa-file-download
                   p {{ props.row.description }}
 
-                // pre {{ props }} 
-                  {
-                    "id": 107,
-                    "title": "Nuevo Repo :v",
-                    "url": "http://jesus.biz",
-                    "topic": 1,
-                    "type": 3,
-                    "createdAt": null,
-                    "tags": "solution,program,programming,Executive",
-                    "username": "Soriel",
-                    "userId": 1,
-                    "visibility": 2,
-                    "file": "http://taryn.info",
-                    "image": "https://s3.amazonaws.com/uifaces/faces/twitter/yalozhkin/128.jpg",
-                    "description": "reboot Consultant transmit Vermont Cambridgeshire cross-platform Small Rubber Chair Tasty Avon New Leu Practical world-class Awesome Concrete Gloves Agent target synthesizing Customer-focused Berkshire online 1080p Legacy SMS",
-                    "author": [
-                      {
-                        "id": 2,
-                        "idAuthor": 4,
-                        "idRepository": 107,
-                        "firstName": "Larissa",
-                        "lastName": "Beier"
-                      },
-                      {
-                        "id": 4,
-                        "idAuthor": 6,
-                        "idRepository": 107,
-                        "firstName": "Dena",
-                        "lastName": "Okuneva"
-                      }
-                    ]
-                  }
               template(slot='bottom-left')
-                | {{ (search.page * search.perPage) > table.total ? table.total : (search.page * search.perPage)  }} de {{ table.total }}
+                | {{ (search.page * search.perPage) > table.total ? table.total : (search.page * search.perPage)  }} a {{ table.total }} de {{ pagination.total }} 
+
               template(slot="empty")
                 section.container
                   section.hero.has-text-centered
@@ -257,7 +215,6 @@
         // Crear
         b-tab-item(label="Crear Base (?)")
           form.block(v-on:submit.prevent="handleSubmitCreate")
-
             b-field(
               label="Titulo"
             )
@@ -305,9 +262,9 @@
                 :required="false"
               )
 
-            b-field(
+            //-b-field(
               label="Imagen"
-            )
+            //-)
               b-input(
                 type="text"
                 v-model="create.image"
@@ -315,6 +272,32 @@
                 maxlength="80"
                 :required="false"
               )
+
+            .field
+              label.label Imagen
+              .control.is-box(v-if="upload.isSelected")
+                figure.image.is-256x256
+                  img#createImage(src='"/public/empty.png"' )
+                .is-overlay
+                  .buttons
+                    button.button.is-danger(v-on:click.stop="handleRemoveInputFileupload")
+                      i.mdi.mdi-close
+              .control
+                b-upload(
+                  v-show="!upload.isSelected"
+                  v-model='upload.imageFile'
+                  type="is-black"
+                  single drag-drop
+                  style="width: 100%;"
+                  @input="handleCreateInputFile"
+                )
+                  section.section
+                    center
+                      .content.has-text-centered
+                        p
+                          b-icon(icon='upload', size='is-large')
+                        p Suelta La Imagen
+              
 
             .field
               label.label Visibilidad
@@ -347,338 +330,134 @@
 
         // Actualizar
         b-tab-item(:label='`Actualizar (id: ${update.data.id})`' :disabled="update.index === null")
-          form.block(v-on:submit.prevent="handleSubmitUpdate")
+          b-tabs.block(position='is-centered')
+            // Informacion Basica
+            b-tab-item(label='Informacion Basica')
+              form.block(v-on:submit.prevent="handleSubmitUpdate")
+                b-field(
+                  label="Titulo"
+                )
+                  b-input(
+                    type="text"
+                    v-model="update.data.title"
+                    value=""
+                    maxlength="45"
+                    :required="true"
+                  )
 
-            b-field(
-              label="Titulo"
-            )
-              b-input(
-                type="text"
-                v-model="update.data.title"
-                value=""
-                maxlength="45"
-                :required="true"
-              )
+                b-field(
+                  label="Descripcion"
+                )
+                  b-input(
+                    type="textarea"
+                    v-model="update.data.description"
+                    value=""
+                    maxlength="400"
+                    :required="true"
+                  )
 
-            b-field(
-              label="Descripcion"
-            )
-              b-input(
-                type="textarea"
-                v-model="update.data.description"
-                value=""
-                maxlength="400"
-                :required="true"
-              )
+                b-field(
+                  label="Tags"
+                )
+                  b-input(
+                    type="text"
+                    v-model="update.data.tags"
+                    value=""
+                    maxlength="200"
+                    :required="false"
+                  )
 
-            b-field(
-              label="Tags"
-            )
-              b-input(
-                type="text"
-                v-model="update.data.tags"
-                value=""
-                maxlength="200"
-                :required="false"
-              )
+                b-field(
+                  label="Imagen"
+                )
+                  b-input(
+                    type="text"
+                    v-model="update.data.image"
+                    value=""
+                    maxlength="80"
+                    :required="false"
+                  )
 
-            b-field(
-              label="Imagen"
-            )
-              b-input(
-                type="text"
-                v-model="update.data.image"
-                value=""
-                maxlength="80"
-                :required="false"
-              )
+                .field
+                  label.label Visibilidad
+                  .control
+                    .select
+                      select(v-model="update.data.visibility")
+                        option(v-for="(type, key) in catalog.visibility" v-text="type.text" :value="type.value")
 
-            .field
-              label.label Visibilidad
-              .control
-                .select
-                  select(v-model="update.data.visibility")
-                    option(v-for="(type, key) in catalog.visibility" v-text="type.text" :value="type.value")
+                .buttons.is-centered
+                  button.button.is-danger(@click="handleCancelEvent") Cancelar
+                  button.button.is-dark(type="submit") Actualizar Repositorio
 
-            .buttons.is-centered
-              button.button.is-danger(@click="handleCancelEvent") Cancelar
-              button.button.is-dark(type="submit") Actualizar Repositorio
-
-          b-field(label='Tipos')
-            b-taginput(
-              v-model='update.data.type'
-              :data='catalog.filteredTypes'
-              autocomplete
-              :allow-new='false'
-              field='value'
-              icon='label'
-              @typing='getFilteredTypes'
-              @remove="removeType"
-              @add="addType"
-            )
-
-          b-field(label='Temas')
-            b-taginput(
-              v-model='update.data.topic'
-              :data='catalog.filteredTopics'
-              autocomplete
-              :allow-new='false'
-              field='value'
-              icon='label'
-              @typing='getFilteredTopics'
-              @remove="removeTopic"
-              @add="addTopic"
-            )
-
-          .control
-            label.label Autores
-            b-autocomplete(
-              v-model="catalog.authorFilter"
-              :data="filterAuthors"
-              placeholder="Agregar Autores"
-              @select='author => addAuthor(author)'
-            )
-              template(slot-scope='props')
-                .media
-                  .media-left
-                    img(width='32' :src="props.option.image || 'https://bulma.io/images/placeholders/128x128.png'")
-                  .media-content
-                    | {{ props.option.firstName + ' ' + props.option.lastName }}
-                    br
-                    small
-                      | rated
-
-            section.has-my-1
-              .columns.is-multiline
-                .column.is-4(v-for='(author, index) in update.data.author' :key='index')
-                  .box
-                    article.media
-                      .media-left
-                        figure.image.is-64x64
-                          img(:src="author.image || 'https://bulma.io/images/placeholders/128x128.png'" alt='Image')
-                      .media-content
-                        .content
-                          p
-                            strong {{ author.firstName + ' ' + author.lastName }}
-                        nav.level.is-mobile
-                          .level-left
-                            a.button.is-danger.is-small.level-item(aria-label='reply')
-                              span.icon.is-small
-                                i.mdi.mdi-window-close(aria-hidden='true')
-
-
-            //-b-field(label='Autores')
-              b-taginput(
-                v-model='update.data.author'
-                :data='catalog.filteredAuthors'
-                autocomplete
-                :allow-new='false'
-                field='lastName'
-                icon='label'
-                @typing='filterAuthors'
-              )
-
-              //-
-                @remove="removeType"
-                @add="addType"
-
-            //-.field.is-grouped
+            // Autores, Tipos, Temas
+            b-tab-item(label='Autores, Tipos, Temas')
               .field
-                label.label Tipo
+                label.label Autores
                 .control
-                  .select
-                    select(v-model="update.data.type")
-                      option(v-for="(type, key) in catalog.types" v-text="type.text" :value="type.value")
-              .field
-                label.label Tema
-                .control
-                  .select
-                    select(v-model="update.data.topic")
-                      option(v-for="(type, key) in catalog.topics" v-text="type.text" :value="type.value")
+                  b-autocomplete(
+                    v-model="catalog.authorFilter"
+                    :data="filterAuthors"
+                    placeholder="Agregar Autores"
+                    @select='author => addAuthor(author)'
+                  )
+                    template(slot-scope='props')
+                      .media
+                        .media-left
+                          img(width='32' :src="props.option.image || 'https://bulma.io/images/placeholders/128x128.png'")
+                        .media-content
+                          | {{ props.option.firstName + ' ' + props.option.lastName }}
+                          br
+                          small
+                            | rated
 
-            //-section
-              .block.has-text-centered
-                div
-                  h1.subtitle Autores
-                    button.button.is-info.is-small(@click="handleShowCreateAuthor" style="margin-left: 0.5%;")
-                      i.mdi.mdi-plus
-              b-table(
-                icon-pack="fa"
-                :data="update.data.author"
-                :loading="false"
-                mobile-cards
-                :total="update.data.author ? update.data.author.length : 0"
-              )
-                template(slot-scope="props")
-                  b-table-column(
-                    field="id"
-                    label="Id"
-                    :visible="true"
-                    :sortable="true"
-                  ) {{ props.row['id'] }}
+                  section.has-my-1
+                    .columns.is-multiline
+                      .column.is-4(v-for='(author, index) in update.data.author' :key='index')
+                        .box
+                          article.media
+                            .media-left
+                              figure.image.is-64x64
+                                img(:src="author.image || 'https://bulma.io/images/placeholders/128x128.png'" alt='Image')
+                            .media-content
+                              .content
+                                p
+                                  strong {{ author.firstName + ' ' + author.lastName }}
+                              nav.level.is-mobile
+                                .level-left
+                                  a.button.is-danger.is-small.level-item(aria-label='reply')
+                                    span.icon.is-small
+                                      i.mdi.mdi-window-close(aria-hidden='true')
 
-                  b-table-column(
-                    field="idAuthor"
-                    label="Id Author"
-                    :visible="true"
-                    :sortable="true"
-                  ) {{ props.row['idAuthor'] }}
+              b-field(label='Tipos')
+                b-taginput(
+                  v-model='update.data.type'
+                  :data='catalog.filteredTypes'
+                  autocomplete
+                  :allow-new='false'
+                  field='value'
+                  icon='label'
+                  @typing='getFilteredTypes'
+                  @remove="removeType"
+                  @add="addType"
+                )
 
-                  b-table-column(
-                    field="idRepository"
-                    label="Id Repositorio"
-                    :visible="true"
-                    :sortable="true"
-                  ) {{ props.row['idRepository'] }}
+              b-field(label='Temas')
+                b-taginput(
+                  v-model='update.data.topic'
+                  :data='catalog.filteredTopics'
+                  autocomplete
+                  :allow-new='false'
+                  field='value'
+                  icon='label'
+                  @typing='getFilteredTopics'
+                  @remove="removeTopic"
+                  @add="addTopic"
+                )
+            // Recursos
+            b-tab-item(label='Recursos')
 
-                  b-table-column(
-                    field="firstName"
-                    label="Nombre"
-                    :visible="true"
-                    :sortable="true"
-                  ) {{ props.row['firstName'] }}
-
-                  b-table-column(
-                    field="lastName"
-                    label="Apellido"
-                    :visible="true"
-                    :sortable="true"
-                  ) {{ props.row['lastName'] }}
-
-                  b-table-column(
-                    field="id"
-                    label="Acciones"
-                  ) 
-                    .buttons.block
-                      button.button.is-danger.is-small(@click="handleRemoveDialog(props.row)")
-                        i.mdi.mdi-window-close
-                      button.button.is-success.is-small(v-if="props.row.id === null" @click="handleSaveAuthorDialog(props.row)")
-                        i.mdi.mdi-check
-
-    // Agregar Resources [Repo]
-    b-modal(:active.sync="update.showModalAuthor" :width="640" scroll="keep")
-      section.card(style="padding: 10%; width: auto; height: 400px;")
-        b-field(label="Busca Autores")
-          b-autocomplete(
-            v-model="catalog.authorFilter"
-            :data="catalog.authors"
-            field="lastName"
-            :open-on-focus="true"
-            :clear-on-select="true"
-            placeholder="Buscar Autor"
-            @select="filterAuthors"
-          )
-            template(slot-scope="props")
-              p {{ props.option.lastName + ' ' + props.option.firstName }}
-
-        //-b-table(
-          :data="update.data.author"
-          :loading="false"
-          mobile-cards
-          :total="update.data.author ? update.data.author.length : 0"
-        //-)
-          template(slot-scope="props")
-            b-table-column(
-              field="id"
-              label="Id"
-              :visible="true"
-              :sortable="true"
-            ) {{ props.row['id'] }}
-
-            b-table-column(
-              field="idAuthor"
-              label="Id Author"
-              :visible="true"
-              :sortable="true"
-            ) {{ props.row['idAuthor'] }}
-
-            b-table-column(
-              field="idRepository"
-              label="Id Repositorio"
-              :visible="false"
-              :sortable="true"
-            ) {{ props.row['idRepository'] }}
-
-            b-table-column(
-              field="firstName"
-              label="Nombre"
-              :visible="true"
-              :sortable="true"
-            ) {{ props.row['firstName'] }}
-
-            b-table-column(
-              field="lastName"
-              label="Apellido"
-              :visible="true"
-              :sortable="true"
-            ) {{ props.row['lastName'] }}
-
-            b-table-column(
-              field="id" 
-              label="Acciones"
-            )
-              .buttons
-                button.button.is-danger.is-small(@click="handleRemoveDialog(props.row)")
-                  i.mdi.mdi-window-close
-                button.button.is-success.is-small(v-if="props.row.id === null" @click="handleSaveAuthorDialog(props.row)")
-                  i.mdi.mdi-check
-
-    // Agregar Author [Repo]
-    b-modal(:active.sync="update.showModalResource" :width="640" scroll="keep")
-      section.card(style="padding: 6%; width: auto; height: 400px;")
-        b-table(
-          :data="update.data.resource"
-          :loading="false"
-          mobile-cards
-          :total="update.data.resource ? update.data.resource.length : 0"
-        )
-          template(slot-scope="props")
-            b-table-column(
-              field="id"
-              label="Id"
-              :visible="true"
-              :sortable="true"
-            ) {{ props.row['id'] }}
-
-            b-table-column(
-              field="file"
-              label="Enlace"
-              :visible="true"
-              :sortable="true"
-            ) {{ props.row['file'] }}
-
-            b-table-column(
-              field="idRepository"
-              label="Id Repositorio"
-              :visible="false"
-              :sortable="true"
-            ) {{ props.row['idRepository'] }}
-
-            b-table-column(
-              field="type"
-              label="Type"
-              :visible="true"
-              :sortable="true"
-            ) {{ props.row['type'] }}
-
-            b-table-column(
-              field="uploaded"
-              label="Local"
-              :visible="true"
-              :sortable="true"
-            ) {{ props.row['uploaded'] ? false : true }}
-
-            b-table-column(
-              field="id" 
-              label="Acciones"
-            )
-              .buttons
-                button.button.is-danger.is-small(@click="handleRemoveDialog(props.row)")
-                  i.mdi.mdi-window-close
-                button.button.is-success.is-small(v-if="props.row.id === null" @click="handleSaveAuthorDialog(props.row)")
-                  i.mdi.mdi-check
         //- Upload File
-        b-upload(v-model='update.dropFiles' type="is-black" multiple drag-drop style="width: 100%;")
+        //-b-upload(v-model='update.dropFiles' type="is-black" multiple drag-drop style="width: 100%;")
           section.section
             center
               .content.has-text-centered
@@ -787,10 +566,12 @@ export default {
   async asyncData({ app }) {
     try {
       const {
-        data: { data }
+        data: { data = [], ...pagination }
       } = await app.$axios.get('/api/repo?full=true')
+
       return {
         data: data,
+        pagination,
         table: {
           loading: false,
           columns,
@@ -817,6 +598,7 @@ export default {
   },
   data() {
     return {
+      pagination: {},
       author: null,
       data: [],
       selectedTab: 0,
@@ -852,6 +634,9 @@ export default {
         checkedRows: [],
         data: [],
         total: 0
+      },
+      upload: {
+        isSelected: false
       },
       catalog: {
         authorFilter: '',
@@ -953,12 +738,12 @@ export default {
   },
   computed: {
     filterAuthors() {
-      console.log(this.catalog.authors)
+      // console.log(this.catalog.authors)
       if (this.catalog.authors.length === 0) {
         this.getAuthors()
       }
 
-      console.log(this.catalog.authors, this.catalog.authorFilter)
+      // console.log(this.catalog.authors, this.catalog.authorFilter)
       const filter = this.catalog.authorFilter || ''
 
       if (filter.length > 1) {
@@ -1002,16 +787,40 @@ export default {
       }
     },
     'update.dropFiles'(newFile, oldFile) {
-      console.log(oldFile, newFile)
       const newFiles =
         oldFile.length !== 0
           ? newFile.filter(file => oldFile.indexOf(file) === -1)
           : newFile
-
-      console.log(newFiles, newFile, oldFile.length)
     }
   },
   methods: {
+    async fileRender() {
+      const [file] = this.upload.imageFile
+      if (file) {
+        const reader = new FileReader()
+        return await new Promise((resolve, reject) => {
+          reader.onerror = e => {
+            reader.abort()
+            return reject(null)
+          }
+          reader.onload = e => {
+            document.getElementById('createImage').src = e.target.result
+            return resolve()
+          }
+          reader.readAsDataURL(file)
+        })
+      }
+      return Promise.resolve(null)
+    },
+    handleRemoveInputFileupload() {
+      this.upload.imageFile = []
+      this.upload.isSelected = false
+    },
+    async handleCreateInputFile(files) {
+      console.log(this.upload.imageFile)
+      this.upload.isSelected = true
+      await this.fileRender()
+    },
     /*
     filterAuthors(param) {
       this.catalog.filterAuthors = Array.from(this.catalog.authors).filter(
@@ -1059,7 +868,11 @@ export default {
             console.log(err.message)
           }
         },
-        onCancel: () => {}
+        onCancel: () => {
+          const index = this.update.data.type.indexOf(type)
+          console.log(index)
+          this.update.data.type.splice(index)
+        }
       })
     },
     addTopic(topic) {
@@ -1096,7 +909,11 @@ export default {
             console.log(err.message)
           }
         },
-        onCancel: () => {}
+        onCancel: () => {
+          const index = this.update.data.topic.indexOf(topic)
+          console.log(index)
+          this.update.data.topic.splice(index)
+        }
       })
     },
     removeType(type) {
@@ -1236,18 +1053,41 @@ export default {
       ev.preventDefault()
       this.selectedTab = 0
     },
+    // Crear Repositorio
+    createFormData(obj) {
+      const data = new FormData()
+
+      for (const prop in obj) {
+        data.append(prop, obj[prop])
+      }
+
+      console.log(data)
+      return data
+    },
     async handleSubmitCreate() {
-      const author = this.create
+      const hasImage = this.upload.isSelected
+      const repoData = hasImage ? this.createFormData(this.create) : this.create
+
+      if (hasImage) {
+        const [image] = this.upload.imageFile
+        console.log(repoData)
+        repoData.append('image', image)
+      }
+
       try {
+        console.log(data)
+
         const {
-          data: { data }
-        } = await this.$axios.post('/api/repo', this.create)
+          data: { data = {} }
+        } = await this.$axios.post('/api/repo', repoData)
+
+        data.author = []
+
         this.create = {}
-        data.author = [] // Estado Inicial
         this.data.push(data)
-        // this.table.data.push(data)
+
         this.showUpdate(null, data)
-        this.selectedTab = 2
+
         this.$toast.open({
           message: 'Repositorio Creado C:',
           type: 'is-success'
@@ -1429,7 +1269,6 @@ export default {
         )
         data.lastName = lastName
         data.firstName = firstName
-        console.log(data)
         repository.author.push(data)
         if (this.update.data.id === data.idRepository) {
           this.update.data.author.splice(indexAuthor, 1, data)
@@ -1450,5 +1289,12 @@ export default {
 }
 div.upload-draggable.is-black {
   width: 100%;
+}
+.is-256x256 {
+  height: 256px;
+  width: 256px;
+}
+div.autocomplete.control div.dropdown-menu {
+  position: initial;
 }
 </style>

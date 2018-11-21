@@ -1,6 +1,16 @@
 <template lang="pug">
-  section
-    p Admin Index
+  section.container
+    p Administrador Index [En Progreso]
+    ul
+      li
+        nuxt-link(to='/admin') Dashboard
+      li
+        nuxt-link(to='/admin/users') Usuarios
+      li
+        nuxt-link(to='/admin/repos') Repositorios
+      li.has-dropdown.is-hoverable
+      li
+        nuxt-link(to='/admin/catalog') Catalogos
 </template>
 
 <script>

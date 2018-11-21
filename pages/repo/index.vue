@@ -3,9 +3,9 @@
     section.block
       .field.is-grouped.is-fullwidth(style="justify-content: center;")
         p.control.is-expanded
-          input.input(type='text', placeholder='Lorem ...' v-model="filter")
+          input.input(type='text', placeholder='Lorem ...'  @keyup.enter="handleFilter" v-model="filter")
         p.control
-          a.button.is-info
+          button.button.is-info(@click="handleFilter")
             | Buscar
     section.has-py-1rem(style="border: solid 1px red;")
       .container
@@ -84,14 +84,14 @@ export default {
     const params = new URLSearchParams(window.location.search)
 
     try {
-      if (query['title']) {
+      if (query['slug']) {
         const {
           data: { data: repositories = [], ...pagination }
-        } = await app.$axios.get(`/api/repo/?title=${query['title']}`)
+        } = await app.$axios.get(`/api/repo/?slug=${query['slug']}`)
         return {
           pagination,
           query,
-          filter: query['title'] || '',
+          filter: query['slug'] || '',
           repositories,
           filtered: repositories,
           filter: ''
@@ -215,8 +215,23 @@ export default {
     }
   },
   methods: {
-    async changePage(page) {
-      this
+    // Reciclable
+    async handleFilter() {
+      const baseSlug = (this.query.slug || '').trim().toLowerCase()
+      const slug = this.filter.trim().toLowerCase()
+      console.log(slug)
+
+      // Cambio Visual [Compartir Link de Contenido]
+      if (slug.length > 0 && slug !== baseSlug) {
+        const {
+          data: { data: repositories = [], ...pagination }
+        } = await this.$axios.get('/api/repo?slug=' + slug)
+        this.repositories = repositories
+        this.pagination = pagination
+        this.filtered = repositories
+        window.history.pushState(undefined, 'Repo', '/repo?slug=' + slug)
+        window.scrollTo(0, 0)
+      }
     },
     getType(type) {
       const { text = 'Otro' } =

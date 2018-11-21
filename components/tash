@@ -1,0 +1,210 @@
+// Agregar Author [Repo]
+    b-modal(:active.sync="update.showModalResource" :width="640" scroll="keep")
+      section.card(style="padding: 6%; width: auto; height: 400px;")
+        b-table(
+          :data="update.data.resource"
+          :loading="false"
+          mobile-cards
+          :total="update.data.resource ? update.data.resource.length : 0"
+        )
+          template(slot-scope="props")
+            b-table-column(
+              field="id"
+              label="Id"
+              :visible="true"
+              :sortable="true"
+            ) {{ props.row['id'] }}
+
+            b-table-column(
+              field="file"
+              label="Enlace"
+              :visible="true"
+              :sortable="true"
+            ) {{ props.row['file'] }}
+
+            b-table-column(
+              field="idRepository"
+              label="Id Repositorio"
+              :visible="false"
+              :sortable="true"
+            ) {{ props.row['idRepository'] }}
+
+            b-table-column(
+              field="type"
+              label="Type"
+              :visible="true"
+              :sortable="true"
+            ) {{ props.row['type'] }}
+
+            b-table-column(
+              field="uploaded"
+              label="Local"
+              :visible="true"
+              :sortable="true"
+            ) {{ props.row['uploaded'] ? false : true }}
+
+            b-table-column(
+              field="id" 
+              label="Acciones"
+            )
+              .buttons
+                button.button.is-danger.is-small(@click="handleRemoveDialog(props.row)")
+                  i.mdi.mdi-window-close
+                button.button.is-success.is-small(v-if="props.row.id === null" @click="handleSaveAuthorDialog(props.row)")
+                  i.mdi.mdi-check
+
+    // Agregar Resources [Repo]
+    b-modal(:active.sync="update.showModalAuthor" :width="640" scroll="keep")
+      section.card(style="padding: 10%; width: auto; height: 400px;")
+        b-field(label="Busca Autores")
+          b-autocomplete(
+            v-model="catalog.authorFilter"
+            :data="catalog.authors"
+            field="lastName"
+            :open-on-focus="true"
+            :clear-on-select="true"
+            placeholder="Buscar Autor"
+            @select="filterAuthors"
+          )
+            template(slot-scope="props")
+              p {{ props.option.lastName + ' ' + props.option.firstName }}
+
+        //-b-table(
+          :data="update.data.author"
+          :loading="false"
+          mobile-cards
+          :total="update.data.author ? update.data.author.length : 0"
+        //-)
+          template(slot-scope="props")
+            b-table-column(
+              field="id"
+              label="Id"
+              :visible="true"
+              :sortable="true"
+            ) {{ props.row['id'] }}
+
+            b-table-column(
+              field="idAuthor"
+              label="Id Author"
+              :visible="true"
+              :sortable="true"
+            ) {{ props.row['idAuthor'] }}
+
+            b-table-column(
+              field="idRepository"
+              label="Id Repositorio"
+              :visible="false"
+              :sortable="true"
+            ) {{ props.row['idRepository'] }}
+
+            b-table-column(
+              field="firstName"
+              label="Nombre"
+              :visible="true"
+              :sortable="true"
+            ) {{ props.row['firstName'] }}
+
+            b-table-column(
+              field="lastName"
+              label="Apellido"
+              :visible="true"
+              :sortable="true"
+            ) {{ props.row['lastName'] }}
+
+            b-table-column(
+              field="id" 
+              label="Acciones"
+            )
+              .buttons
+                button.button.is-danger.is-small(@click="handleRemoveDialog(props.row)")
+                  i.mdi.mdi-window-close
+                button.button.is-success.is-small(v-if="props.row.id === null" @click="handleSaveAuthorDialog(props.row)")
+                  i.mdi.mdi-check
+
+                   //-b-field(label='Autores')
+              b-taginput(
+                v-model='update.data.author'
+                :data='catalog.filteredAuthors'
+                autocomplete
+                :allow-new='false'
+                field='lastName'
+                icon='label'
+                @typing='filterAuthors'
+              )
+
+              //-
+                @remove="removeType"
+                @add="addType"
+
+            //-.field.is-grouped
+              .field
+                label.label Tipo
+                .control
+                  .select
+                    select(v-model="update.data.type")
+                      option(v-for="(type, key) in catalog.types" v-text="type.text" :value="type.value")
+              .field
+                label.label Tema
+                .control
+                  .select
+                    select(v-model="update.data.topic")
+                      option(v-for="(type, key) in catalog.topics" v-text="type.text" :value="type.value")
+
+            //-section
+              .block.has-text-centered
+                div
+                  h1.subtitle Autores
+                    button.button.is-info.is-small(@click="handleShowCreateAuthor" style="margin-left: 0.5%;")
+                      i.mdi.mdi-plus
+              b-table(
+                icon-pack="fa"
+                :data="update.data.author"
+                :loading="false"
+                mobile-cards
+                :total="update.data.author ? update.data.author.length : 0"
+              )
+                template(slot-scope="props")
+                  b-table-column(
+                    field="id"
+                    label="Id"
+                    :visible="true"
+                    :sortable="true"
+                  ) {{ props.row['id'] }}
+
+                  b-table-column(
+                    field="idAuthor"
+                    label="Id Author"
+                    :visible="true"
+                    :sortable="true"
+                  ) {{ props.row['idAuthor'] }}
+
+                  b-table-column(
+                    field="idRepository"
+                    label="Id Repositorio"
+                    :visible="true"
+                    :sortable="true"
+                  ) {{ props.row['idRepository'] }}
+
+                  b-table-column(
+                    field="firstName"
+                    label="Nombre"
+                    :visible="true"
+                    :sortable="true"
+                  ) {{ props.row['firstName'] }}
+
+                  b-table-column(
+                    field="lastName"
+                    label="Apellido"
+                    :visible="true"
+                    :sortable="true"
+                  ) {{ props.row['lastName'] }}
+
+                  b-table-column(
+                    field="id"
+                    label="Acciones"
+                  ) 
+                    .buttons.block
+                      button.button.is-danger.is-small(@click="handleRemoveDialog(props.row)")
+                        i.mdi.mdi-window-close
+                      button.button.is-success.is-small(v-if="props.row.id === null" @click="handleSaveAuthorDialog(props.row)")
+                        i.mdi.mdi-check

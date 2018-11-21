@@ -363,7 +363,7 @@ Repository.getRepositories = async function(_options = {}) {
     select * from "Repositories" ${
       whereConditions ? 'where' : ''
     } ${whereConditions}
-    order by id ${
+    order by id desc ${
       options.all ? '' : ` limit ${limit} offset ${offset * (page - 1)} `
     }
   `
@@ -396,8 +396,7 @@ Repository.getRepositories = async function(_options = {}) {
       left join "RepositoryEditorials" as REE on Repo.id = REE."idRepository"
         left join "CatalogEditorials" as Editorial on REE."idCatalog" = Editorial.id
       left join "RepositoryAuthors" as REA on Repo.id = REA."idRepository"
-        left join "CatalogAuthors" as Author on REA."idAuthor" = Author.id
-    order by Repo.id;
+        left join "CatalogAuthors" as Author on REA."idAuthor" = Author.id;
   `
 
   console.log('total')
