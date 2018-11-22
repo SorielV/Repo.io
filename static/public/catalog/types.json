@@ -1,157 +1,162 @@
 [
   {
-    "idCatalog": 1,
-    "value": "Example",
-    "image": null
-  },
-  {
-    "idCatalog": 3,
-    "value": "Cursos",
-    "image": null
-  },
-  {
-    "idCatalog": 4,
-    "value": "Videos",
-    "image": null
-  },
-  {
-    "idCatalog": 5,
-    "value": "Portales Blogs",
-    "image": null
-  },
-  {
-    "idCatalog": 6,
-    "value": "Tools Software",
-    "image": null
-  },
-  {
-    "idCatalog": 7,
-    "value": "PPTs SlideShare",
-    "image": null
-  },
-  {
     "idCatalog": 8,
     "value": "Infografias y Memes",
-    "image": null
-  },
-  {
-    "idCatalog": 9,
-    "value": "People To Follow",
-    "image": null
-  },
-  {
-    "idCatalog": 10,
-    "value": "Comunidades",
-    "image": null
-  },
-  {
-    "idCatalog": 11,
-    "value": "APIs",
-    "image": null
-  },
-  {
-    "idCatalog": 12,
-    "value": "DataSets",
-    "image": null
-  },
-  {
-    "idCatalog": 13,
-    "value": "Papers",
-    "image": null
-  },
-  {
-    "idCatalog": 14,
-    "value": "Books",
-    "image": null
-  },
-  {
-    "idCatalog": 2,
-    "value": "grass",
-    "image": null
-  },
-  {
-    "idCatalog": 15,
-    "value": "water",
-    "image": null
-  },
-  {
-    "idCatalog": 16,
-    "value": "fire",
-    "image": null
-  },
-  {
-    "idCatalog": 17,
-    "value": "normal",
-    "image": null
-  },
-  {
-    "idCatalog": 18,
-    "value": "dark",
-    "image": null
-  },
-  {
-    "idCatalog": 19,
-    "value": "poison",
-    "image": null
-  },
-  {
-    "idCatalog": 20,
-    "value": "electric",
-    "image": null
-  },
-  {
-    "idCatalog": 21,
-    "value": "ice",
-    "image": null
-  },
-  {
-    "idCatalog": 22,
-    "value": "ground",
-    "image": null
-  },
-  {
-    "idCatalog": 23,
-    "value": "fairy",
-    "image": null
-  },
-  {
-    "idCatalog": 24,
-    "value": "fighting",
-    "image": null
-  },
-  {
-    "idCatalog": 25,
-    "value": "psychic",
-    "image": null
-  },
-  {
-    "idCatalog": 26,
-    "value": "rock",
-    "image": null
-  },
-  {
-    "idCatalog": 27,
-    "value": "ghost",
-    "image": null
-  },
-  {
-    "idCatalog": 28,
-    "value": "dragon",
-    "image": null
-  },
-  {
-    "idCatalog": 29,
-    "value": "steel",
-    "image": null
-  },
-  {
-    "idCatalog": 30,
-    "value": "flying",
     "image": null
   },
   {
     "idCatalog": 32,
     "value": "bug",
     "image": null
+  },
+  {
+    "idCatalog": 2,
+    "value": "grass",
+    "image": "/public/catalog/types/2.jpeg"
+  },
+  {
+    "idCatalog": 36,
+    "value": "Exampleee",
+    "image": null
+  },
+  {
+    "idCatalog": 29,
+    "value": "steel",
+    "image": "/public/repositories/type/1542924202119.png"
+  },
+  {
+    "idCatalog": 30,
+    "value": "flying",
+    "image": "/public/repositories/type/1542924241606.jpg"
+  },
+  {
+    "idCatalog": 28,
+    "value": "dragon",
+    "image": "/public/repositories/type/1542924154620.png"
+  },
+  {
+    "idCatalog": 24,
+    "value": "fighting",
+    "image": "/public/repositories/type/1542923886326.png"
+  },
+  {
+    "idCatalog": 20,
+    "value": "electric",
+    "image": "/public/repositories/type/1542924297001.png"
+  },
+  {
+    "idCatalog": 21,
+    "value": "ice",
+    "image": "/public/repositories/type/1542923645574.jpg"
+  },
+  {
+    "idCatalog": 18,
+    "value": "dark",
+    "image": "/public/repositories/type/1542923426076.jpg"
+  },
+  {
+    "idCatalog": 1,
+    "value": "Example",
+    "image": "/public/repositories/type/1542922171911.png"
+  },
+  {
+    "idCatalog": 6,
+    "value": "Tools Software",
+    "image": "/public/repositories/type/1542922546005.png"
+  },
+  {
+    "idCatalog": 5,
+    "value": "Portales Blogs",
+    "image": "/public/repositories/type/1542922562831.png"
+  },
+  {
+    "idCatalog": 7,
+    "value": "PPTs SlideShare",
+    "image": "/public/repositories/type/1542922613227.png"
+  },
+  {
+    "idCatalog": 9,
+    "value": "People To Follow",
+    "image": "/public/repositories/type/1542922677135.png"
+  },
+  {
+    "idCatalog": 3,
+    "value": "Cursos",
+    "image": "/public/repositories/type/1542922848657.jpg"
+  },
+  {
+    "idCatalog": 4,
+    "value": "Videos",
+    "image": "/public/repositories/type/1542922881736.jpg"
+  },
+  {
+    "idCatalog": 10,
+    "value": "Comunidades",
+    "image": "/public/repositories/type/1542922974203.jpg"
+  },
+  {
+    "idCatalog": 12,
+    "value": "DataSets",
+    "image": "/public/repositories/type/1542923118304.png"
+  },
+  {
+    "idCatalog": 13,
+    "value": "Papers",
+    "image": "undefined"
+  },
+  {
+    "idCatalog": 14,
+    "value": "Books",
+    "image": "/public/repositories/type/1542923192722.jpg"
+  },
+  {
+    "idCatalog": 11,
+    "value": "APIs",
+    "image": "/public/repositories/type/1542923214261.png"
+  },
+  {
+    "idCatalog": 15,
+    "value": "water",
+    "image": "/public/repositories/type/1542923254311.jpg"
+  },
+  {
+    "idCatalog": 17,
+    "value": "normal",
+    "image": "/public/repositories/type/1542923348496.png"
+  },
+  {
+    "idCatalog": 16,
+    "value": "fire",
+    "image": "/public/repositories/type/1542923389154.jpg"
+  },
+  {
+    "idCatalog": 19,
+    "value": "poison",
+    "image": "/public/repositories/type/1542923453725.jpg"
+  },
+  {
+    "idCatalog": 22,
+    "value": "ground",
+    "image": "/public/repositories/type/1542923731687.jpg"
+  },
+  {
+    "idCatalog": 23,
+    "value": "fairy",
+    "image": "/public/repositories/type/1542923816746.png"
+  },
+  {
+    "idCatalog": 25,
+    "value": "psychic",
+    "image": "/public/repositories/type/1542924008060.jpg"
+  },
+  {
+    "idCatalog": 26,
+    "value": "rock",
+    "image": "/public/repositories/type/1542924094888.png"
+  },
+  {
+    "idCatalog": 27,
+    "value": "ghost",
+    "image": "/public/repositories/type/1542924130006.jpg"
   }
 ]

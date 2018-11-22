@@ -1,3 +1,3 @@
-import Author from './author.api'
+import Author from './author.controller'
 
 export default Author

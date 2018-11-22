@@ -8,10 +8,10 @@ import Type from './type'
 
 const Model = {
   resource: Resource,
-  author: Author,
   comment: Comment,
-  editorial: Editorial,
   score: Score,
+  author: Author,
+  editorial: Editorial,
   topic: Topic,
   type: Type
 }

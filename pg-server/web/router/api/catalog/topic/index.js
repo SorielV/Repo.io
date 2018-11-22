@@ -1,3 +1,3 @@
-import Topic from './topic.api'
+import Topic from './topic.controller'
 
 export default Topic

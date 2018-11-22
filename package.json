@@ -5,9 +5,9 @@
   "author": "SorielV",
   "private": true,
   "scripts": {
-    "dev-server": "cross-env NUXT=false NODE_ENV=development DB=development DB=local nodemon --exec babel-node --presets @babel/preset-env pg-server/index.js --watch ./pg-server",
+    "dev-server": "cross-env NUXT=false PORT=8080 CLIENT_PATH=/home/sv/Desktop/Nuxt/Repo/static NODE_ENV=development DB=development DB=local nodemon --exec babel-node --presets @babel/preset-env pg-server/index.js --watch ./pg-server",
     "dev-client": "cross-env PORT=8080 NODE_ENV=development DB=development HOST=127.0.0.1 API_URL=http://localhost:3000 nodemon --exec babel-node --presets @babel/preset-env client.js --watch pages",
-    "dev": "cross-env NUXT=true PORT=80 NODE_ENV=development DB=development HOST=http://127.0.0.1 API_URL=http://177.246.200.252 NODE_ENV=development nodemon --exec babel-node --presets @babel/preset-env pg-server/index.js --watch ./pg-server",
+    "dev": "cross-env NUXT=true CLIENT_PATH=/home/sv/Desktop/Nuxt/Repo/static PORT=80 NODE_ENV=development DB=development HOST=http://127.0.0.1 API_URL=http://177.246.200.252 NODE_ENV=development nodemon --exec babel-node --presets @babel/preset-env pg-server/index.js --watch ./pg-server",
     "dev-local": "cross-env NUXT=true CLIENT_PATH=/home/sv/Desktop/Nuxt/Repo/static PORT=8080 NODE_ENV=local DB=local HOST=http://localhost API_URL=http://localhost:8080 NODE_ENV=development nodemon --exec babel-node --presets @babel/preset-env pg-server/index.js --watch ./pg-server",
     "dev-ip": "cross-env NUXT=true PORT=8080 CLIENT_PATH=/home/sv/Desktop/Nuxt/Repo/static NODE_ENV=local DB=local HOST=192.168.0.24 API_URL=http://177.246.200.252:8080 NODE_ENV=development nodemon --exec babel-node --presets @babel/preset-env pg-server/index.js --watch ./pg-server",
     "dev-local-http2": "cross-env NUXT=true PORT=8080 NODE_ENV=local DB=local HOST=http://127.0.0.1 API_URL=http://177.246.200.252 NODE_ENV=development nodemon --exec babel-node --presets @babel/preset-env pg-server/index-http2.js --watch ./pg-server",

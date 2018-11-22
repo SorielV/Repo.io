@@ -1,5 +1,9 @@
 import { Router } from 'express'
+import fileUpload from 'express-fileupload'
 import { catchException, getAuth, isAdminAuth } from './../../../../middleware'
+import { saveFile } from './../../../../../utils'
+
+const hasImage = ['editorial', 'topic', 'type']
 
 export default function(model) {
   const router = Router()
@@ -35,35 +39,102 @@ export default function(model) {
   )
 
   router.use(isAdminAuth)
+  router.use(
+    fileUpload({
+      limits: { fileSize: 50 * 1024 * 1024 }
+    })
+  )
 
   router.post(
-    '/',
-    catchException(async (req, res) => {
-      const newItem = await new Item(req.body).save()
+    '/:model/',
+    catchException(async (req, res, next) => {
+      const { username, id: idUser } = req.user
+      const {
+        params: { model }
+      } = req
+
+      let obj = new Item({
+        ...req.body,
+        idRepository,
+        username,
+        idUser
+      })
+
+      if (hasImage.indexOf(model) !== -1 && req.files && req.files.image) {
+        const {
+          files: { image }
+        } = req
+
+        const client = '/public/repositories/' + model
+        console.log(process.env.CLIENT_PATH, client)
+        console.log(Path.join(process.env.CLIENT_PATH, client))
+
+        const path = Path.join(process.env.CLIENT_PATH, client)
+        const fileName = await saveFile(image, null, path)
+        obj.setImage(fileName ? client + '/' + fileName : null)
+      }
+
+      console.log(obj)
+
+      const results = await obj.save()
+
       return res
         .status(201)
-        .json({ data: newItem })
+        .json({ data: results })
         .end()
     })
   )
 
   router.put(
-    '/:id',
-    catchException(async (req, res) => {
+    '/:model/:id',
+    catchException(async (req, res, next) => {
+      const { username, id: idUser } = req.user
       const {
-        params: { id }
+        params: { idR: idRepository, id, model }
       } = req
 
-      console.log(id)
-
-      const item = await new Item.findOneAndUpadate(
+      const obj = await Item.findOne(
         {
-          id
+          id,
+          idRepository
         },
-        req.body
+        false
       )
 
-      return res.json({ data: item }).end()
+      obj.merge(
+        {
+          ...req.body,
+          id,
+          idRepository,
+          username,
+          idUser
+        },
+        false
+      )
+
+      console.log(obj)
+      console.log(hasImage.indexOf(model))
+
+      if (hasImage.indexOf(model) !== -1 && (req.files && req.files.image)) {
+        const {
+          files: { image }
+        } = req
+
+        const client = '/public/repositories/' + model
+        console.log(process.env.CLIENT_PATH, client)
+        console.log(Path.join(process.env.CLIENT_PATH, client))
+
+        const path = Path.join(process.env.CLIENT_PATH, client)
+        const fileName = await saveFile(image, null, path)
+        obj.setImage(fileName ? client + '/' + fileName : null)
+      }
+
+      const results = await obj.update()
+
+      return res
+        .status(201)
+        .json({ data: results })
+        .end()
     })
   )
 

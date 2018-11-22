@@ -101,13 +101,10 @@ module.exports = function Schema(
     }
 
     static validation(data) {
-      const Schema =
-        this instanceof Model ? this.constructor._Schema : this._Schema
-      const Options =
-        this instanceof Model ? this.constructor._Options : this._Options
+      const Schema = Model._Schema
+      const Options = Model._Options
       const primaryKeys = Options || 'id'
-      const formatValue =
-        this instanceof Model ? this.constructor.formatValue : this.formatValue
+      const formatValue = Model.formatValue
 
       const model = {}
 
@@ -186,7 +183,93 @@ module.exports = function Schema(
       return row
     }
 
+    async merge(_values, strict = true) {
+      const Schema = Model._Schema
+      const Options = Model._Options
+      const primaryKeys = Array.isArray(Options.id) ? Options.id : [Options.id]
+      const formatValue = Model.formatValue
+      const current = this.data
+
+      let changes = 0
+
+      // FIX: Loop Innecesario
+
+      for (const key in Schema) {
+        if (_values.hasOwnProperty(key)) {
+          if (_values[key] !== current[key]) {
+            if (primaryKeys.indexOf(key) === -1) {
+              this.updateData[key] = formatValue(_values[key], Schema[key].type)
+              changes++
+            }
+          }
+        }
+      }
+
+      console.log('isStrict: ' + strict)
+
+      if (changes - primaryKeys.length <= 0) {
+        if (strict) {
+          throw new Error('Datos no validos informacion duplicada')
+        } else {
+          console.log('Merge sin cambios')
+        }
+      }
+
+      console.log(this.updateData)
+    }
+
     async update() {
+      const Schema = Model._Schema
+      const Options = Model._Options
+      const formatValueToSql = Model.formatValueToSql
+      const primaryKeys = Options.id
+      const model = this.updateData
+
+      console.log(model)
+
+      const columnNames = Object.keys(model).map(column => {
+        // Produce "column_name" = 'value'
+        return `"${column}" = ${
+          model[column] !== null
+            ? formatValueToSql(model[column], Schema[column].type)
+            : 'null'
+        }
+        `
+      })
+
+      const statement = `update "${Model._Table}" set ${columnNames.join(
+        ' , '
+      )}`
+
+      const whereStatement = []
+
+      if (Array.isArray(primaryKeys)) {
+        for (const primaryKey of primaryKeys) {
+          whereStatement.push(`
+            "${primaryKey}" = ${formatValueToSql(
+            this.data[primaryKey],
+            Schema[primaryKey].type
+          )}
+          `)
+        }
+      } else {
+        whereStatement.push(`
+            "${primaryKeys}" = ${formatValueToSql(
+          this.data[primaryKeys],
+          Schema[primaryKeys].type
+        )}
+        `)
+      }
+
+      const {
+        rows: [result]
+      } = await Model.query(
+        statement + ' where ' + whereStatement.join(' and ') + ' RETURNING *;'
+      )
+      return result
+    }
+
+    /*async update() {
       const Schema = this.constructor.Schema
       const Options = this.constructor.Options
       const formatValueToSql = this.constructor.formatValueToSql
@@ -220,7 +303,7 @@ module.exports = function Schema(
       return (
         statement + ' where ' + whereStatement.join(' and ') + ' RETURNING *;'
       )
-    }
+    }*/
 
     /**
      *
@@ -383,10 +466,10 @@ module.exports = function Schema(
       return rows
     }
 
-    static async findOne(options) {
+    static async findOne(options, raw = true) {
       options.limit = 1
-      const [result = null] = await Model.find(options)
-      return result
+      const [result = null] = await Model.find({ where: options })
+      return raw ? result : new Model(result, false)
     }
 
     static query(query) {
@@ -416,7 +499,9 @@ module.exports = function Schema(
         : hasExclude
           ? excludeColumnStament(exclude)
           : '*'
-
+      console.table([1, 2])
+      console.log(whereStament(where))
+      console.table([1, 2])
       const whereConditions =
         where && Object.keys(where).length ? 'where ' + whereStament(where) : ''
 
@@ -611,6 +696,8 @@ module.exports = function Schema(
       }
 
       this.data = {}
+      this.updateData = {}
+
       for (let column in Schema) {
         const type = Schema[column].type
         const validate = Schema[column].validate || null

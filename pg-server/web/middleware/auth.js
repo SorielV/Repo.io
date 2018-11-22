@@ -65,7 +65,6 @@ const isAdminAuth = async (req, res, next) => {
     const user = await getAuthUser(req)
     if (user.type === ADMIN) {
       req.user = user
-      console.log('isAdmin')
       return next()
     } else {
       return res

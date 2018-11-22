@@ -11,9 +11,8 @@ const AuthorSchema = {
     },
     image: {
       type: String,
-      required: true,
-      updatable: true,
-      length: 100
+      required: false,
+      updatable: true
     },
     description: {
       type: String,
@@ -35,9 +34,8 @@ const AuthorSchema = {
     },
     createdAt: {
       type: Date,
-      required: true,
-      updatable: true,
-      default: 'CURRENT_TIMESTAMP'
+      required: false,
+      updatable: true
     }
   },
   options: {

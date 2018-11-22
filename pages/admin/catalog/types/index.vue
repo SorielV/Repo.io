@@ -77,6 +77,15 @@
               ) {{ props.row['description'] }}
 
               b-table-column(
+                field="image"
+                label="Imagen"
+                :visible="true"
+                sortable
+              ) 
+                .field
+                  b-checkbox(disabled v-model="props.row['image'] ? true : false")
+
+              b-table-column(
                 field="id" 
                 label="Acciones"
               ) 
@@ -124,9 +133,38 @@
                 maxlength="60"
                 :required="true"
               )
+
+            .field
+              label.label Imagen
+              .control.is-box
+                // Nueva Imagen
+                div(v-if="upload.isSelected")
+                  figure.image.is-256x256
+                    img(:src='upload.src')
+                  .is-overlay
+                    .buttons
+                      button.button.is-danger(v-on:click.stop="cancelImage")
+                        i.mdi.mdi-close
+                div(v-else)
+                  b-upload(
+                    v-model='upload.imageFile'
+                    type="is-black"
+                    single drag-drop
+                    style="width: 100%;"
+                    @input="handleRenderImage"
+                  )
+                    section.section
+                      center
+                        .content.has-text-centered
+                          p
+                            b-icon(icon='upload', size='is-large')
+                          p Suelta La Imagen
+
             .buttons.is-centered
               button.button.is-danger(@click="cancelCreate") Cancelar
               button.button.is-dark(type="submit") Crear Tema
+
+        // Actulizar
         b-tab-item(:label='`Actualizar (id: ${update.data.id})`' :disabled="update.index === null")
           form.block(v-on:submit.prevent="onUpdate")
             b-field(
@@ -147,6 +185,41 @@
                 maxlength="60"
                 :required="true"
               )
+
+            .field
+              label.label Imagen
+              .control.is-box(v-show="!upload.isAdding && update.data.image")
+                // Original
+                figure.image.is-256x256
+                  img(:src='update.data.image')
+                .is-overlay
+                  .buttons
+                    button.button.is-danger(v-on:click.stop="handleRemoveImage")
+                      i.mdi.mdi-close
+              .control.is-box(v-if="upload.isAdding || (!upload.isAdding && !update.data.image)")
+                // Nueva Imagen
+                div(v-if="upload.isSelected")
+                  figure.image.is-256x256
+                    img(:src='upload.src')
+                  .is-overlay
+                    .buttons
+                      button.button.is-danger(v-on:click.stop="cancelImage")
+                        i.mdi.mdi-close
+                div(v-else)
+                  b-upload(
+                    v-model='upload.imageFile'
+                    type="is-black"
+                    single drag-drop
+                    style="width: 100%;"
+                    @input="handleRenderImage"
+                  )
+                    section.section
+                      center
+                        .content.has-text-centered
+                          p
+                            b-icon(icon='upload', size='is-large')
+                          p Suelta La Imagen
+
             pre {{ update }}
             .buttons.is-centered
               button.button.is-danger(@click="cancelUpdate") Cancelar
@@ -229,6 +302,12 @@ export default {
           id: 0
         }
       },
+      upload: {
+        isAdding: false,
+        hasImage: false,
+        isSelected: false,
+        imageFile: []
+      },
       create: {},
       search: {
         local: true,
@@ -276,22 +355,70 @@ export default {
     }
   },
   methods: {
+    cancelImage(ev) {
+      ev.preventDefault()
+      this.upload.src = null
+      this.upload.isSelected = false
+      this.upload.isAdding = false
+    },
+    async renderImage() {
+      const [file] = this.upload.imageFile
+
+      if (file) {
+        const reader = new FileReader()
+        return await new Promise((resolve, reject) => {
+          reader.onerror = e => {
+            reader.abort()
+            return reject(null)
+          }
+
+          reader.onload = e => {
+            this.$set(this.upload, 'src', e.target.result)
+            return resolve()
+          }
+          reader.readAsDataURL(file)
+        })
+      }
+      return Promise.resolve(null)
+    },
+    handleRemoveImage(ev) {
+      ev.preventDefault()
+      this.upload.isAdding = true
+      this.upload.imageFile = []
+    },
+    async handleRenderImage(files) {
+      console.log(this.upload.imageFile)
+      this.upload.isSelected = true
+      await this.renderImage()
+    },
     onPageChange(page) {
       this.search.page = page
     },
     async onCreate() {
+      const hasImage = this.upload.isSelected
+      const item = hasImage ? this.createFormData(this.create) : this.create
+
+      if (hasImage) {
+        const [image] = this.upload.imageFile
+        console.log(item)
+        item.delete('image')
+        item.append('image', image)
+      }
+
       try {
         const {
           data: { data: type }
-        } = await this.$axios.post('/api/catalog/type', this.create)
+        } = await this.$axios.post('/api/catalog/type', item)
+
         this.create = {}
         this.data.push(type)
-        const index = Array.apply(null, this.table.data).findIndex(
-          ({ id }) => id === type.id
-        )
+
+        const index = this.table.data.indexOf(type)
+
         if (index === -1) {
           this.table.data.push(type)
         }
+
         this.selectedTab = 0
         this.$toast.open({
           message: 'Tema Creado',
@@ -313,20 +440,44 @@ export default {
       ev.preventDefault()
       this.selectedTab = 0
     },
+    // Crear Repositorio
+    createFormData(obj) {
+      const data = new FormData()
+
+      for (const prop in obj) {
+        data.append(prop, obj[prop])
+      }
+
+      console.log(data)
+      return data
+    },
     async onUpdate(ev) {
-      const type = this.update.data
+      const hasImage = this.upload.isSelected
+      const { id: typeId } = this.update.data
+
+      const type = hasImage
+        ? this.createFormData(this.update.data)
+        : this.update.data
+
+      if (hasImage) {
+        const [image] = this.upload.imageFile
+        console.log(type)
+        type.delete('image')
+        type.append('image', image)
+      }
+
       try {
         const { data } = await this.$axios.put(
-          '/api/catalog/type/' + type.id,
-          this.update.data
+          '/api/catalog/type/' + typeId,
+          type
         )
+
         this.update.index = null
         this.update.data = {}
         this.data.splice(this.update.index, 1, data.data)
 
-        const index = Array.apply(null, this.table.data).findIndex(
-          ({ id }) => id === type.id
-        )
+        const index = this.update.index
+
         if (index !== -1) {
           this.table.data.splice(index, 1, data.data)
         }
@@ -389,11 +540,23 @@ export default {
         this.table.defaultOpenedDetails.splice(index, 1)
       }
     },
-    showUpdate(ev, row) {
+    resetFileUpload() {
+      this.update.isSelected = false
+      this.upload.isAdding = false
+      this.upload.isSelected = false
+      this.upload.imageFile = []
+    },
+    setCurrentUpdateItem(row) {
       const index = this.data.indexOf(row)
       const data = JSON.parse(JSON.stringify(row))
       this.update.index = index
       this.update.data = data
+      return data
+    },
+    showUpdate(ev, row) {
+      this.resetFileUpload()
+      const data = this.setCurrentUpdateItem(row)
+      this.update.hasImage = Boolean(data.image)
       this.selectedTab = 2
     }
   }
@@ -406,5 +569,9 @@ export default {
 }
 [v-cloak]::before {
   content: 'loading…';
+}
+.is-256x256 {
+  height: 256px;
+  width: 256px;
 }
 </style>

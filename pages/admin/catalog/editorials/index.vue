@@ -1,13 +1,5 @@
 <template lang="pug">
   section(style="padding: 1% 2% 2% 2%;")
-    section.hero.is-danger
-      .hero-body
-        .container
-          h1.title
-            | Sin implementacion
-          h2.subtitle
-            | Copia de Catalogo Autores
-    hr
     b-loading(:is-full-page="true" :active.sync="table.loading" :can-cancel="true")
     section.card
       b-tabs.block(
@@ -70,20 +62,27 @@
               ) {{ props.row['id'] }}
 
               b-table-column(
-                field="firstName"
+                field="name"
                 label="Nombre"
                 :visible="true"
                 sortable
-              ) {{ props.row['firstName'] }}
-                  
+              ) {{ props.row['name'] }}
 
               b-table-column(
-                field="lastName"
-                label="Apellido"
+                field="description"
+                label="Descripcion"
                 :visible="true"
                 sortable
-              ) {{ props.row['lastName'] }}
-                  
+              ) {{ props.row['description'] }}
+
+              b-table-column(
+                field="image"
+                label="Imagen"
+                :visible="true"
+                sortable
+              ) 
+                .field
+                  b-checkbox(disabled v-model="props.row['image'] ? true : false")
 
               b-table-column(
                 field="createdAt"
@@ -92,11 +91,10 @@
                 sortable
               ) {{ props.row['createdAt'] }}
 
-
               b-table-column(
                 field="id" 
                 label="Acciones"
-              ) 
+              )
                 .buttons.block
                   button.button.is-info.is-small(@click="showDetail($event, props.row)")
                     i.mdi.mdi-eye 
@@ -121,49 +119,117 @@
                     h2.subtitle(v-if="data.length !== 0")
                       | Busqueda: {{ search.param }}
                     img(src="https://i.gifer.com/7WOr.gif")
+
+        // Crear
         b-tab-item(label="Crear")
           form.block(v-on:submit.prevent="onCreate")
             b-field(
               label="Nombre"
             )
               b-input(type="Nombre"
-                v-model="create.firstName"
+                v-model="create.name"
                 value=""
                 maxlength="60"
                 :required="true"
               )
+
             b-field(
-              label="Apellido"
+              label="Descripcion"
             )
-              b-input(type="Apellido"
-                v-model="create.lastName"
+              b-input(type="text"
+                v-model="create.description"
                 value=""
                 maxlength="60"
                 :required="true"
               )
+
+            .field
+              label.label Imagen
+              .control.is-box
+                // Nueva Imagen
+                div(v-if="upload.isSelected")
+                  figure.image.is-256x256
+                    img(:src='upload.src')
+                  .is-overlay
+                    .buttons
+                      button.button.is-danger(v-on:click.stop="cancelImage")
+                        i.mdi.mdi-close
+                div(v-else)
+                  b-upload(
+                    v-model='upload.imageFile'
+                    type="is-black"
+                    single drag-drop
+                    style="width: 100%;"
+                    @input="handleRenderImage"
+                  )
+                    section.section
+                      center
+                        .content.has-text-centered
+                          p
+                            b-icon(icon='upload', size='is-large')
+                          p Suelta La Imagen
+
             .buttons.is-centered
               button.button.is-danger(@click="cancelCreate") Cancelar
               button.button.is-dark(type="submit") Crear Autor
+
+        // Actualizar
         b-tab-item(:label='`Actualizar (id: ${update.data.id})`' :disabled="update.index === null")
           form.block(v-on:submit.prevent="onUpdate")
             b-field(
               label="Nombre"
             )
               b-input(type="Nombre"
-                v-model="update.data.firstName"
+                v-model="update.data.name"
                 value=""
                 maxlength="60"
                 :required="true"
               )
+
             b-field(
-              label="Apellido"
+              label="Descripcion"
             )
-              b-input(type="Apellido"
-                v-model="update.data.lastName"
+              b-input(type="text"
+                v-model="create.description"
                 value=""
                 maxlength="60"
                 :required="true"
               )
+
+            .field
+              label.label Imagen
+              .control.is-box(v-show="!upload.isAdding && update.data.image")
+                // Original
+                figure.image.is-256x256
+                  img(:src='update.data.image')
+                .is-overlay
+                  .buttons
+                    button.button.is-danger(v-on:click.stop="handleRemoveImage")
+                      i.mdi.mdi-close
+              .control.is-box(v-if="upload.isAdding || (!upload.isAdding && !update.data.image)")
+                // Nueva Imagen
+                div(v-if="upload.isSelected")
+                  figure.image.is-256x256
+                    img(:src='upload.src')
+                  .is-overlay
+                    .buttons
+                      button.button.is-danger(v-on:click.stop="cancelImage")
+                        i.mdi.mdi-close
+                div(v-else)
+                  b-upload(
+                    v-model='upload.imageFile'
+                    type="is-black"
+                    single drag-drop
+                    style="width: 100%;"
+                    @input="handleRenderImage"
+                  )
+                    section.section
+                      center
+                        .content.has-text-centered
+                          p
+                            b-icon(icon='upload', size='is-large')
+                          p Suelta La Imagen
+
             pre {{ update }}
             .buttons.is-centered
               button.button.is-danger(@click="cancelUpdate") Cancelar
@@ -182,17 +248,9 @@ const columns = [
     type: 'number'
   },
   {
-    field: 'firstName',
+    field: 'name',
     label: 'Nombre',
-    meta: 'Nombre de Usuario',
-    sortable: true,
-    visible: true,
-    type: 'string'
-  },
-  {
-    field: 'lastName',
-    label: 'Apellido',
-    meta: 'Apellido Usuario',
+    meta: 'Nombre de Empresa',
     sortable: true,
     visible: true,
     type: 'string'
@@ -204,14 +262,6 @@ const columns = [
     sortable: true,
     visible: true,
     type: 'date'
-  },
-  {
-    field: 'gender',
-    label: 'Genero',
-    meta: 'Genero',
-    sortable: true,
-    visible: true,
-    type: 'string'
   }
 ]
 
@@ -229,7 +279,7 @@ export default {
     try {
       const {
         data: { data }
-      } = await app.$axios.get('/api/catalog/author')
+      } = await app.$axios.get('/api/catalog/editorial')
       return {
         data: data,
         table: {
@@ -274,6 +324,12 @@ export default {
         perPage: 15,
         page: 1
       },
+      upload: {
+        isAdding: false,
+        hasImage: false,
+        isSelected: false,
+        imageFile: []
+      },
       table: {
         loading: true,
         columns,
@@ -312,26 +368,81 @@ export default {
     }
   },
   methods: {
+    cancelImage(ev) {
+      ev.preventDefault()
+      this.upload.src = null
+      this.upload.isSelected = false
+      this.upload.isAdding = false
+    },
+    async renderImage() {
+      const [file] = this.upload.imageFile
+
+      if (file) {
+        const reader = new FileReader()
+        return await new Promise((resolve, reject) => {
+          reader.onerror = e => {
+            reader.abort()
+            return reject(null)
+          }
+
+          reader.onload = e => {
+            this.$set(this.upload, 'src', e.target.result)
+            return resolve()
+          }
+          reader.readAsDataURL(file)
+        })
+      }
+      return Promise.resolve(null)
+    },
+    handleRemoveImage(ev) {
+      ev.preventDefault()
+      this.upload.isAdding = true
+      this.upload.imageFile = []
+    },
+    async handleRenderImage(files) {
+      console.log(this.upload.imageFile)
+      this.upload.isSelected = true
+      await this.renderImage()
+    },
     onPageChange(page) {
       this.search.page = page
     },
-    async onCreate() {
-      try {
-        const { data } = await this.$axios.post(
-          '/api/catalog/author',
-          this.create
-        )
+    createFormData(obj) {
+      const data = new FormData()
 
-        const author = data.data
+      for (const prop in obj) {
+        data.append(prop, obj[prop])
+      }
+
+      console.log(data)
+      return data
+    },
+    async onCreate() {
+      const hasImage = this.upload.isSelected
+      const item = hasImage ? this.createFormData(this.create) : this.create
+
+      if (hasImage) {
+        const [image] = this.upload.imageFile
+        console.log(item)
+        item.delete('image')
+        item.append('image', image)
+      }
+
+      try {
+        const {
+          data: { data: author }
+        } = await this.$axios.post('/api/catalog/editorial', item)
+
         this.create = {}
         this.data.push(author)
-        const index = Array.apply(null, this.table.data).findIndex(
-          ({ id }) => id === author.id
-        )
+
+        const index = this.table.data.indexOf(author)
         if (index === -1) {
           this.table.data.push(author)
         }
+
         this.selectedTab = 0
+
         this.$toast.open({
           message: 'Autor Creado',
           type: 'is-success'
@@ -353,23 +464,37 @@ export default {
       this.selectedTab = 0
     },
     async onUpdate(ev) {
-      const author = this.update.data
+      const hasImage = this.upload.isSelected
+      const { id: itemId } = this.update.data
+
+      const item = hasImage
+        ? this.createFormData(this.update.data)
+        : this.update.data
+
+      if (hasImage) {
+        const [image] = this.upload.imageFile
+        console.log(item)
+        item.delete('image')
+        item.append('image', image)
+      }
+
       try {
-        const { data } = await this.$axios.put(
-          '/api/catalog/author/' + author.id,
-          this.update.data
-        )
+        const {
+          data: { data: data }
+        } = await this.$axios.put('/api/catalog/editorial/' + itemId, item)
+
         this.update.index = null
         this.update.data = {}
-        this.data.splice(this.update.index, 1, data.data)
 
-        const index = Array.apply(null, this.table.data).findIndex(
-          ({ id }) => id === author.id
-        )
+        this.data.splice(this.update.index, 1, data)
+
+        const index = this.table.data.indexOf(data)
         if (index !== -1) {
-          this.table.data.splice(index, 1, data.data)
+          this.table.data.splice(index, 1, data)
         }
+
         this.selectedTab = 0
+
         this.$toast.open({
           message: 'Autor Actualizado',
           type: 'is-success'
@@ -385,7 +510,7 @@ export default {
     async removeAuthor(row) {
       try {
         const { data } = await this.$axios.delete(
-          '/api/catalog/author/' + row.id
+          '/api/catalog/editorial/' + row.id
         )
         this.data.splice(this.data.indexOf(row), 1) // General
         const dataIndex = this.table.data.indexOf(row) // Subbusqueda
@@ -447,5 +572,9 @@ export default {
 }
 [v-cloak]::before {
   content: 'loading…';
+}
+.is-256x256 {
+  height: 256px;
+  width: 256px;
 }
 </style>

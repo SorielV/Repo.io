@@ -1,3 +1,3 @@
-import Type from './type.api'
+import Type from './type.controller'
 
 export default Type

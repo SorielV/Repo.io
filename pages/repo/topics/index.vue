@@ -6,7 +6,7 @@
       .container
         .columns.is-multiline.is-centered
           .column.is-4(v-for="(catalog, index) in catalog" :key='index')
-            .card
+            .card.is-catalog
               header.card-header
                 p.card-header-title
                   | {{ catalog.value }}
@@ -43,3 +43,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.card.is-catalog {
+  height: 450;
+}
+</style>

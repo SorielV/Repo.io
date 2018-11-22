@@ -18,12 +18,12 @@
                 nuxt-link.has-text-white(to='/admin') Dashboard
               .navbar-item.has-dropdown.is-hoverable.is-mega
                 .navbar-link
-                  nuxt-link.has-text-white(to='/repo') Repositorios Digitales
+                  nuxt-link.has-text-white(to='/repo') Repositorios
                 #nav-repo.navbar-dropdown(data-style='width: 18rem;')
                   .container.is-fluid
                     .columns
                       .column
-                        nuxt-link.title.is-6.is-mega-menu-title(to='/repo/topics') Tematicas
+                        nuxt-link.title.is-6.is-mega-menu-title(to='/repo/topics') Por Temas
                         a.navbar-item(href='#')
                           .navbar-content
                             p New feature: list of tags
@@ -46,7 +46,7 @@
                         a.navbar-item(href='http://bulma.io/documentation/columns/basics/')
                           | Columns
                       .column
-                        nuxt-link.title.is-6.is-mega-menu-title(to='/repo/types') Tipos
+                        nuxt-link.title.is-6.is-mega-menu-title(to='/repo/types') Por Tipos
                         a.navbar-item(href='#')
                           .navbar-content
                             p New feature: list of tags
@@ -95,7 +95,12 @@
                     span.tag.is-danger.beta-feacture Beta
                   hr.navbar-divider
                   a.navbar-item Pedir Nueva Feacture
-  
+              .navbar-item
+                input.input.is-rounded(
+                  placeholder='Busca repositorios'
+                  @keyup.enter="search"
+                  v-model="filter"
+                )
               .navbar-item
                 span.navbar-item(v-if="$store.state.isAuth")
                   b-dropdown(v-model='navigation', position='is-bottom-left')
@@ -123,7 +128,17 @@
 export default {
   data() {
     return {
+      filter: '',
       navigation: false
+    }
+  },
+  methods: {
+    search() {
+      if (this.filter.trim()) {
+        this.$router.push('/repo?slug=' + this.filter.toLowerCase())
+      } else {
+        this.$router.push('/repo')
+      }
     }
   }
 }
