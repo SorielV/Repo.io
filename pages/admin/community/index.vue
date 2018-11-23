@@ -1,43 +1,43 @@
 <template lang="pug">
   section.container(style="padding:2%;")
-    h1.title Administrar Catalogos
+    h1.title Administrar Comunidad
     hr
     .columns.is-multiline
       .column.is-4
         section.hero
           .hero-body
-            nuxt-link(to='/admin/catalog/authors')
+            nuxt-link(to='/admin/community/blog')
               h1.title
-                | Autores
+                | Blog
               h2.subtitle
-                | Administra Catalogo de Autores
+                | Administra Blogs de La Comunidad
 
       .column.is-4
         section.hero
           .hero-body
-            nuxt-link(to='/admin/catalog/types')
+            nuxt-link(to='/admin/community/bundle`')
               h1.title
-                | Tipos
+                | Bundle
               h2.subtitle
-                | Administra Catalogo de Tipos
+                | Administra Bundle de La Comunidad
 
       .column.is-4
         section.hero
           .hero-body
-            nuxt-link(to='/admin/catalog/topics')
+            nuxt-link(to='/admin/community/communities')
               h1.title
-                | Tematicas
+                | Comunidades
               h2.subtitle
-                | Administra Catalogo de Temas
+                | Administra las Comunidades
 
       .column.is-4
         section.hero
           .hero-body
-            nuxt-link(to='/admin/catalog/editorials')
+            nuxt-link(to='/admin/community/`')
               h1.title
-                | Editoriales
+                | Tareas
               h2.subtitle
-                | Administra Catalogo de Editoriales
+                | Administra las Tareas de Comunidad
 
 </template>
 

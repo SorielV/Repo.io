@@ -21,50 +21,63 @@
                   nuxt-link.has-text-white(to='/repo') Repositorios
                 #nav-repo.navbar-dropdown(data-style='width: 18rem;')
                   .container.is-fluid
+                    .columns.is-centered
+                      .column.has-text-centered
+                        nuxt-link.title.is-6.is-mega-menu-title(to='/repo/topics') Tematicas
+                      .column.has-text-centered
+                        nuxt-link.title.is-6.is-mega-menu-title(to='/repo/types') Tipos
+
                     .columns
                       .column
-                        nuxt-link.title.is-6.is-mega-menu-title(to='/repo/topics') Por Temas
-                        a.navbar-item(href='#')
+                        nuxt-link.navbar-item(to='/repo/topics/cultura')
                           .navbar-content
-                            p New feature: list of tags
-                        a.navbar-item(href='#')
+                            p Cultura
+                        nuxt-link.navbar-item(to='/repo/topics/videojuegos')
                           .navbar-content
-                            p New feature: list of tags
-                        a.navbar-item(href='#')
+                            p Videojuegos
+                        nuxt-link.navbar-item(to='/repo/topics/sotfware')
                           .navbar-content
-                            p New feature: list of tags
+                            p Sotfware
+
                       .column
-                        a.navbar-item(href='#')
+                        nuxt-link.navbar-item(to='/repo/topics/javascript')
                           .navbar-content
-                            p
-                              small.has-text-info 03 Aug 2017
-                            p New feature: list of tags
-                        a.navbar-item(href='/documentation/overview/start/')
-                          | Overview
-                        a.navbar-item(href='http://bulma.io/documentation/modifiers/syntax/')
-                          | Modifiers
-                        a.navbar-item(href='http://bulma.io/documentation/columns/basics/')
-                          | Columns
+                            p Javascript
+                        nuxt-link.navbar-item(to='/repo/topics/machine')
+                          .navbar-content
+                            p Machine
+                        nuxt-link.navbar-item(to='/repo/topics/programing')
+                          .navbar-content
+                            p Programing
+                        nuxt-link.navbar-item(to='/repo/topics/programing')
+                          .navbar-content
+                            p.tag.is-danger Todas
+
                       .column
-                        nuxt-link.title.is-6.is-mega-menu-title(to='/repo/types') Por Tipos
-                        a.navbar-item(href='#')
+                        nuxt-link.navbar-item(to='/repo/types/cursos')
                           .navbar-content
-                            p New feature: list of tags
-                        a.navbar-item(href='#')
+                            p Cursos
+                        nuxt-link.navbar-item(to='/repo/types/videos')
                           .navbar-content
-                            p New feature: list of tags
-                        a.navbar-item(href='#')
+                            p Videos
+                        nuxt-link.navbar-item(to='/repo/types/comunidades')
                           .navbar-content
-                            p New feature: list of tags
+                            p Comunidades
+
                       .column
-                        a.navbar-item(href='/documentation/overview/start/')
-                          | Overview
-                        a.navbar-item(href='http://bulma.io/documentation/modifiers/syntax/')
-                          | Modifiers
-                        a.navbar-item(href='http://bulma.io/documentation/columns/basics/')
-                          | Columns
-                        a.navbar-item(href='http://bulma.io/documentation/layout/container/')
-                          | Layout
+                        nuxt-link.navbar-item(to='/repo/types/datasets')
+                          .navbar-content
+                            p DataSets
+                        nuxt-link.navbar-item(to='/repo/types/papers')
+                          .navbar-content
+                            p Papers
+                        nuxt-link.navbar-item(to='/repo/types/books')
+                          .navbar-content
+                            p Books
+                        nuxt-link.navbar-item(to='/repo/types/todos')
+                          .navbar-content
+                            p.tag.is-danger Todos
+
                   hr.navbar-divider
                   .navbar-item
                     .navbar-content

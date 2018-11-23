@@ -124,6 +124,7 @@
                 maxlength="60"
                 :required="true"
               )
+
             b-field(
               label="Descripcion"
             )

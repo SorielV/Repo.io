@@ -54,7 +54,7 @@
                     //img(src="https://i.gifer.com/7WOr.gif")
           .columns.is-centered.is-multiline(v-else)
             .column.is-3(v-for="(repo, index) in filtered" :key="index")
-              CardRepository(:repository='repo')
+              CardRepository(:repository='repo' @handleViewRepo="handleViewRepo")
         hr
         b-pagination.is-centered(
           v-if="!filter || filter.length === 0"
@@ -163,6 +163,11 @@ export default {
     this.pagination = pagination
     this.repositories = repositories
     this.filtered = repositories
+  },
+  methods: {
+    handleViewRepo(repo) {
+      this.$router.push('/repo/' + repo.id)
+    }
   }
 }
 </script>

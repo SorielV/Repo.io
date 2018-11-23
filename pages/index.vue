@@ -22,7 +22,7 @@
           .columns.is-centered
             .column.is-3(v-for="(repo, index) in repositories" :key="index")
               transition-group(name="component-fade" tag="section")
-                CardRepository.has-text-black(:repository='repo' @handleViewRepo="" :key="repo.id")
+                CardRepository.has-text-black(:repository='repo' @handleViewRepo="handleViewRepo" :key="repo.id")
           .buttons.is-centered
             nuxt-link.button.is-info(to="/repo" style="width: 25%;") Ver Mas
       .box.cta.has-background-black
@@ -54,6 +54,9 @@ export default {
     this.repositories = repositories
   },
   methods: {
+    handleViewRepo(repo) {
+      this.$router.push('/repo/' + repo.id)
+    },
     search() {
       if (this.filter.trim()) {
         this.$router.push('/repo?slug=' + this.filter.toLowerCase())
