@@ -4,10 +4,9 @@ import consola from 'consola'
 import path from 'path'
 import express from 'express'
 import { Server } from 'http'
-import https from 'https'
-import SocketIO from 'socket.io'
+// import https from 'https'
+// import SocketIO from 'socket.io'
 import morgan from 'morgan'
-import fs from 'fs'
 
 import cors from 'cors'
 import bodyParser from 'body-parser'
@@ -24,17 +23,13 @@ const corsOptions = {
 }
 
 const app = express()
-const ssl_options = {
-  ca: fs.readFileSync(path.join(__dirname + '/config/https/ca_bundle.crt')),
-  cert: fs.readFileSync(path.join(__dirname + '/config/https/certificate.crt')),
-  key: fs.readFileSync(path.join(__dirname + '/config/https/private.key'))
-}
+/// const ssl_options = {}
 
 app.use(morgan('tiny'))
 app.use('*', cors(corsOptions))
 
 const httpServer = Server(app)
-const httpsServer = https.createServer(ssl_options, app)
+// const httpsServer = https.createServer(ssl_options, app)
 
 if (process.env.NUXT === 'true') {
   const config = require('../nuxt.config')
@@ -60,12 +55,8 @@ if (process.env.NUXT === 'true') {
     app.use('/login', LoginAPI)
     app.use(nuxt.render)
 
-    httpServer.listen(80, () => {
-      consola.success('Server HTTP Running in Port ' + 80)
-    })
-
-    httpsServer.listen(443, () => {
-      consola.success('Server HTTPS Running in Port ' + 443)
+    httpServer.listen(8081, () => {
+      consola.success('Server HTTP Running in Port ' + 8081)
     })
   }
 
@@ -86,12 +77,8 @@ if (process.env.NUXT === 'true') {
     app.use('/api', APIs)
     app.use('/login', LoginAPI)
 
-    httpServer.listen(80, () => {
-      consola.success('Server HTTP Running in Port ' + 80)
-    })
-
-    httpsServer.listen(443, () => {
-      consola.success('Server HTTPS Running in Port ' + 443)
+    httpServer.listen(8081, () => {
+      consola.success('Server HTTP Running in Port ' + 8081)
     })
   }
   start()

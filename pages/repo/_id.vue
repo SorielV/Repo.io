@@ -20,7 +20,7 @@
     article.media(v-if='$store.state.isAuth')
       figure.media-left
         p.image.is-64x64
-          img(src='https://bulma.io/images/placeholders/128x128.png')
+          img(:src="$store.state.user.profileImage || 'https://bulma.io/images/placeholders/128x128.png'")
       .media-content
         form(v-on:submit.prevent="handleSubmit($event)")
           .field
@@ -31,7 +31,7 @@
               button#handle.button Post comment
     article.media(v-else)
       | Login Event
-    pre {{ repository }}
+    // pre {{ repository }}
 </template>
 
 <script>
@@ -94,6 +94,7 @@ export default {
           idRepository,
           comment
         })
+        content.value = ''
         this.comments.push(data)
       } catch (error) {
         console.log(error.message)

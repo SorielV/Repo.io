@@ -3,8 +3,7 @@ import jwtConfig from './../../config/jwt.json'
 
 const ADMIN = 1
 
-const getAuthUser = req => {
-  if (process.env.NODE_ENV === 'development') {
+/*if (process.env.NODE_ENV === 'development') {
     return {
       id: 1,
       username: 'admin',
@@ -14,12 +13,15 @@ const getAuthUser = req => {
       profileImage: 'http://www.nyan.cat/cats/original.gif',
       type: 1
     }
-  }
+  }*/
 
+const getAuthUser = req => {
   return new Promise((resolve, reject) => {
     const header = req.headers.authorization
     if (!header) {
       return reject(new Error('Token no enviado'))
+    } else if (header.lenght < 30) {
+      return reject(new Error('Token no Valido'))
     } else {
       const token = header.substr(7).trim()
       jwt.verify(token, jwtConfig.secret, (error, user) => {

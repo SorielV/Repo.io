@@ -7,7 +7,7 @@
         p.control
           button.button.is-info(@click="handleFilter")
             | Buscar
-    section.has-py-1rem(style="border: solid 1px red;")
+    section.has-py-1rem
       .container
         center
           b-dropdown
@@ -16,28 +16,31 @@
               b-icon(icon='menu-down')
             section.columns.is-multiline(style="padding: 1rem; margin: auto;")
               .column.is-6(v-for="(catalog, key) in catalog.types" :key="key" style="padding: 0")
-                b-checkbox(:value='catalog.selected' @click='handleSelectType($event, catalog.value)' type="is-danger")
+                b-checkbox(v-model='catalog.isSelected' @input="handleFilterCatalog(catalog, 0)" type="is-danger")
                   | {{ catalog.value }}
 
           b-dropdown
             button.button.is-primary(slot='trigger')
-              | Tipos
+              | Temas
               b-icon(icon='menu-down')
             section.columns.is-multiline(style="padding: 1rem; margin: auto;")
               .column.is-6(v-for="(catalog, key) in catalog.topics" :key="key" style="padding: 0")
-                b-checkbox(:value='catalog.selected' @click='handleSelectType($event, catalog.value)' type="is-danger")
+                b-checkbox(v-model='catalog.isSelected' @input="handleFilterCatalog(catalog, 1)" type="is-danger")
                   | {{ catalog.value }}
 
-          b-dropdown
+          b-dropdown(:disabled="true")
             button.button.is-primary(slot='trigger')
               | Editoriales
               b-icon(icon='menu-down')
             section.columns.is-multiline(style="padding: 1rem; margin: auto;")
               .column.is-6(v-for="(catalog, key) in catalog.editorials" :key="key" style="padding: 0")
-                b-checkbox(:value='catalog.selected' @click='handleSelectType($event, catalog.value)' type="is-danger")
+                b-checkbox(v-model='catalog.isSelected' type="is-danger")
                   | {{ catalog.value }}
     .content.has-text-centered
       span.small Mostrando {{ repositories.length }} [{{ (pagination.page - 1 || 1) * pagination.offset }} a {{ (pagination.page || 1) * pagination.offset }}] de {{ pagination.total }}
+      div
+        span.small Base
+        pre {{ JSON.stringify(query) }}
     hr
     section
       .columns.is-centered(v-if="filtered.length === 0")
@@ -76,6 +79,21 @@
 <script>
 import CardRepository from './../../components/CardRepository.vue'
 
+function slugify(text) {
+  return text
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, '-') // Replace spaces with -
+    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
+    .replace(/\-\-+/g, '-') // Replace multiple - with single -
+    .replace(/^-+/, '') // Trim - from start of text
+    .replace(/-+$/, '') // Trim - from end of text
+}
+
+function parseUrl() {
+  return
+}
+
 export default {
   components: {
     CardRepository
@@ -83,14 +101,41 @@ export default {
   async asyncData({ app, query }) {
     const params = new URLSearchParams(window.location.search)
 
+    const slug = slugify(query['slug'] || '')
+    const types = query['type[]']
+      ? Array.isArray(query['type[]'])
+        ? query['type[]']
+        : [query['type[]']]
+      : []
+
+    const topics = query['topic[]']
+      ? Array.isArray(query['topic[]'])
+        ? query['topic[]']
+        : [query['topic[]']]
+      : []
+
+    const queryParams = {
+      slug,
+      types,
+      topics
+    }
+
+    const queryParam =
+      '?' +
+      (slug ? 'slug=' + slug : '') +
+      (types.length ? '&' + types.map(id => 'type=' + id).join('&') : '') +
+      (topics.length ? '&' + topics.map(id => 'topic=' + id).join('&') : '')
+
+    console.log(queryParam)
+
     try {
       if (query['slug']) {
         const {
           data: { data: repositories = [], ...pagination }
-        } = await app.$axios.get(`/api/repo/?slug=${query['slug']}`)
+        } = await app.$axios.get('/api/repo' + queryParam)
         return {
           pagination,
-          query,
+          query: queryParams,
           filter: query['slug'] || '',
           repositories,
           filtered: repositories,
@@ -122,6 +167,11 @@ export default {
       query: {},
       pagination: {},
       catalog: {
+        types: [],
+        topics: [],
+        editorials: []
+      },
+      search: {
         types: [],
         topics: [],
         editorials: []
@@ -200,13 +250,38 @@ export default {
 
     try {
       const [{ data: topics }, { data: types }] = await Promise.all(promises)
+
       topics.forEach(topic => {
-        topic.selected = false
+        topic.isSelected = false
       })
 
+      for (const id of this.query.topics) {
+        console.log(id)
+        const index = topics.findIndex(
+          ({ idCatalog }) => idCatalog === Number(id)
+        )
+        if (index !== -1) {
+          topics[index].isSelected = true
+        }
+      }
+
       types.forEach(type => {
-        type.selected = false
+        type.isSelected = false
       })
+
+      for (const id of this.query.types) {
+        const index = types.findIndex(
+          ({ idCatalog }) => idCatalog === Number(id)
+        )
+        console.log(index)
+        if (index !== -1) {
+          console.log(index)
+          types[index].isSelected = true
+        }
+      }
+
+      // console.log(types)
+      console.log(types.find(({ idCatalog }) => idCatalog === 17))
 
       this.catalog.types = types
       this.catalog.topics = topics
@@ -215,43 +290,121 @@ export default {
     }
   },
   methods: {
+    setFiltered() {
+      const data = this.repositories
+      const filter = slugify(this.filter)
+
+      const types = this.catalog.types.reduce(
+        (acc, { idCatalog, isSelected }) => {
+          if (isSelected) {
+            acc.push(idCatalog)
+          }
+          return acc
+        },
+        []
+      )
+
+      const topics = this.catalog.topics.reduce(
+        (acc, { idCatalog, isSelected }) => {
+          if (isSelected) {
+            acc.push(idCatalog)
+          }
+          return acc
+        },
+        []
+      )
+
+      this.filtered = data.filter(({ slug, type, topic }) => {
+        if (filter) {
+          if (!slug.includes(filter)) {
+            return false
+          }
+        }
+
+        if (types.length > 0) {
+          if (type.length > 0) {
+            for (const idCatalog of types) {
+              if (!type.find(({ id }) => idCatalog === id)) {
+                console.warn('Exit Type')
+                return false
+              }
+            }
+          } else {
+            return false
+          }
+        }
+
+        if (topics.length > 0) {
+          if (topic.length > 0) {
+            for (const idCatalog of topics) {
+              if (!topic.find(({ id }) => idCatalog === id)) {
+                console.warn('Exit Topic')
+                return false
+              }
+            }
+          } else {
+            return false
+          }
+        }
+
+        return true
+      })
+    },
+    async handleFilterCatalog({ isSelected, idCatalog }, catalog) {
+      if (isSelected) {
+        const key = catalog ? 'topic' : 'type'
+        this.filtered = Array.from(this.filtered).filter(
+          ({ [key]: catalog }) => {
+            console.log(catalog)
+            return catalog.findIndex(({ id }) => id === idCatalog) !== -1
+          }
+        )
+      } else {
+        this.setFiltered()
+      }
+    },
     // Reciclable
     async handleFilter() {
       const baseSlug = (this.query.slug || '').trim().toLowerCase()
       const slug = this.filter.trim().toLowerCase()
-      console.log(slug)
+
+      const types = this.catalog.types.reduce(
+        (acc, { idCatalog, isSelected }) => {
+          if (isSelected) {
+            acc.push(`type[]=${idCatalog}`)
+          }
+          return acc
+        },
+        []
+      )
+
+      const topics = this.catalog.topics.reduce(
+        (acc, { idCatalog, isSelected }) => {
+          if (isSelected) {
+            acc.push(`topic[]=${idCatalog}`)
+          }
+          return acc
+        },
+        []
+      )
 
       // Cambio Visual [Compartir Link de Contenido]
       if (slug.length > 0 && slug !== baseSlug) {
+        const url =
+          '/repo?slug=' +
+          slug +
+          (types.length ? '&' + types.join('&') : '') +
+          (topics.length ? '&' + topics.join('&') : '')
+
         const {
           data: { data: repositories = [], ...pagination }
-        } = await this.$axios.get('/api/repo?slug=' + slug)
+        } = await this.$axios.get('/api' + url)
+
         this.repositories = repositories
         this.pagination = pagination
         this.filtered = repositories
-        window.history.pushState(undefined, 'Repo', '/repo?slug=' + slug)
+        window.history.pushState(undefined, 'Repo', url)
         window.scrollTo(0, 0)
-      }
-    },
-    getType(type) {
-      const { text = 'Otro' } =
-        Array.apply(null, this.catalog.types).find(
-          ({ value }) => value === type
-        ) || {}
-
-      return text
-    },
-    handleSelectType(event, type) {
-      const indexOfType = this.types.indexOf(type)
-      const parent =
-        event.target.nodeName == 'A' ? event.target.parentNode : event.target
-
-      if (indexOfType === -1) {
-        this.types.push(type)
-        parent.classList.add('is-active')
-      } else {
-        this.types.splice(indexOfType)
-        parent.classList.remove('is-active')
       }
     },
     handleViewRepo(repo) {

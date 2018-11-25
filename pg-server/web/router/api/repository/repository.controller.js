@@ -2,6 +2,7 @@
 
 import { Repository } from './../../../../models/repository'
 import { Pagination } from './../../../../utils/pagination'
+import { slugify } from './../../../../utils/index'
 
 const groupBy = (arr, fn) => {
   let currentId = arr[0][0]
@@ -30,7 +31,7 @@ function CreateObject(keys, values) {
 }
 
 const pageOptions = options => {
-  let {
+  const {
     limit = 50,
     offset = 50,
     page = 1,
@@ -139,6 +140,137 @@ function getNestedData(fields, rows) {
     }
     return obj
   })
+}
+
+Repository.getRepositoriesByTypesandTopics = async function(_options) {
+  const { api } = _options
+  if (!_options.hasOwnProperty('type') || !_options.hasOwnProperty('topic')) {
+    return new Error('Type no enviado API' + api)
+  }
+
+  const {
+    pagination: { limit, offset, page, orderBy, orderDirection },
+    options
+  } = pageOptions(_options)
+
+  console.log(options.where.type)
+  const types = uniqueIntegers(options.where.type)
+  const topics = uniqueIntegers(options.where.topic)
+  const slug = options.where.slug ? slugify(options.where.slug) : null
+  console.log(types, topics)
+
+  const tableAs = 'R'
+  const whereConditions = ''
+
+  const countQuery = `
+    select count(*) from (
+      select RT."idRepository"
+      from public."RepositoryTopics" as RT
+        where RT."idCatalog" in (${topics.join(',')})
+        and RT."idRepository" in (select RT."idRepository" as "match"
+                                  from public."RepositoryTypes" as RT
+                                  where RT."idCatalog" in (${types.join(',')})
+                                  ${
+                                    slug
+                                      ? `and RT."idRepository" in (
+                                          select id from "Repositories" where slug like '%${slug}%'
+                                        )`
+                                      : ``
+                                  }
+                                  group by RT."idRepository"
+                                  having count(RT."idRepository") = ${
+                                    types.length
+                                  })
+    group by RT."idRepository"
+    having count(RT."idRepository") = ${topics.length}
+    ) as count
+  `
+
+  const baseQuery = `
+    select RT."idRepository"
+      from public."RepositoryTopics" as RT
+      where RT."idCatalog" in (${topics.join(',')})
+        and RT."idRepository" in (select RT."idRepository" as "match"
+                                  from public."RepositoryTypes" as RT
+                                  where RT."idCatalog" in (${types.join(',')})
+                                  ${
+                                    slug
+                                      ? `and RT."idRepository" in (
+                                          select id from "Repositories" where slug like '%${slug}%'
+                                        )`
+                                      : ``
+                                  }
+                                  group by RT."idRepository"
+                                  having count(RT."idRepository") = ${
+                                    types.length
+                                  })
+      group by RT."idRepository"
+      having count(RT."idRepository") = ${topics.length}
+      order by RT."idRepository" desc
+      ${options.all ? '' : ` limit ${limit} offset ${offset * (page - 1)} `}
+  `
+
+  const query = `
+    SELECT Repo.*,
+      Topic.id as "topic.id", Topic.value as "topic.value",
+      Type.id as "type.id", Type.value as "type.value",
+      Editorial.id as "editorial.id", Editorial.name as "editorial.name",
+      Author.id as "author.id", Author."firstName" as "author.firstName", Author."lastName" as "author.lastName"
+    from (
+      select *
+        from "Repositories" as Repo
+          inner join (
+            ${baseQuery}
+          ) as match
+        on Repo.id = match."idRepository"
+        order by id
+    ) as Repo
+      left join "RepositoryTopics" as RET on Repo.id = RET."idRepository"
+        left join "CatalogTopics" as Topic on RET."idCatalog" = Topic.id
+      left join "RepositoryTypes" as RETy on Repo.id = RETy."idRepository"
+        left join "CatalogTypes" as Type on RETy."idCatalog" = Type.id
+      left join "RepositoryEditorials" as REE on Repo.id = REE."idRepository"
+        left join "CatalogEditorials" as Editorial on REE."idCatalog" = Editorial.id
+      left join "RepositoryAuthors" as REA on Repo.id = REA."idRepository"
+        left join "CatalogAuthors" as Author on REA."idAuthor" = Author.id
+    order by Repo.id;
+  `
+
+  const promises = [
+    Repository.query({
+      text: countQuery,
+      rowMode: 'array'
+    }),
+    Repository.query({
+      text: query,
+      rowMode: 'array'
+    })
+  ]
+
+  const [
+    {
+      rows: [[total]]
+    },
+    { rows, fields }
+  ] = await Promise.all(promises)
+
+  return Number.parseInt(total) === 0 || rows.length === 0
+    ? new Pagination(options.api, [], {
+        limit,
+        offset,
+        page,
+        orderBy,
+        orderDirection,
+        total: Number(total)
+      })
+    : new Pagination(options.api, getNestedData(fields, rows), {
+        limit,
+        offset,
+        page,
+        orderBy,
+        orderDirection,
+        total: Number(total)
+      })
 }
 
 Repository.getRepositoriesByTypes = async function(_options) {
@@ -444,7 +576,7 @@ Repository.getRepositoryById = async function(id) {
 
   const query = `
   SELECT Repo.*,
-    RS.id as "resource.id", RS.file as "resource.file", RS.type as "resource.type", RS.uploaded as "resource.uploaded",
+    RS.id as "resource.id", RS.name as "resource.name", RS.description as "resource.description", RS.file as "resource.file", RS.type as "resource.type", RS.uploaded as "resource.uploaded",
     Topic.id as "topic.id", Topic.value as "topic.value",
     Type.id as "type.id", Type.value as "type.value",
     Editorial.id as "editorial.id", Editorial.name as "editorial.name",
@@ -471,3 +603,15 @@ Repository.getRepositoryById = async function(id) {
 }
 
 export default Repository
+
+/*
+select RT."idRepository", count(RT."idRepository") as "match"
+      from public."RepositoryTopics" as RT
+      where RT."idCatalog" in (26) and RT."idRepository" in (
+          select RT."idRepository" as "match"
+              from public."RepositoryTypes" as RT
+              where RT."idCatalog" in (19)
+          group by RT."idRepository" having count(RT."idRepository") = 1
+        )
+      group by RT."idRepository" having count(RT."idRepository") = 1
+*/

@@ -1,7 +1,7 @@
 {
-  "name": "Repo",
+  "name": "repo-io",
   "version": "1.0.0",
-  "description": "My tiptop Nuxt.js project",
+  "description": "repo-io Repositorios Digitales",
   "author": "SorielV",
   "private": true,
   "scripts": {

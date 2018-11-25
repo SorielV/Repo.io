@@ -61,7 +61,7 @@ const store = () => {
             ] = `Bearer ${currentToken}`
 
             const {
-              data: { user = {}, token = null }
+              data: { user = {}, jwt: token = null }
             } = await this.$axios.get('/login/status')
 
             this.$axios.defaults.headers.common[
@@ -69,6 +69,7 @@ const store = () => {
             ] = `Bearer ${token}`
 
             commit('login', { token, user })
+            return resolve()
           } catch (error) {
             if (error.response) {
               const {

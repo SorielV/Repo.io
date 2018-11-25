@@ -9,13 +9,8 @@ const router = Router()
 router.post(
   '/',
   catchException(async (req, res) => {
-    const { username = 'Soriel', password = 'JS' } = req.body
-    const user = await User.findOne({
-      where: {
-        username,
-        password
-      }
-    })
+    const { username = 'Soriel', password = 'Nyan' } = req.body
+    const user = await User.findOne({ username, password })
 
     if (!user) {
       return res
