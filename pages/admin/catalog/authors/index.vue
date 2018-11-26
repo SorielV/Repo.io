@@ -210,7 +210,7 @@
               label="Descripcion"
             )
               b-input(type="text"
-                v-model="create.description"
+                v-model="update.data.description"
                 value=""
                 maxlength="60"
                 :required="true"

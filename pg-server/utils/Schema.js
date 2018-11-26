@@ -343,7 +343,8 @@ module.exports = function Schema(
     }
 
     static whereStament(where, array = false, strict = true) {
-      const Schema = Model.Schema
+      console.log(where)
+      const Schema = Model._Schema
       const formatWhereOperator = Model.formatWhereOperator
       const whereStament = Model.whereStament
 
@@ -488,8 +489,8 @@ module.exports = function Schema(
         throw new Error('Invalid columns & exclude')
       }
 
-      const table = Model.Table
-      const Schema = Model.Schema
+      const table = Model._Table
+      const Schema = Model._Schema
       const whereStament = Model.whereStament
       const columnStament = Model.columnStament
       const excludeColumnStament = Model.excludeColumnStament
@@ -499,9 +500,7 @@ module.exports = function Schema(
         : hasExclude
           ? excludeColumnStament(exclude)
           : '*'
-      console.table([1, 2])
-      console.log(whereStament(where))
-      console.table([1, 2])
+
       const whereConditions =
         where && Object.keys(where).length ? 'where ' + whereStament(where) : ''
 
@@ -539,40 +538,45 @@ module.exports = function Schema(
         const primaryKeys = Array.isArray(Options.id)
           ? Options.id
           : [Options.id]
-        const whereColumns = []
+        const whereStatement = []
+
+        console.log(current)
 
         if (Object.keys(_values).length <= 0) {
           throw new Error('Datos no validos sin criterios de actulizacion')
         }
 
-        for (let key in Schema) {
-          if (_values.hasOwnProperty(key)) {
+        if (Array.isArray(primaryKeys)) {
+          for (let primaryKey of primaryKeys) {
+            // Produce "id" = "1" and "username" = "foo"
+            whereStatement.push(`
+              "${primaryKey}" = ${formatValueToSql(
+              current[primaryKey],
+              Schema[primaryKey].type
+            )}
+            `)
+          }
+        } else {
+          whereStatement.push(`
+            "${primaryKeys}" = ${formatValueToSql(
+            current[primaryKeys],
+            Schema[primaryKeys].type
+          )}
+          `)
+        }
+
+        for (let key in _values) {
+          if (Schema.hasOwnProperty(key)) {
             if (_values[key] !== current[key]) {
               if (primaryKeys.indexOf(key) === -1) {
                 values[key] = _values[key]
                 updateColumn.push(key)
-              } else {
-                values[key] = current[key]
-                whereColumns.push(`
-                  "${key}" = ${formatValueToSql(
-                  current[key],
-                  Schema[key].type
-                )}`)
               }
-            }
-          } else {
-            if (primaryKeys.indexOf(key) !== -1) {
-              values[key] = current[key]
-              whereColumns.push(`
-                  "${key}" = ${formatValueToSql(
-                current[key],
-                Schema[key].type
-              )}`)
             }
           }
         }
 
-        if (Object.keys(values).length - primaryKeys.length <= 0) {
+        if (Object.keys(values).length <= 0) {
           throw new Error('Datos no validos informacion duplicada')
         }
 
@@ -594,7 +598,7 @@ module.exports = function Schema(
 
         const query = `update "${Model._Table}" set ${columnNames.join(
           ' , '
-        )} where ${whereColumns.join(' and ')} RETURNING *;`
+        )} where ${whereStatement.join(' and ')} RETURNING *;`
 
         const {
           rows: [result]

@@ -1,5 +1,5 @@
 <template lang="pug">
-  section(style="padding: 1% 2% 2% 2%;")
+  section(style="padding: 2% 2% 2% 2%;")
     section.card
       b-tabs.block(
         position="is-centered"
@@ -455,7 +455,119 @@
                 )
             // Recursos
             b-tab-item(label='Recursos')
+              button.is-info(@click="upload.isModalResourceActive = true") Agregar
+              b-table(
+                v-cloak
+                :data="update.data.resource"
+                mobile-cards
+                :total="update.data.resource.length"
+              )
+                template(slot-scope="props")
+                  b-table-column(
+                    field="name"
+                    label="Nombre"
+                    :visible="true"
+                    sortable
+                  )
+                    span(v-if="props.row['name']") {{ props.row['name'] }} 
+                    i(v-else) Sin Nombre
 
+                  b-table-column(
+                    field="description"
+                    label="Descripcion"
+                    :visible="true"
+                    sortable
+                  )
+                    span(v-if="props.row['description']") {{ props.row['description'] }} 
+                    i(v-else) Sin Descripcion
+                  
+                  b-table-column(
+                    field="file"
+                    label="Recurso"
+                    :visible="true"
+                    sortable
+                  ) {{ props.row['file'] }}
+                  
+                  b-table-column(
+                    field="id"
+                    label="Acciones"
+                  )
+                    .buttons
+                      button.button.is-dark.is-small(@click="showUpdateResource($event, props.row)")
+                        i.mdi.mdi-pencil
+                      button.button.is-danger.is-small(@click="handleRemoveResourceDialog($event, props.row)")
+                        i.mdi.mdi-delete
+                      button.button.is-link.is-small(@click="downloadFile(props.row)")
+                        i.mdi.mdi-download
+
+              // Nuevo Recurso
+              b-modal(:active.sync='upload.isModalResourceActive', has-modal-card='')
+                .card(style="padding: 2rem; border-radius: 0.275rem;")
+                  form(v-on:submit.prevent="handleSubmitCreateResource")
+                    b-field(
+                      label="Nombre"
+                    )
+                      b-input(type="Nombre"
+                        v-model="upload.resource.name"
+                        maxlength="60"
+                        :required="true"
+                      )
+
+                    b-field(
+                      label="Descripcion"
+                    )
+                      b-input(type="text"
+                        v-model="upload.resource.description"
+                        maxlength="120"
+                        :required="true"
+                      )
+
+                    .field
+                      label.label Tipo
+                      .control
+                        .select
+                          select(v-model="upload.resource.type")
+                            option(value="1") Imagen
+                            option(value="2") Documento
+                            option(value="3") Video Youtube
+                            option(value="4") Playlist Youtube
+                            option(value="5") Audios
+
+                    .field
+                      b-checkbox(v-model='upload.resource.uploaded')
+                        | {{ upload.resource.uploaded ? 'Interna' : 'Externa' }}
+
+                    .field(v-if="upload.resource.uploaded")
+                      label.label Recurso
+                      .control.is-box
+                        div
+                          b-upload(
+                            v-model='upload.file.file'
+                            type="is-black"
+                            :single='true'
+                            drag-drop
+                            :required="true"
+                            style="width: 100%;"
+                            @input="resourceSelected"
+                          )
+                            section.section
+                              center
+                                .content.has-text-centered
+                                  p
+                                    b-icon(icon='upload', size='is-large')
+                                  p Suelta La Imagen
+                    .field(v-else)
+                      b-field(
+                        label="Recurso"
+                      )
+                        b-input(type="text"
+                          v-model="upload.resource.file"
+                          maxlength="120"
+                          :required="true"
+                        )
+                    .buttons
+                      button.button.is-danger(@click="closeResourceModal") Cancelar
+                      button.button.is-info(type="submit") Guardar
         //- Upload File
         //-b-upload(v-model='update.dropFiles' type="is-black" multiple drag-drop style="width: 100%;")
           section.section
@@ -611,6 +723,7 @@ export default {
         showModalAuthor: false,
         showModalResource: false,
         data: {
+          resource: [],
           author: [],
           id: 0
         }
@@ -636,7 +749,13 @@ export default {
         total: 0
       },
       upload: {
-        isSelected: false
+        isModalResourceActive: false,
+        isSelected: false,
+        file: {
+          fileName: '',
+          file: []
+        },
+        resource: {}
       },
       catalog: {
         authorFilter: '',
@@ -794,6 +913,133 @@ export default {
     }
   },
   methods: {
+    handleRemoveResourceDialog(ev, resource) {
+      ev.preventDefault()
+
+      this.$dialog.confirm({
+        iconPack: 'mdi',
+        message: `<pre>${JSON.stringify(resource, undefined, 2)}</pre>`,
+        title: 'Eliminar Recurso',
+        confirmText: 'Eliminar',
+        type: 'is-danger',
+        hasIcon: false,
+        onConfirm: async () => {
+          console.log('Eliminar')
+          // API Call
+          // Then
+          const { id: idResource } = resource
+          const {
+            data: { id: idRepository }
+          } = this.update
+
+          try {
+            await this.$axios.delete(
+              `/api/repo/${idRepository}/resource/${idResource}`
+            )
+
+            const index = Array.from(this.table.data).findIndex(
+              ({ id }) => id === idRepository
+            )
+
+            const itemIndex =
+              index !== -1
+                ? Array.from(this.table.data[index].resource).findIndex(
+                    ({ id }) => id === resource.id
+                  )
+                : null
+
+            console.log(index, itemIndex)
+
+            if (itemIndex !== null) {
+              console.log(
+                'Removed',
+                this.table.data[index].resource.splice(itemIndex, 1),
+                this.update.data.resource.splice(itemIndex, 1)
+              )
+            }
+
+            this.$toast.open({
+              message: 'Recurso Borrado',
+              type: 'is-success'
+            })
+          } catch (err) {
+            this.$toast.open({
+              message: 'Error al borrar recurso',
+              type: 'is-danger'
+            })
+          }
+        }
+      })
+    },
+    showUpdateResource() {
+      return
+    },
+    async handleSubmitCreateResource() {
+      const {
+        file: {
+          file: [file]
+        },
+        resource
+      } = this.upload
+
+      const {
+        data: { id: idRepository }
+      } = this.update
+
+      const data = resource.uploaded ? this.createFormData(resource) : resource
+
+      if (resource.uploaded) {
+        data.delete('file')
+        data.append('file', file)
+      }
+
+      const index = Array.from(this.table.data).findIndex(
+        ({ id }) => id === idRepository
+      )
+
+      try {
+        const {
+          data: { data: resource }
+        } = await this.$axios.post(`/api/repo/${idRepository}/resource`, data)
+
+        // Agregar A Lista
+        this.table.data[index].resource.push(resource)
+
+        // Actualizar Repositorio Actual [Editando]
+        this.update.data.resource.push(resource)
+
+        this.uploaded.isModalResourceActive = false
+
+        this.$toast.open({
+          message: 'Recurso Agregado',
+          type: 'is-success'
+        })
+      } catch (error) {
+        this.$toast.open({
+          message: 'Error al Agregar recurso',
+          type: 'is-danger'
+        })
+        console.error(error.message)
+      }
+
+      /*
+      const index = Array.from(this.table.data).findIndex(
+        ({ id }) => id === idRepository
+      )
+
+      this.table.data[index].resource.push(this.upload.resource)
+
+      console.log(index)
+      console.log(this.upload.resource)
+      */
+    },
+    closeResourceModal(ev) {
+      ev.preventDefault()
+      this.upload.isModalResourceActive = false
+    },
+    resourceSelected() {
+      return
+    },
     async fileRender() {
       const [file] = this.upload.imageFile
       if (file) {
@@ -1082,9 +1328,19 @@ export default {
         } = await this.$axios.post('/api/repo', repoData)
 
         data.author = []
+        data.resource = []
+        data.type = []
+        data.topic = []
 
         this.create = {}
         this.data.push(data)
+        const indexTable = Array.from(this.table.data).findIndex(
+          ({ id }) => id === idRepository
+        )
+
+        if (indexTable === -1) {
+          this.table.data.push(data)
+        }
 
         this.showUpdate(null, data)
 
@@ -1101,11 +1357,30 @@ export default {
       }
     },
     async handleSubmitUpdate(ev) {
-      const item = this.update.data
+      const {
+        data: { id: idRepository }
+      } = this.update
+
+      const index = Array.from(this.data).findIndex(
+        ({ id }) => id === idRepository
+      )
+
+      const repository = this.data[index] || {}
+
+      const item = Object.keys(this.update.data).reduce((acc, prop) => {
+        if (
+          !Array.isArray(this.update.data[prop]) &&
+          this.update.data[prop] !== repository[prop]
+        ) {
+          acc[prop] = this.update.data[prop]
+        }
+        return acc
+      }, {})
+
       try {
         const { data } = await this.$axios.put(
-          '/api/repo/' + item.id,
-          this.update.data
+          '/api/repo/' + idRepository,
+          item
         )
         this.update.index = null
         this.update.data = {
@@ -1114,12 +1389,14 @@ export default {
         }
         this.data.splice(this.update.index, 1, data.data)
 
-        const index = Array.apply(null, this.table.data).findIndex(
-          ({ id }) => id === item.id
-        )
         if (index !== -1) {
-          this.table.data.splice(index, 1, data.data)
+          this.data.splice(index, 1, data.data)
+          const indexTable = Array.from(this.table.data).findIndex(
+            ({ id }) => id === idRepository
+          )
+          this.table.data.splice(indexTable, 1, data.data)
         }
+
         this.selectedTab = 0
         this.$toast.open({
           message: 'Autor de Repositorio Actulizado',

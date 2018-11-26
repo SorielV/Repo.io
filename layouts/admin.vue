@@ -3,15 +3,18 @@
     AdminHeader
     section.Site-content
       nuxt
+    Footer
 </template>
 
 <script>
 import Vuex from 'vuex'
 import AdminHeader from './../components/AdminHeader.vue'
+import Footer from './../components/Footer.vue'
 
 export default {
   components: {
-    AdminHeader
+    AdminHeader,
+    Footer
   },
   middleware: 'adminAuth',
   mounted() {

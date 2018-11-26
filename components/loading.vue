@@ -9,7 +9,7 @@
           class="image">
           <img
             class="nyan-cat"
-            src="http://www.nyan.cat/cats/original.gif">
+            src="/public/loading.gif">
         </figure>
       </div>
     </div>
@@ -61,7 +61,7 @@ export default {
   vertical-align: middle;
 }
 .nyan-cat {
-  width: 50%;
+  width: 25%;
   margin: auto;
 }
 </style>

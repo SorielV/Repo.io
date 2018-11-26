@@ -25,7 +25,7 @@ const corsOptions = {
 const app = express()
 /// const ssl_options = {}
 
-app.use(morgan('tiny'))
+app.use(morgan())
 app.use('*', cors(corsOptions))
 
 const httpServer = Server(app)

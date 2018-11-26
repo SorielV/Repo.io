@@ -7,15 +7,15 @@
         p.control
           button.button.is-info(@click="handleFilter")
             | Buscar
-    section.has-py-1rem
-      .container
+    section
+      section
         center
           b-dropdown
             button.button.is-primary(slot='trigger')
               | Tipos
               b-icon(icon='menu-down')
             section.columns.is-multiline(style="padding: 1rem; margin: auto;")
-              .column.is-6(v-for="(catalog, key) in catalog.types" :key="key" style="padding: 0")
+              .column.is-6(v-for="(catalog, key) in catalogs.types" :key="key" style="padding: 0")
                 b-checkbox(v-model='catalog.isSelected' @input="handleFilterCatalog(catalog, 0)" type="is-danger")
                   | {{ catalog.value }}
 
@@ -24,7 +24,7 @@
               | Temas
               b-icon(icon='menu-down')
             section.columns.is-multiline(style="padding: 1rem; margin: auto;")
-              .column.is-6(v-for="(catalog, key) in catalog.topics" :key="key" style="padding: 0")
+              .column.is-6(v-for="(catalog, key) in catalogs.topics" :key="key" style="padding: 0")
                 b-checkbox(v-model='catalog.isSelected' @input="handleFilterCatalog(catalog, 1)" type="is-danger")
                   | {{ catalog.value }}
 
@@ -33,14 +33,20 @@
               | Editoriales
               b-icon(icon='menu-down')
             section.columns.is-multiline(style="padding: 1rem; margin: auto;")
-              .column.is-6(v-for="(catalog, key) in catalog.editorials" :key="key" style="padding: 0")
+              .column.is-6(v-for="(catalog, key) in catalogs.editorials" :key="key" style="padding: 0")
                 b-checkbox(v-model='catalog.isSelected' type="is-danger")
                   | {{ catalog.value }}
-    .content.has-text-centered
-      span.small Mostrando {{ repositories.length }} [{{ (pagination.page - 1 || 1) * pagination.offset }} a {{ (pagination.page || 1) * pagination.offset }}] de {{ pagination.total }}
-      div
-        span.small Base
-        pre {{ JSON.stringify(query) }}
+      section.has-pt-1rem
+        .columns.is-mobile
+          .column.has-text-centered
+            div(style="margin-top: 0.75rem;")
+              span.small Mostrando {{ repositories.length }} [{{ (pagination.page - 1 || 1) * pagination.offset }} a {{ (pagination.page || 1) * pagination.offset }}] de {{ pagination.total }}
+          .column.is-narrow
+            .buttons
+              .button.is-info(@click="view = 'list'")
+                i.mdi.mdi-view-list
+              .button.is-info(@click="view = 'grid'")
+                i.mdi.mdi-view-grid
     hr
     section
       .columns.is-centered(v-if="filtered.length === 0")
@@ -57,12 +63,14 @@
                 iframe.container(src="http://wayou.github.io/t-rex-runner/" style="height: 150px")
                 //img(src="https://i.gifer.com/7WOr.gif")
       .container(v-else)
-        .columns.is-multiline.is-centered
-          .column.is-3(v-for="(repo, index) in filtered" :key="index")
+        .columns.is-multiline.is-centered(v-if="view === 'grid'")
+          .column.is-3( v-for="(repo, index) in filtered" :key="index")
             transition-group(name="component-fade" tag="section")
               CardRepository(:repository='repo' @handleViewRepo="handleViewRepo" :key="repo.id")
-              // -pre(:key="index") {{ repo }}
-              //CardRepository(@repository="repo" )
+        .columns.is-multiline.is-centered(v-else)
+          .column.is-12(v-for="(repo, index) in filtered" :key="index")
+            transition-group(name="component-fade" tag="section")
+              ListRepository(:repository='repo' @handleViewRepo="handleViewRepo" :key="repo.id")
     hr
     b-pagination.is-centered(
       v-if="!filter || filter.length === 0"
@@ -74,10 +82,12 @@
     )
     hr
     pre {{ pagination }}
+    pre {{ catalog }}
 </template>
 
 <script>
 import CardRepository from './../../components/CardRepository.vue'
+import ListRepository from './../../components/ListRepository.vue'
 
 function slugify(text) {
   return text
@@ -96,7 +106,8 @@ function parseUrl() {
 
 export default {
   components: {
-    CardRepository
+    CardRepository,
+    ListRepository
   },
   async asyncData({ app, query }) {
     const params = new URLSearchParams(window.location.search)
@@ -126,8 +137,6 @@ export default {
       (types.length ? '&' + types.map(id => 'type=' + id).join('&') : '') +
       (topics.length ? '&' + topics.map(id => 'topic=' + id).join('&') : '')
 
-    console.log(queryParam)
-
     try {
       if (query['slug']) {
         const {
@@ -147,6 +156,7 @@ export default {
         } = await app.$axios.get('/api/repo')
         return {
           pagination,
+          query: queryParams,
           repositories,
           filtered: repositories
         }
@@ -156,6 +166,7 @@ export default {
       const repositories = []
 
       return {
+        query: queryParams,
         params,
         repositories,
         filtered: repositories
@@ -164,9 +175,14 @@ export default {
   },
   data() {
     return {
-      query: {},
+      view: 'grid',
+      query: {
+        slug: '',
+        types: [],
+        topics: []
+      },
       pagination: {},
-      catalog: {
+      catalogs: {
         types: [],
         topics: [],
         editorials: []
@@ -188,14 +204,10 @@ export default {
         return
       }
 
-      const query = Object.keys(this.query)
-        .map(prop => {
-          return prop + '=' + this.query[prop]
-        })
-        .join('&')
-
       const { limit, offset } = this.pagination
-      const url = `/api/repo?page=${current}&limt=${limit}&offset=${offset}&${query}`
+      const options = `page=${current}&limt=${limit}&offset=${offset}`
+      const queryParams = this.getQueryParam()
+      const url = '/api/repo?' + options + '&' + queryParams
 
       try {
         const {
@@ -219,26 +231,7 @@ export default {
       }
     },
     filter(_filter, _oldFilter) {
-      const oldFilter = _oldFilter.trim().toUpperCase()
-      const filter = _filter.trim().toUpperCase()
-
-      if (filter.length === 0) {
-        this.filtered =
-          this.types.length > 0
-            ? Array.apply(null, this.repositories).filter(
-                ({ type }) => this.types.indexOf(type) !== -1
-              )
-            : this.repositories
-      } else {
-        const flag =
-          this.filtered.length === 0 || filter.length < oldFilter.length
-        this.filtered = Array.apply(
-          null,
-          flag ? this.repositories : this.filtered
-        ).filter(repository => {
-          return repository.title.toUpperCase().includes(filter)
-        })
-      }
+      this.setFiltered()
     }
   },
   async created() {
@@ -256,7 +249,6 @@ export default {
       })
 
       for (const id of this.query.topics) {
-        console.log(id)
         const index = topics.findIndex(
           ({ idCatalog }) => idCatalog === Number(id)
         )
@@ -280,21 +272,54 @@ export default {
         }
       }
 
-      // console.log(types)
-      console.log(types.find(({ idCatalog }) => idCatalog === 17))
-
-      this.catalog.types = types
-      this.catalog.topics = topics
+      this.catalogs.types = types
+      this.catalogs.topics = topics
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   },
   methods: {
+    getQueryParam() {
+      const baseSlug = (this.query.slug || '').trim().toLowerCase()
+      const slug = this.filter.trim().toLowerCase()
+
+      console.log(this.catalogs.types)
+
+      const types = this.catalogs.types.reduce(
+        (acc, { idCatalog, isSelected }) => {
+          if (isSelected) {
+            acc.push(`type[]=${idCatalog}`)
+          }
+          return acc
+        },
+        []
+      )
+
+      const topics = this.catalogs.topics.reduce(
+        (acc, { idCatalog, isSelected }) => {
+          if (isSelected) {
+            acc.push(`topic[]=${idCatalog}`)
+          }
+          return acc
+        },
+        []
+      )
+
+      console.log(topics, types)
+
+      const queryParam =
+        '' +
+        (slug ? 'slug=' + slug + '&' : '') +
+        (types.length ? types.join('&') + '&' : '') +
+        (topics.length ? topics.join('&') + '&' : '')
+
+      return queryParam
+    },
     setFiltered() {
       const data = this.repositories
-      const filter = slugify(this.filter)
+      const filter = slugify(this.filter || '')
 
-      const types = this.catalog.types.reduce(
+      const types = this.catalogs.types.reduce(
         (acc, { idCatalog, isSelected }) => {
           if (isSelected) {
             acc.push(idCatalog)
@@ -304,7 +329,7 @@ export default {
         []
       )
 
-      const topics = this.catalog.topics.reduce(
+      const topics = this.catalogs.topics.reduce(
         (acc, { idCatalog, isSelected }) => {
           if (isSelected) {
             acc.push(idCatalog)
@@ -315,7 +340,7 @@ export default {
       )
 
       this.filtered = data.filter(({ slug, type, topic }) => {
-        if (filter) {
+        if (filter.length > 0 && (slug || '').length > 0) {
           if (!slug.includes(filter)) {
             return false
           }
@@ -368,7 +393,7 @@ export default {
       const baseSlug = (this.query.slug || '').trim().toLowerCase()
       const slug = this.filter.trim().toLowerCase()
 
-      const types = this.catalog.types.reduce(
+      const types = this.catalogs.types.reduce(
         (acc, { idCatalog, isSelected }) => {
           if (isSelected) {
             acc.push(`type[]=${idCatalog}`)
@@ -378,7 +403,7 @@ export default {
         []
       )
 
-      const topics = this.catalog.topics.reduce(
+      const topics = this.catalogs.topics.reduce(
         (acc, { idCatalog, isSelected }) => {
           if (isSelected) {
             acc.push(`topic[]=${idCatalog}`)
@@ -432,88 +457,6 @@ export default {
 .title {
   font-size: 1.5rem;
 }
-.is-Papers {
-  background-color: #303f9f;
-  color: white;
-}
-.is-Books {
-  background-color: red;
-  color: white;
-}
-.is-Cursos {
-  background-color: #c5cae9;
-}
-.is-Videos {
-  background-color: #3f51b5;
-  color: white;
-}
-.is-Portales .Blogs {
-  background-color: #ffffff;
-}
-.is-Tools .Software {
-  background-color: #448aff;
-}
-.is-PPTs .SlideShare {
-  background-color: #212121;
-  color: white;
-}
-.is-Infografias .Memes {
-  background-color: #757575;
-}
-.is-People .Follow {
-  background-color: #bdbdbd;
-}
-.is-Comunidades {
-  background-color: #007bff;
-  color: white;
-}
-.is-APIs {
-  background-color: #007bff;
-  color: white;
-}
-.is-DataSets {
-  background-color: #007bff;
-  color: white;
-}
-
-.b-card {
-  position: relative;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: column;
-  flex-direction: column;
-  min-width: 0;
-  word-wrap: break-word;
-  background-color: #fff;
-  background-clip: border-box;
-  border: 1px solid rgba(0, 0, 0, 0.125);
-  border-radius: 0.25rem;
-}
-
-.b-card > hr {
-  margin-right: 0;
-  margin-left: 0;
-}
-
-.b-card > .list-group:first-child .list-group-item:first-child {
-  border-top-left-radius: 0.25rem;
-  border-top-right-radius: 0.25rem;
-}
-
-.b-card > .list-group:last-child .list-group-item:last-child {
-  border-bottom-right-radius: 0.25rem;
-  border-bottom-left-radius: 0.25rem;
-}
-
-.card-body {
-  -webkit-box-flex: 1;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
-  padding: 1.25rem;
-}
 
 .card-title {
   margin-bottom: 0.75rem;
@@ -561,254 +504,39 @@ export default {
   border-radius: 0 0 calc(0.25rem - 1px) calc(0.25rem - 1px);
 }
 
-.card-header-tabs {
-  margin-right: -0.625rem;
-  margin-bottom: -0.75rem;
-  margin-left: -0.625rem;
-  border-bottom: 0;
-}
-
-.card-header-pills {
-  margin-right: -0.625rem;
-  margin-left: -0.625rem;
-}
-
-.card-img-overlay {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  padding: 1.25rem;
-}
-
-.card-img {
-  width: 100%;
-  border-radius: calc(0.25rem - 1px);
-}
-
-.card-img-top {
-  width: 100%;
-  border-top-left-radius: calc(0.25rem - 1px);
-  border-top-right-radius: calc(0.25rem - 1px);
-}
-
-.card-img-bottom {
-  width: 100%;
-  border-bottom-right-radius: calc(0.25rem - 1px);
-  border-bottom-left-radius: calc(0.25rem - 1px);
-}
-
-.card-deck {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: column;
-  flex-direction: column;
-}
-
-.card-deck .b-card {
-  margin-bottom: 15px;
-}
-
-@media (min-width: 576px) {
-  .card-deck {
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    -ms-flex-flow: row wrap;
-    flex-flow: row wrap;
-    margin-right: -15px;
-    margin-left: -15px;
-  }
-  .card-deck .b-card {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-flex: 1;
-    -ms-flex: 1 0 0%;
-    flex: 1 0 0%;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: column;
-    flex-direction: column;
-    margin-right: 15px;
-    margin-bottom: 0;
-    margin-left: 15px;
-  }
-}
-
-.card-group {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: column;
-  flex-direction: column;
-}
-
-.card-group > .b-card {
-  margin-bottom: 15px;
-}
-
-@media (min-width: 576px) {
-  .card-group {
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    -ms-flex-flow: row wrap;
-    flex-flow: row wrap;
-  }
-  .card-group > .b-card {
-    -webkit-box-flex: 1;
-    -ms-flex: 1 0 0%;
-    flex: 1 0 0%;
-    margin-bottom: 0;
-  }
-  .card-group > .b-card + .b-card {
-    margin-left: 0;
-    border-left: 0;
-  }
-  .card-group > .card:first-child {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-  .card-group > .card:first-child .card-img-top,
-  .card-group > .card:first-child .card-header {
-    border-top-right-radius: 0;
-  }
-  .card-group > .card:first-child .card-img-bottom,
-  .card-group > .card:first-child .card-footer {
-    border-bottom-right-radius: 0;
-  }
-  .card-group > .card:last-child {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-  }
-  .card-group > .card:last-child .card-img-top,
-  .card-group > .card:last-child .card-header {
-    border-top-left-radius: 0;
-  }
-  .card-group > .card:last-child .card-img-bottom,
-  .card-group > .card:last-child .card-footer {
-    border-bottom-left-radius: 0;
-  }
-  .card-group > .card:only-child {
-    border-radius: 0.25rem;
-  }
-  .card-group > .card:only-child .card-img-top,
-  .card-group > .card:only-child .card-header {
-    border-top-left-radius: 0.25rem;
-    border-top-right-radius: 0.25rem;
-  }
-  .card-group > .card:only-child .card-img-bottom,
-  .card-group > .card:only-child .card-footer {
-    border-bottom-right-radius: 0.25rem;
-    border-bottom-left-radius: 0.25rem;
-  }
-  .card-group > .card:not(:first-child):not(:last-child):not(:only-child) {
-    border-radius: 0;
-  }
-  .card-group
-    > .card:not(:first-child):not(:last-child):not(:only-child)
-    .card-img-top,
-  .card-group
-    > .card:not(:first-child):not(:last-child):not(:only-child)
-    .card-img-bottom,
-  .card-group
-    > .card:not(:first-child):not(:last-child):not(:only-child)
-    .card-header,
-  .card-group
-    > .card:not(:first-child):not(:last-child):not(:only-child)
-    .card-footer {
-    border-radius: 0;
-  }
-}
-
-.card-columns .b-card {
-  margin-bottom: 0.75rem;
-}
-
-@media (min-width: 576px) {
-  .card-columns {
-    -webkit-column-count: 3;
-    -moz-column-count: 3;
-    column-count: 3;
-    -webkit-column-gap: 1.25rem;
-    -moz-column-gap: 1.25rem;
-    column-gap: 1.25rem;
-  }
-  .card-columns .b-card {
-    display: inline-block;
-    width: 100%;
-  }
-}
-.border-type-1 {
-  border-top: 10px solid #007bff !important;
-}
-
-.border-type-2 {
-  border-top: 10px solid #e83e8c !important;
-}
-
-.border-type-3 {
-  border-top: 10px solid #6f42c1 !important;
-}
-
-.border-type-4 {
-  border-top: 10px solid #6610f2 !important;
-}
-
-.border-type-5 {
-  border-top: 10px solid #28a745 !important;
-}
-
-.option-type-1 {
-  color: #007bff !important;
-}
-
-.option-type-2 {
-  color: #e83e8c !important;
-}
-
-.option-type-3 {
-  color: #6f42c1 !important;
-}
-
-.option-type-4 {
-  color: #6610f2 !important;
-}
-
-.option-type-5 {
-  color: #28a745 !important;
-}
-
-.option-type-1.active {
-  border-bottom: 3px solid #007bff !important;
-}
-
-.option-type-2.active {
-  border-bottom: 3px solid #e83e8c !important;
-}
-
-.option-type-3.active {
-  border-bottom: 3px solid #6f42c1 !important;
-}
-
-.option-type-4.active {
-  border-bottom: 3px solid #6610f2 !important;
-}
-.option-type-5.active {
-  border-bottom: 3px solid #28a745 !important;
-}
-.component-fade-enter-active,
-.component-fade-leave-active {
-  transition: opacity 0.3s ease;
-}
 .component-fade-enter,
 .component-fade-leave-to
 /* .component-fade-leave-active below version 2.1.8 */ {
   opacity: 0;
+}
+.has-pt-1rem {
+  margin-top: 1rem;
+}
+/* List */
+@media only screen and (max-width: 768px) {
+  .is-256x246 {
+    height: 128px !important;
+    width: 128px !important;
+  }
+}
+.is-256x246 {
+  height: 256px;
+  width: 256px;
+}
+.card.is-horizontal {
+  display: flex;
+}
+.card.is-horizontal .card-image {
+  width: auto;
+  height: 100%;
+}
+.card.is-horizontal .card-stacked {
+  flex-direction: column;
+  flex: 1 1 auto;
+  display: flex;
+  position: relative;
+}
+.card.is-horizontal .card-stacked .card-content {
+  flex-grow: 1;
 }
 </style>

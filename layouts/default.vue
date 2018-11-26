@@ -3,15 +3,18 @@
     Header
     section.Site-content
       nuxt
+    Footer
 </template>
 
 <script>
 import Vuex from 'vuex'
 import Header from './../components/Header.vue'
+import Footer from './../components/Footer.vue'
 
 export default {
   components: {
-    Header
+    Header,
+    Footer
   },
   head: {
     bodyAttrs: {

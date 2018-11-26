@@ -13,22 +13,17 @@
           #navbarMenu.navbar-menu
             .navbar-end
               .navbar-item
-                nuxt-link.has-text-white(to='/') Inicio
-              .navbar-item
-                nuxt-link.has-text-white(to='/admin') Dashboard
+                nuxt-link.navbar-link(to='/') Inicio
+              .navbar-item(v-if="$store.state.isAuth && $store.state.isAdmin")
+                nuxt-link.navbar-link(to='/admin') Dashboard
               .navbar-item.has-dropdown.is-hoverable.is-mega
-                .navbar-link
-                  nuxt-link.has-text-white(to='/repo') Repositorios
+                nuxt-link.navbar-link(to='/repo') Repositorios
                 #nav-repo.navbar-dropdown(data-style='width: 18rem;')
                   .container.is-fluid
-                    .columns.is-centered
-                      .column.has-text-centered
-                        nuxt-link.title.is-6.is-mega-menu-title(to='/repo/topics') Tematicas
-                      .column.has-text-centered
-                        nuxt-link.title.is-6.is-mega-menu-title(to='/repo/types') Tipos
 
                     .columns
                       .column
+                        nuxt-link.title.is-6.is-mega-menu-title(to='/repo/topics') Tematicas
                         nuxt-link.navbar-item(to='/repo/topics/cultura')
                           .navbar-content
                             p Cultura
@@ -54,6 +49,7 @@
                             p.tag.is-danger Todas
 
                       .column
+                        nuxt-link.title.is-6.is-mega-menu-title(to='/repo/types') Tipos
                         nuxt-link.navbar-item(to='/repo/types/cursos')
                           .navbar-content
                             p Cursos
@@ -180,6 +176,9 @@ nav.navbar.is-black {
 .navbar-item.is-mega .is-mega-menu-title {
   margin-bottom: 0;
   padding: 0.375rem 1rem;
+}
+.is-mega > a {
+  color: black;
 }
 /*
 #nav-repo {

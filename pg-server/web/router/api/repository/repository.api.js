@@ -206,6 +206,52 @@ router.use(
 )
 
 router.post(
+  '/:idR/resource/',
+  catchException(async (req, res, next) => {
+    console.log(req.user)
+    const { username, id: idUser, profileImage } = req.user
+    const {
+      params: { idR: idRepository }
+    } = req
+
+    delete req.body.id
+
+    if (!req.body.file) {
+      req.body.file = ''
+    }
+
+    const obj = new Model['resource']({
+      ...req.body,
+      idRepository,
+      username,
+      idUser
+    })
+
+    if (req.files && req.files.file) {
+      const {
+        files: { file }
+      } = req
+
+      const client = '/public/repositories/' + 'resources'
+      console.log(process.env.CLIENT_PATH, client)
+      console.log(Path.join(process.env.CLIENT_PATH, client))
+      const path = Path.join(process.env.CLIENT_PATH, client)
+      const fileName = await saveFile(file, null, path)
+      obj.setFile(fileName ? client + '/' + fileName : null)
+      obj.setUploaded(true)
+    }
+
+    //const results = await obj.save()
+    const result = await obj.save()
+
+    return res
+      .status(201)
+      .json({ data: result })
+      .end()
+  })
+)
+
+router.post(
   '/:idR/comment/',
   catchException(async (req, res, next) => {
     console.log(req.user)
@@ -236,7 +282,7 @@ router.put(
       params: { idR: idRepository, id }
     } = req
 
-    const results = await Comment.findOneAndUpdate(
+    const results = await Comment.findOneAndUpadate(
       {
         id,
         idRepository,
@@ -312,7 +358,7 @@ router.put(
     } = req
 
     const results = await Model[req.model]
-      .findOneAndUpdate(
+      .findOneAndUpadate(
         {
           id,
           idRepository
@@ -390,13 +436,13 @@ router.put(
   '/:id',
   catchException(async (req, res, next) => {
     const {
-      param: { id }
+      params: { id }
     } = req
 
     // if is required
     const { username, id: idUser } = req.user
 
-    const repository = await Repository.findOneAndUpdate(
+    const repository = await Repository.findOneAndUpadate(
       {
         id
       },

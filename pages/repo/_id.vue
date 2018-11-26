@@ -1,8 +1,8 @@
 <template lang="pug">
   div.container(style="padding: 1% 0% 1% 0%;")
-    template(v-if="repository.image")
-      repoDI(:repository="repository")
-    template(v-else)
+    //template(v-if="repository.image")
+    repoDI(:repository="repository")
+    //-template(v-else)
       repoD(:repository="repository")
     article.media(v-for="(comment, index) in comments" :key="index")
       figure.media-left
@@ -23,14 +23,19 @@
           img(:src="$store.state.user.profileImage || 'https://bulma.io/images/placeholders/128x128.png'")
       .media-content
         form(v-on:submit.prevent="handleSubmit($event)")
+          .field(style="margin:0;")
+            b-input#comment(maxlength="255" type="textarea")
           .field
             p.control
-              textarea#comment.textarea(placeholder='Add a comment...')
-          .field
-            p.control
-              button#handle.button Post comment
-    article.media(v-else)
-      | Login Event
+              button#handle.button Comentar
+    section(v-else)
+      .buttons.is-centered
+        nuxt-link(to="/login").button.is-info
+          span(title='Ingresa C:') Ingresa
+        nuxt-link(to="/singup").button.is-danger
+          span.icon
+            i.mdi.mdi-account
+          span(title='Registro C:') Registro
     // pre {{ repository }}
 </template>
 
