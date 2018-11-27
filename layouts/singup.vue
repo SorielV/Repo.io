@@ -1,73 +1,48 @@
 <template lang="pug">
   section.login
-    .something-semantic
-      .something-else-semantic
-        section.login-from
-          section.login-from-content
-            form(
-              v-on:submit.prevent="handleSubmit"
-            )
-              h1.title Registrese
-              div(
-                style="display: block; text-align: -webkit-center; margin: 1rem"
-              )
-                figure.image.is-128x128
-                  img(src="http://cdn.onlinewebfonts.com/svg/img_210318.png")
-                  nuxt-link(to='/') selecciona
-              .field
-                .control
-                <br>
-                  input.input(
-                    type="text"
-                    placeholder="Usuario"
-                    v-model="user.username"
-                  )
-              .field
-                .control
-                  b-input(
-                    type="password"
-                    placeholder="Password"
-                    password-reveal
-                    v-model="user.password"
-                  )
-              .field
-                .control
-                  input.input(
-                    type="email"
-                    placeholder="Email"
-                    v-model="user.email"
-                  )
-              .field
-                .control
-                  input.input(
-                    type="text"
-                    placeholder="Nombre"
-                    v-model="user.firstName"
-                  )
-              .field
-                .control
-                  input.input(
-                    type="text"
-                    placeholder="Apellido"
-                    v-model="user.lastName"
-                  )
-              .field
-                .control
+    #flow
+      span.flow-1
+      span.flow-2
+      span.flow-3
+    section.hero.is-white.is-fullheight
+      .hero-body
+        .container.has-text-centered
+          .column.is-4.is-offset-4
+            h3.title.has-text-black Registrate
+            p.subtitle.has-text-black Estas listo para el Conocimieto
+            .box
+              figure.avatar
+                img(src='https://placehold.it/128x128')
+              form
+                .field
+                  .control
+                    input.input.is-medium(type='text', placeholder='Usuario', autofocus='')
+                .field
+                  .control
+                    input.input.is-medium(type='text', placeholder='Nombre(s)')
+                .field
+                  .control
+                    input.input.is-medium(type='text', placeholder='Apellidos')
+                  .field
                   b-datepicker(
-                    placeholder="Fecha Nacimiento"
+                    placeholder='Fecha de Nacimiento'
                     icon="calendar-today"
-                    v-model="user.birthDate"
-                    position="is-top-right"
-                  )
-              button.button.is-danger.is-outlined.is-rounded Registrarse
-              section.login-others
-              <br>
-                a(href='') 
-                  img(src="https://i0.wp.com/umap.org/wp-content/uploads/2017/06/Universidad-de-Colima.png?fit=1069%2C1065" width='50px')
-                a(href='')
-                  img(src="http://www.stickpng.com/assets/images/5a951939c4ffc33e8c148af2.png" width='50px')
-              section.has-text-left
-                nuxt-link(to='/') Inicio
+                    v-model="user.birthDate")
+                  .field
+                  .control
+                    input.input.is-medium(type='email', placeholder='Correo Electronico')
+                .field
+                  .control
+                    input.input.is-medium(type='password', placeholder='Contraseña')
+                
+                button.button.is-block.is-danger.is-large.is-fullwidth Registrarme
+            p.has-text-grey
+              |Ya tienes cuenta?, 
+              a(href='../') Inicia Sesión
+              |   · 
+              a(href='../') Necesitas Ayuda?
+    script(async='', type='text/javascript', src='../js/bulma.js')
+              
 </template>
 
 <script>
@@ -99,6 +74,87 @@ export default {
 </script>
 
 <style>
+#flow span {
+  display: block;
+  width: 200vw;
+  height: 200vw;
+  position: absolute;
+  top: -180vw;
+  left: -50vw;
+  border-radius: 90vw;
+  opacity: 0.6;
+}
+.flow-1 {
+  background: #191717;
+  -webkit-animation: rotating 20s linear infinite;
+  -moz-animation: rotating 20s linear infinite;
+  -ms-animation: rotating 20s linear infinite;
+  -o-animation: rotating 20s linear infinite;
+  animation: rotating 20s linear infinite;
+}
+
+.flow-2 {
+  background: #0f91e2;
+  position: absolute;
+  -webkit-animation: rotating 15s linear infinite;
+  -moz-animation: rotating 15s linear infinite;
+  -ms-animation: rotating 15s linear infinite;
+  -o-animation: rotating 15s linear infinite;
+  animation: rotating 15s linear infinite;
+}
+
+.flow-3 {
+  background: #a721dc;
+  position: absolute;
+  -webkit-animation: rotating 7s linear infinite;
+  -moz-animation: rotating 7s linear infinite;
+  -ms-animation: rotating 7s linear infinite;
+  -o-animation: rotating 7s linear infinite;
+  animation: rotating 7s linear infinite;
+}
+
+@-webkit-keyframes rotating {
+  from {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+
+  to {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotating {
+  from {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+
+  to {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+.rotating {
+  -webkit-animation: rotating 2s linear infinite;
+  -moz-animation: rotating 2s linear infinite;
+  -ms-animation: rotating 2s linear infinite;
+  -o-animation: rotating 2s linear infinite;
+  animation: rotating 2s linear infinite;
+}
 html,
 body,
 #__layout,

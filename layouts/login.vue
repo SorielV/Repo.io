@@ -1,30 +1,33 @@
 <template lang="pug">
   section.login
-    section.hero.is-black.is-fullheight
+    #flow
+      span.flow-1
+      span.flow-2
+      span.flow-3
+    section.hero.is-white.is-fullheight
       .hero-body
         .container.has-text-centered
           .column.is-4.is-offset-4
-            h3.title.has-text-white Iniciar Sesión
-            p.subtitle.has-text-white Logeate en Repo-io para Acceder
+            h3.title.has-text-black Iniciar Sesión
+            p.subtitle.has-text-black Logeate en Repo-io para Acceder
             .box
               figure.avatar
                 img(src='https://placehold.it/128x128')
               form
                 .field
                   .control
-                    input.input.is-medium(type='email', placeholder='Your Email', autofocus='')
+                    input.input(type='email', placeholder='Correo', autofocus='')
                 .field
                   .control
-                    input.input.is-medium(type='password', placeholder='Your Password')
+                    input.input(type='password', placeholder='Contraseña')
                 .field
-                  label.checkbox
-                    input(type='checkbox')
-                    | Recuerdame
-                button.button.is-block.is-warning.is-large.is-fullwidth Iniciar
+                  b-checkbox(type='is-info')
+                  | Recuerdame
+                button.button.is-block.is-info.is-large.is-fullwidth Iniciar
             p.has-text-grey
               a(href='../') Registrate
               |   · 
-              a(href='../') Olvidaste tu contraceña
+              a(href='../') Olvidaste tu contraseña
               |   · 
               a(href='../') Ayuda?
     script(async='', type='text/javascript', src='../js/bulma.js')
@@ -73,6 +76,88 @@ export default {
   }
 }
 </script>
+<style>
+#flow span {
+  display: block;
+  width: 800vw;
+  height: 800vw;
+  position: absolute;
+  top: -180vw;
+  left: -50vw;
+  border-radius: 90vw;
+  opacity: 0.6;
+}
+.flow-1 {
+  background: #191717;
+  -webkit-animation: rotating 20s linear infinite;
+  -moz-animation: rotating 20s linear infinite;
+  -ms-animation: rotating 20s linear infinite;
+  -o-animation: rotating 20s linear infinite;
+  animation: rotating 20s linear infinite;
+}
+
+.flow-2 {
+  background: #0f91e2;
+  position: absolute;
+  -webkit-animation: rotating 15s linear infinite;
+  -moz-animation: rotating 15s linear infinite;
+  -ms-animation: rotating 15s linear infinite;
+  -o-animation: rotating 15s linear infinite;
+  animation: rotating 15s linear infinite;
+}
+
+.flow-3 {
+  background: #a721dc;
+  position: absolute;
+  -webkit-animation: rotating 7s linear infinite;
+  -moz-animation: rotating 7s linear infinite;
+  -ms-animation: rotating 7s linear infinite;
+  -o-animation: rotating 7s linear infinite;
+  animation: rotating 7s linear infinite;
+}
+
+@-webkit-keyframes rotating {
+  from {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+
+  to {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotating {
+  from {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+
+  to {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+.rotating {
+  -webkit-animation: rotating 2s linear infinite;
+  -moz-animation: rotating 2s linear infinite;
+  -ms-animation: rotating 2s linear infinite;
+  -o-animation: rotating 2s linear infinite;
+  animation: rotating 2s linear infinite;
+}
 
 html,
 body,
