@@ -12,21 +12,18 @@
               span
           #navbarMenu.navbar-menu
             .navbar-end
-              .navbar-item
-                nuxt-link.has-text-white(to='/') Inicio
-              .navbar-item
-                nuxt-link.has-text-white(to='/admin') Dashboard
+              nuxt-link.navbar-item(to='/')
+                | Inicio
+              nuxt-link.navbar-item(
+                to='/admin'
+                v-if="$store.state.isAuth && $store.state.isAdmin"
+              ) Dashboard
+              nuxt-link.navbar-item(to='/repo')
+                | Repositorios
               .navbar-item.has-dropdown.is-hoverable.is-mega
-                .navbar-link
-                  nuxt-link.has-text-white(to='/repo') Repositorios
+                nuxt-link.navbar-link(to='/repo/topics') Tematicas
                 #nav-repo.navbar-dropdown(data-style='width: 18rem;')
                   .container.is-fluid
-                    .columns.is-centered
-                      .column.has-text-centered
-                        nuxt-link.title.is-6.is-mega-menu-title(to='/repo/topics') Tematicas
-                      .column.has-text-centered
-                        nuxt-link.title.is-6.is-mega-menu-title(to='/repo/types') Tipos
-
                     .columns
                       .column
                         nuxt-link.navbar-item(to='/repo/topics/cultura')
@@ -51,8 +48,17 @@
                             p Programing
                         nuxt-link.navbar-item(to='/repo/topics/programing')
                           .navbar-content
-                            p.tag.is-danger Todas
+                            p Todas
 
+                  hr.navbar-divider
+                  .buttons.is-centered
+                    button.button.is-info.is-small Ver Todos
+
+              .navbar-item.has-dropdown.is-hoverable.is-mega
+                nuxt-link.navbar-link(to='/repo/types') Tipos
+                #nav-repo.navbar-dropdown(data-style='width: 18rem;')
+                  .container.is-fluid
+                    .columns
                       .column
                         nuxt-link.navbar-item(to='/repo/types/cursos')
                           .navbar-content
@@ -79,22 +85,12 @@
                             p.tag.is-danger Todos
 
                   hr.navbar-divider
-                  .navbar-item
-                    .navbar-content
-                      .level.is-mobile
-                        .level-left
-                          .level-item
-                            strong Stay up to date!
-                        .level-right
-                          .level-item
-                            a.button.bd-is-rss.is-small(href='http://bulma.io/atom.xml')
-                              span.icon.is-small
-                                i.fa.fa-rss
-                              span Subscribe
+                  .buttons.is-centered
+                    button.button.is-info.is-small Ver Todos
+                
 
               .navbar-item.has-dropdown.is-hoverable
-                a.navbar-link
-                  nuxt-link.has-text-white(to='/community') Comunidad
+                nuxt-link.navbar-link(to='/community') Comunidad
                 .navbar-dropdown
                   nuxt-link.navbar-item(to='/community/bundle') Bundles
                     span.tag.is-danger.beta-feacture Beta
@@ -180,6 +176,9 @@ nav.navbar.is-black {
 .navbar-item.is-mega .is-mega-menu-title {
   margin-bottom: 0;
   padding: 0.375rem 1rem;
+}
+.is-mega > a {
+  color: black;
 }
 /*
 #nav-repo {

@@ -10,10 +10,15 @@ module.exports = {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: pkg.description }
+      {
+        hid: 'description',
+        name: 'Repo-io',
+        content: 'Comparte y consulata repositorios'
+      }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'stylesheet', href: '/public/css/index.css' },
       { rel: 'manifest', href: '/manifest.json' }
     ],
     /*
@@ -53,9 +58,9 @@ module.exports = {
   axios: {
     proxyHeaders: true,
     credentials: true,
-    baseURL: process.env.API_URL || 'http://localhost:3000',
+    baseURL: process.env.API_URL || '//',
     init(axios, context) {
-      axios.defaults.baseURL = context.env.API_URL || 'http://localhost:3000'
+      axios.defaults.baseURL = context.env.API_URL || '//'
     }
     // See https://github.com/nuxt-community/axios-module#options
   },

@@ -25,11 +25,6 @@
                 CardRepository.has-text-black(:repository='repo' @handleViewRepo="handleViewRepo" :key="repo.id")
           .buttons.is-centered
             nuxt-link.button.is-info(to="/repo" style="width: 25%;") Ver Mas
-      .box.cta.has-background-black
-        p.has-text-centered.has-text-white
-          span.tag.is-primary New
-          a(href="https://github.com/SorielV")
-            | @SorielV
 </template>
 
 <script>

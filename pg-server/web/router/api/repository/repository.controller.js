@@ -308,7 +308,18 @@ Repository.getRepositoriesByTypes = async function(_options) {
       ${options.all ? '' : ` limit ${limit} offset ${offset * (page - 1)} `}
   `
   const query = `
-    SELECT Repo.*,
+    SELECT
+      Repo."id",
+      Repo."idUser",
+      Repo."username",
+      Repo."title",
+      Repo."description",
+      Repo."image",
+      Repo."tags",
+      Repo."visibility",
+      Repo."createdAt",
+      Repo."updatedAt",
+      Repo."slug",
       Topic.id as "topic.id", Topic.value as "topic.value",
       Type.id as "type.id", Type.value as "type.value",
       Editorial.id as "editorial.id", Editorial.name as "editorial.name",
@@ -405,7 +416,18 @@ Repository.getRepositoriesByTopics = async function(_options = {}) {
       ${options.all ? '' : ` limit ${limit} offset ${offset * (page - 1)} `}
   `
   const query = `
-    SELECT Repo.*,
+    SELECT
+      Repo."id",
+      Repo."idUser",
+      Repo."username",
+      Repo."title",
+      Repo."description",
+      Repo."image",
+      Repo."tags",
+      Repo."visibility",
+      Repo."createdAt",
+      Repo."updatedAt",
+      Repo."slug",
       Topic.id as "topic.id", Topic.value as "topic.value",
       Type.id as "type.id", Type.value as "type.value",
       Editorial.id as "editorial.id", Editorial.name as "editorial.name",
@@ -501,18 +523,35 @@ Repository.getRepositories = async function(_options = {}) {
   `
 
   const query = `
-    SELECT Repo.*,
+    SELECT
+      Repo."id",
+      Repo."idUser",
+      Repo."username",
+      Repo."title",
+      ${
+        options.full
+          ? 'Repo."content", Repo."description",'
+          : 'Repo."description",'
+      }
+      Repo."image",
+      Repo."tags",
+      Repo."visibility",
+      Repo."createdAt",
+      Repo."updatedAt",
+      Repo."slug",
       ${
         !options.full
           ? `
-          RS.id as "resource.id", RS.file as "resource.file", RS.type as "resource.type", RS.uploaded as "resource.uploaded",
+          RS.id as "resource.id", RS.name as "resource.name", RS.description as "resource.description",
+          RS.file as "resource.file", RS.type as "resource.type", RS.uploaded as "resource.uploaded",
           Topic.id as "topic.id", Topic.value as "topic.value",
           Type.id as "type.id", Type.value as "type.value",
           Editorial.id as "editorial.id", Editorial.name as "editorial.name",
           Author.id as "author.id", Author."firstName" as "author.firstName", Author."lastName" as "author.lastName"
           `
           : `
-          RS.id as "resource.id", RS.file as "resource.file", RS.type as "resource.type", RS.uploaded as "resource.uploaded",
+          RS.id as "resource.id", RS.name as "resource.name", RS.description as "resource.description",
+          RS.file as "resource.file", RS.type as "resource.type", RS.uploaded as "resource.uploaded",
           RET.id as "topic.id", Topic.id as "topic.idCatalog", Topic.value as "topic.value",
           RETy.id as "type.id", Type.id as "type.idCatalog", Type.value as "type.value",
           REE.id as "editorial.id", Editorial.id as "editorial.idCatalog", Editorial.name as "editorial.name",
@@ -575,8 +614,20 @@ Repository.getRepositoryById = async function(id) {
   const whereConditions = 'where ' + whereStament({ id }, true).join(` , `)
 
   const query = `
-  SELECT Repo.*,
-    RS.id as "resource.id", RS.name as "resource.name", RS.description as "resource.description", RS.file as "resource.file", RS.type as "resource.type", RS.uploaded as "resource.uploaded",
+  SELECT
+    Repo."id",
+    Repo."idUser",
+    Repo."username",
+    Repo."title",
+    Repo."content",
+    Repo."image",
+    Repo."tags",
+    Repo."visibility",
+    Repo."createdAt",
+    Repo."updatedAt",
+    Repo."slug",
+    RS.id as "resource.id", RS.name as "resource.name", RS.description as "resource.description",
+    RS.file as "resource.file", RS.type as "resource.type", RS.uploaded as "resource.uploaded",
     Topic.id as "topic.id", Topic.value as "topic.value",
     Type.id as "type.id", Type.value as "type.value",
     Editorial.id as "editorial.id", Editorial.name as "editorial.name",

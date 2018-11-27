@@ -9,7 +9,7 @@
           class="image">
           <img
             class="nyan-cat"
-            src="https://s0.wp.com/wp-content/themes/a8c/automattic-2011/page-templates/assets/2016-annual-report/images/cat5.gif">
+            src="/public/loading.gif">
         </figure>
       </div>
     </div>
@@ -61,7 +61,7 @@ export default {
   vertical-align: middle;
 }
 .nyan-cat {
-  width: 50%;
+  width: 25%;
   margin: auto;
 }
 </style>

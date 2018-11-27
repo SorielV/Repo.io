@@ -25,6 +25,18 @@ const ResourceSchema = {
       required: false,
       updatable: true
     },
+    name: {
+      type: String,
+      required: true,
+      updatable: true,
+      length: 60
+    },
+    description: {
+      type: String,
+      required: true,
+      updatable: true,
+      length: 120
+    },
     file: {
       type: String,
       required: true,

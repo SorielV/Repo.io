@@ -398,11 +398,13 @@ CREATE TABLE public."Repositories" (
     username character varying(20) NOT NULL,
     title character varying(80) NOT NULL,
     description character varying(200) NOT NULL,
-    image character varying(100) NOT NULL,
+    image character varying(100) DEFAULT NULL::character varying,
     tags character varying(120) NOT NULL,
     visibility smallint DEFAULT 0,
     "createdAt" timestamp without time zone DEFAULT now(),
-    "updatedAt" timestamp without time zone
+    "updatedAt" timestamp without time zone,
+    slug character varying(80) DEFAULT NULL::character varying,
+    content text DEFAULT 'Sin Contenido'::text
 );
 
 
@@ -548,7 +550,9 @@ CREATE TABLE public."RepositoryResources" (
     type smallint DEFAULT 0,
     uploaded boolean DEFAULT false,
     "createdAt" timestamp without time zone DEFAULT now(),
-    "updatedAt" timestamp without time zone
+    "updatedAt" timestamp without time zone,
+    name character varying(80),
+    description character varying(80)
 );
 
 
@@ -986,6 +990,7 @@ COPY public."BundleRepository" (id, "idBundle", "idRepository", "createdAt") FRO
 COPY public."CatalogAuthors" (id, image, description, "lastName", "firstName", "createdAt") FROM stdin;
 1	http://www.nyan.cat/cats/original.gif	Is a Cat	Cat	Nyan	2018-11-10 20:51:39.912119
 3	http://www.nyan.cat/cats/mexinyan.gif	Is a Mexican Cat	Mexican	Nyan	2018-11-14 00:41:41.350202
+2	/public/repositories/author/1542929397445.jpg	Arthur Ignatius Conan Doyle ​ fue un escritor y médico ...	Conan Doyle	Arthur	2018-10-04 17:27:31
 \.
 
 
@@ -994,7 +999,7 @@ COPY public."CatalogAuthors" (id, image, description, "lastName", "firstName", "
 --
 
 COPY public."CatalogEditorials" (id, image, description, name) FROM stdin;
-1	\N	Nintendo	nintendo
+1	/public/repositories/editorial/1542991877781.png	Nintendo	nintendo
 \.
 
 
@@ -1003,29 +1008,29 @@ COPY public."CatalogEditorials" (id, image, description, name) FROM stdin;
 --
 
 COPY public."CatalogTopics" (id, value, description, image) FROM stdin;
-1	Examples	Examples	\N
 2	Samples	Samples	\N
 3	Cultura		\N
-4	Comida		\N
-5	Videojuegos		\N
-6	Humor		\N
-7	Musica		\N
 8	Fotografia		\N
-9	Deportes		\N
-10	Estilo		\N
-11	TV		\N
 12	Negocios		\N
 13	Disenio		\N
-16	Economia		\N
 17	Javascript		\N
 19	Machine Learning		\N
 20	Programing		\N
 21	Sotfware		\N
 22	Tecnologia		\N
 23	Otros		\N
-24	pokemon	El mundo pokemon	\N
-25	anime	Animes	\N
 26	cartoons	Cartoons	\N
+1	Examples	Examples	/public/repositories/topic/1542923104975.png
+5	Videojuegos	jsjsjsjs	/public/repositories/topic/1542925161094.jpg
+6	Humor	Es el dia del platanooooooooooo	/public/repositories/topic/1542925182247.jpg
+25	anime	Gorubin slaya	/public/repositories/topic/1542925214137.jpg
+24	pokemon	El mundo pokemon	/public/repositories/topic/1542925257184.jpg
+9	Deportes	Vive sano	/public/repositories/topic/1542925296798.jpg
+11	TV	Tv chavos	/public/repositories/topic/1542925331120.jpg
+16	Economia	dinero	/public/repositories/topic/1542925351444.jpg
+4	Comida	Para chuparse los dedos	/public/repositories/topic/1542925425995.jpg
+7	Musica	Relax	/public/repositories/topic/1542925463115.jpg
+10	Estilo	Manera de vivir	/public/repositories/topic/1542925517090.jpg
 \.
 
 
@@ -1034,37 +1039,40 @@ COPY public."CatalogTopics" (id, value, description, image) FROM stdin;
 --
 
 COPY public."CatalogTypes" (id, value, description, image) FROM stdin;
-1	Example	Example	\N
-3	Cursos		\N
-4	Videos		\N
-5	Portales Blogs		\N
-6	Tools Software		\N
-7	PPTs SlideShare		\N
 8	Infografias y Memes		\N
-9	People To Follow		\N
-10	Comunidades		\N
-11	APIs		\N
-12	DataSets		\N
-13	Papers		\N
-14	Books		\N
-15	water	Tipo de pokemon {water}	\N
-16	fire	Tipo de pokemon {fire}	\N
-17	normal	Tipo de pokemon {normal}	\N
-18	dark	Tipo de pokemon {dark}	\N
-19	poison	Tipo de pokemon {poison}	\N
-20	electric	Tipo de pokemon {electric}	\N
-21	ice	Tipo de pokemon {ice}	\N
-22	ground	Tipo de pokemon {ground}	\N
-23	fairy	Tipo de pokemon {fairy}	\N
-24	fighting	Tipo de pokemon {fighting}	\N
-25	psychic	Tipo de pokemon {psychic}	\N
-26	rock	Tipo de pokemon {rock}	\N
-27	ghost	Tipo de pokemon {ghost}	\N
-28	dragon	Tipo de pokemon {dragon}	\N
-29	steel	Tipo de pokemon {steel}	\N
-30	flying	Tipo de pokemon {flying}	\N
 32	bug	Tipo de pokemon {bug}	\N
 2	grass	Tipo de pokemon {grass}	/public/catalog/types/2.jpeg
+36	Exampleee	1111	\N
+29	steel	Tipo de pokemon {steel}	/public/repositories/type/1542924202119.png
+30	flying	Tipo de pokemon {flying}	/public/repositories/type/1542924241606.jpg
+28	dragon	BESTO POKEMON DRAGON	/public/repositories/type/1542924154620.png
+24	fighting	BESTO HUSBANDO	/public/repositories/type/1542923886326.png
+20	electric	uy	/public/repositories/type/1542924297001.png
+21	ice	Nievesita de la villa	/public/repositories/type/1542923645574.jpg
+18	dark	Este no es ditto	/public/repositories/type/1542923426076.jpg
+15	water	Tipo de pokemon {water}	/public/repositories/type/1542924548431.jpg
+39	Gato	Soy en un gato	/public/repositories/type/1542925698239.png
+42	1	11111	/public/repositories/type/1543207625545.gif
+1	Example	222222	/public/repositories/type/1542922171911.png
+6	Tools Software	111111	/public/repositories/type/1542922546005.png
+5	Portales Blogs	1111	/public/repositories/type/1542922562831.png
+7	PPTs SlideShare	Es CHIdo	/public/repositories/type/1542922613227.png
+9	People To Follow	Ni Idea	/public/repositories/type/1542922677135.png
+3	Cursos	22211111111111222	/public/repositories/type/1542922848657.jpg
+4	Videos	22211111111111222	/public/repositories/type/1542922881736.jpg
+10	Comunidades	Comunidades comunitivas	/public/repositories/type/1542922974203.jpg
+12	DataSets	Lorem ipsum dolore	/public/repositories/type/1542923118304.png
+13	Papers	Cosas cientificas	undefined
+14	Books	C U L T U R A	/public/repositories/type/1542923192722.jpg
+11	APIs	COSAS	/public/repositories/type/1542923214261.png
+17	normal	Tipo de pokemon {normal}	/public/repositories/type/1542923348496.png
+16	fire	Tipo de pokemon {fire}	/public/repositories/type/1542923389154.jpg
+19	poison	Tipo de pokemon {poison}	/public/repositories/type/1542923453725.jpg
+22	ground	Tipo de pokemon {ground}	/public/repositories/type/1542923731687.jpg
+23	fairy	Tipo de pokemon {fairy}	/public/repositories/type/1542923816746.png
+25	psychic	Tipo de pokemon {psychic}	/public/repositories/type/1542924008060.jpg
+26	rock	Tipo de pokemon {rock}	/public/repositories/type/1542924094888.png
+27	ghost	Tipo de pokemon {ghost}	/public/repositories/type/1542924130006.jpg
 \.
 
 
@@ -1088,814 +1096,818 @@ COPY public."MyList" (id, "idUser", username, "idRepository", type, "createdAt")
 -- Data for Name: Repositories; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public."Repositories" (id, "idUser", username, title, description, image, tags, visibility, "createdAt", "updatedAt") FROM stdin;
-2585	1	admin	Squirtle	Squirtle es el pokemon numero #7	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/007.png	electric,grass	1	2018-11-16 05:58:58.20554	\N
-2586	1	admin	Ivysaur	Ivysaur es el pokemon numero #2	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/002.png	fire,flying,ice,psychic	1	2018-11-16 05:58:58.207023	\N
-2587	1	admin	Charizard	Charizard es el pokemon numero #6	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/006.png	rock,electric,water	1	2018-11-16 05:58:58.218169	\N
-2588	1	admin	Charmeleon	Charmeleon es el pokemon numero #5	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/005.png	ground,rock,water	1	2018-11-16 05:58:58.220323	\N
-2589	1	admin	Wartortle	Wartortle es el pokemon numero #8	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/008.png	electric,grass	1	2018-11-16 05:58:58.225949	\N
-2590	1	admin	Bulbasaur	Bulbasaur es el pokemon numero #1	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/001.png	fire,flying,ice,psychic	1	2018-11-16 05:58:58.252687	\N
-2591	1	admin	Blastoise	Blastoise es el pokemon numero #9	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/009.png	electric,grass	1	2018-11-16 05:58:58.254838	\N
-2592	1	admin	Venusaur	Venusaur es el pokemon numero #3	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/003.png	fire,flying,ice,psychic	1	2018-11-16 05:58:58.259438	\N
-2593	1	admin	Charmander	Charmander es el pokemon numero #4	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/004.png	ground,rock,water	1	2018-11-16 05:58:58.261949	\N
-2594	1	admin	Caterpie	Caterpie es el pokemon numero #10	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/010.png	fire,flying,rock	1	2018-11-16 05:58:58.261463	\N
-2595	1	admin	Metapod	Metapod es el pokemon numero #11	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/011.png	fire,flying,rock	1	2018-11-16 05:58:58.319933	\N
-2596	1	admin	Butterfree	Butterfree es el pokemon numero #12	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/012.png	rock,electric,fire,flying,ice	1	2018-11-16 05:58:58.324873	\N
-2597	1	admin	Weedle	Weedle es el pokemon numero #13	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/013.png	fire,flying,psychic,rock	1	2018-11-16 05:58:58.337644	\N
-2598	1	admin	Beedrill	Beedrill es el pokemon numero #15	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/015.png	fire,flying,psychic,rock	1	2018-11-16 05:58:58.348104	\N
-2599	1	admin	Kakuna	Kakuna es el pokemon numero #14	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/014.png	fire,flying,psychic,rock	1	2018-11-16 05:58:58.350144	\N
-2600	1	admin	Pidgey	Pidgey es el pokemon numero #16	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/016.png	electric,ice,rock	1	2018-11-16 05:58:58.383302	\N
-2601	1	admin	Pidgeot	Pidgeot es el pokemon numero #18	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/018.png	electric,ice,rock	1	2018-11-16 05:58:58.386539	\N
-2602	1	admin	Pidgeotto	Pidgeotto es el pokemon numero #17	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/017.png	electric,ice,rock	1	2018-11-16 05:58:58.392595	\N
-2603	1	admin	Raticate	Raticate es el pokemon numero #20	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/020.png	fighting	1	2018-11-16 05:58:58.422183	\N
-2604	1	admin	Rattata	Rattata es el pokemon numero #19	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/019.png	fighting	1	2018-11-16 05:58:58.423787	\N
-2605	1	admin	Spearow	Spearow es el pokemon numero #21	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/021.png	electric,ice,rock	1	2018-11-16 05:58:58.425726	\N
-2606	1	admin	Fearow	Fearow es el pokemon numero #22	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/022.png	electric,ice,rock	1	2018-11-16 05:58:58.451019	\N
-2607	1	admin	Ekans	Ekans es el pokemon numero #23	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/023.png	ground,psychic	1	2018-11-16 05:58:58.459031	\N
-2608	1	admin	Arbok	Arbok es el pokemon numero #24	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/024.png	ground,psychic	1	2018-11-16 05:58:58.47008	\N
-2609	1	admin	Pikachu	Pikachu es el pokemon numero #25	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/025.png	ground	1	2018-11-16 05:58:58.47385	\N
-2610	1	admin	Raichu	Raichu es el pokemon numero #26	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/026.png	ground	1	2018-11-16 05:58:58.498134	\N
-2611	1	admin	Sandshrew	Sandshrew es el pokemon numero #27	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/027.png	grass,ice,water	1	2018-11-16 05:58:58.506224	\N
-2612	1	admin	Sandslash	Sandslash es el pokemon numero #28	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/028.png	grass,ice,water	1	2018-11-16 05:58:58.515336	\N
-2613	1	admin	Nidoran♀	Nidoran♀ es el pokemon numero #29	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/029.png	ground,psychic	1	2018-11-16 05:58:58.537283	\N
-2614	1	admin	Nidorina	Nidorina es el pokemon numero #30	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/030.png	ground,psychic	1	2018-11-16 05:58:58.546837	\N
-2615	1	admin	Nidoqueen	Nidoqueen es el pokemon numero #31	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/031.png	ground,ice,psychic,water	1	2018-11-16 05:58:58.548402	\N
-2616	1	admin	Nidoran♂	Nidoran♂ es el pokemon numero #32	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/032.png	ground,psychic	1	2018-11-16 05:58:58.566477	\N
-2617	1	admin	Nidorino	Nidorino es el pokemon numero #33	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/033.png	ground,psychic	1	2018-11-16 05:58:58.584565	\N
-2618	1	admin	Nidoking	Nidoking es el pokemon numero #34	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/034.png	ground,ice,psychic,water	1	2018-11-16 05:58:58.678252	\N
-2619	1	admin	Jigglypuff	Jigglypuff es el pokemon numero #39	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/039.png	steel,poison	1	2018-11-16 05:58:58.690871	\N
-2620	1	admin	Clefairy	Clefairy es el pokemon numero #35	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/035.png	steel,poison	1	2018-11-16 05:58:58.691765	\N
-2621	1	admin	Clefable	Clefable es el pokemon numero #36	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/036.png	steel,poison	1	2018-11-16 05:58:58.695607	\N
-2622	1	admin	Vulpix	Vulpix es el pokemon numero #37	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/037.png	ground,rock,water	1	2018-11-16 05:58:58.696392	\N
-2623	1	admin	Wigglytuff	Wigglytuff es el pokemon numero #40	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/040.png	steel,poison	1	2018-11-16 05:58:58.701188	\N
-2624	1	admin	Ninetales	Ninetales es el pokemon numero #38	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/038.png	ground,rock,water	1	2018-11-16 05:58:58.704893	\N
-2625	1	admin	Golbat	Golbat es el pokemon numero #42	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/042.png	electric,ice,psychic,rock	1	2018-11-16 05:58:58.707008	\N
-2626	1	admin	Zubat	Zubat es el pokemon numero #41	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/041.png	electric,ice,psychic,rock	1	2018-11-16 05:58:58.718171	\N
-2628	1	admin	Gloom	Gloom es el pokemon numero #44	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/044.png	fire,flying,ice,psychic	1	2018-11-16 05:58:58.792065	\N
-2627	1	admin	Oddish	Oddish es el pokemon numero #43	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/043.png	fire,flying,ice,psychic	1	2018-11-16 05:58:58.730434	\N
-2637	1	admin	Persian	Persian es el pokemon numero #53	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/053.png	fighting	1	2018-11-16 05:58:58.862376	\N
-2647	1	admin	Abra	Abra es el pokemon numero #63	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/063.png	bug,dark,ghost	1	2018-11-16 05:58:58.973004	\N
-2655	1	admin	Tentacruel	Tentacruel es el pokemon numero #73	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/073.png	electric,ground,psychic	1	2018-11-16 05:58:59.083714	\N
-2665	1	admin	Magneton	Magneton es el pokemon numero #82	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/082.png	ground,fire,fighting	1	2018-11-16 05:58:59.208689	\N
-2673	1	admin	Shellder	Shellder es el pokemon numero #90	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/090.png	electric,grass	1	2018-11-16 05:58:59.323532	\N
-2681	1	admin	Kingler	Kingler es el pokemon numero #99	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/099.png	electric,grass	1	2018-11-16 05:58:59.434827	\N
-2691	1	admin	Hitmonchan	Hitmonchan es el pokemon numero #107	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/107.png	flying,psychic,fairy	1	2018-11-16 05:58:59.550512	\N
-2700	1	admin	Horsea	Horsea es el pokemon numero #116	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/116.png	electric,grass	1	2018-11-16 05:58:59.662633	\N
-2710	1	admin	Magmar	Magmar es el pokemon numero #126	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/126.png	ground,rock,water	1	2018-11-16 05:58:59.772762	\N
-2719	1	admin	Jolteon	Jolteon es el pokemon numero #135	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/135.png	ground	1	2018-11-16 05:58:59.889755	\N
-2729	1	admin	Zapdos	Zapdos es el pokemon numero #145	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/145.png	ice,rock	1	2018-11-16 05:59:00.004282	\N
-2739	1	admin	Cyndaquil	Cyndaquil es el pokemon numero #155	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/155.png	ground,rock,water	1	2018-11-16 05:59:00.125936	\N
-2749	1	admin	Ledyba	Ledyba es el pokemon numero #165	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/165.png	rock,electric,fire,flying,ice	1	2018-11-16 05:59:00.240472	\N
-2760	1	admin	Togepi	Togepi es el pokemon numero #175	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/175.png	steel,poison	1	2018-11-16 05:59:00.360535	\N
-2769	1	admin	Sudowoodo	Sudowoodo es el pokemon numero #185	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/185.png	fighting,grass,ground,steel,water	1	2018-11-16 05:59:00.472515	\N
-2778	1	admin	Wooper	Wooper es el pokemon numero #194	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/194.png	grass	1	2018-11-16 05:59:00.594567	\N
-2788	1	admin	Pineco	Pineco es el pokemon numero #204	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/204.png	fire,flying,rock	1	2018-11-16 05:59:00.697023	\N
-2796	1	admin	Shuckle	Shuckle es el pokemon numero #213	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/213.png	rock,steel,water	1	2018-11-16 05:59:00.812218	\N
-2807	1	admin	Piloswine	Piloswine es el pokemon numero #221	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/221.png	fighting,fire,grass,steel,water	1	2018-11-16 05:59:00.976463	\N
-2815	1	admin	Phanpy	Phanpy es el pokemon numero #231	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/231.png	grass,ice,water	1	2018-11-16 05:59:01.086568	\N
-2825	1	admin	Miltank	Miltank es el pokemon numero #241	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/241.png	fighting	1	2018-11-16 05:59:01.20316	\N
-2834	1	admin	Ho-Oh	Ho-Oh es el pokemon numero #250	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/250.png	rock,electric,water	1	2018-11-16 05:59:01.336616	\N
-2843	1	admin	Marshtomp	Marshtomp es el pokemon numero #259	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/259.png	grass	1	2018-11-16 05:59:01.449814	\N
-2852	1	admin	Cascoon	Cascoon es el pokemon numero #268	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/268.png	fire,flying,rock	1	2018-11-16 05:59:01.566465	\N
-2862	1	admin	Wingull	Wingull es el pokemon numero #278	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/278.png	electric,rock	1	2018-11-16 05:59:01.67734	\N
-2872	1	admin	Vigoroth	Vigoroth es el pokemon numero #288	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/288.png	fighting	1	2018-11-16 05:59:01.799237	\N
-2882	1	admin	Azurill	Azurill es el pokemon numero #298	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/298.png	steel,poison	1	2018-11-16 05:59:01.912504	\N
-2892	1	admin	Medicham	Medicham es el pokemon numero #308	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/308.png	flying,ghost,fairy	1	2018-11-16 05:59:02.027354	\N
-2902	1	admin	Carvanha	Carvanha es el pokemon numero #318	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/318.png	bug,electric,fighting,grass,fairy	1	2018-11-16 05:59:02.139534	\N
-2912	1	admin	Trapinch	Trapinch es el pokemon numero #328	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/328.png	grass,ice,water	1	2018-11-16 05:59:02.254968	\N
-2922	1	admin	Solrock	Solrock es el pokemon numero #338	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/338.png	bug,dark,ghost,grass,steel,water	1	2018-11-16 05:59:02.370426	\N
-2930	1	admin	Anorith	Anorith es el pokemon numero #347	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/347.png	rock,steel,water	1	2018-11-16 05:59:02.482775	\N
-2940	1	admin	Shaymin	Shaymin es el pokemon numero #492	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/492.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:02.593142	\N
-2951	1	admin	Samurott	Samurott es el pokemon numero #503	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/503.png	grass,electric	1	2018-11-16 05:59:02.708782	\N
-2962	1	admin	Simisear	Simisear es el pokemon numero #514	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/514.png	water,ground,rock	1	2018-11-16 05:59:02.839262	\N
-2971	1	admin	Roggenrola	Roggenrola es el pokemon numero #524	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/524.png	water,grass,fighting,ground,steel	1	2018-11-16 05:59:02.949629	\N
-2981	1	admin	Gurdurr	Gurdurr es el pokemon numero #533	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/533.png	flying,psychic,fairy	1	2018-11-16 05:59:03.057423	\N
-2991	1	admin	Venipede	Venipede es el pokemon numero #543	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/543.png	fire,flying,psychic,rock	1	2018-11-16 05:59:03.168699	\N
-3001	1	admin	Krookodile	Krookodile es el pokemon numero #553	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/553.png	water,grass,ice,fighting,bug,fairy	1	2018-11-16 05:59:03.277656	\N
-3011	1	admin	Cofagrigus	Cofagrigus es el pokemon numero #563	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/563.png	ghost,dark	1	2018-11-16 05:59:03.390018	\N
-3021	1	admin	Cinccino	Cinccino es el pokemon numero #573	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/573.png	fighting	1	2018-11-16 05:59:03.499035	\N
-2629	1	admin	Vileplume	Vileplume es el pokemon numero #45	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/045.png	fire,flying,ice,psychic	1	2018-11-16 05:58:58.79696	\N
-2639	1	admin	Golduck	Golduck es el pokemon numero #55	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/055.png	electric,grass	1	2018-11-16 05:58:58.9054	\N
-2649	1	admin	Alakazam	Alakazam es el pokemon numero #65	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/065.png	bug,dark,ghost	1	2018-11-16 05:58:59.037566	\N
-2658	1	admin	Graveler	Graveler es el pokemon numero #75	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/075.png	grass,water,fighting,ground,ice,steel	1	2018-11-16 05:58:59.15331	\N
-2668	1	admin	Doduo	Doduo es el pokemon numero #84	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/084.png	electric,ice,rock	1	2018-11-16 05:58:59.281387	\N
-2677	1	admin	Haunter	Haunter es el pokemon numero #93	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/093.png	dark,ghost,psychic	1	2018-11-16 05:58:59.387251	\N
-2685	1	admin	Exeggcute	Exeggcute es el pokemon numero #102	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/102.png	bug,dark,fire,flying,ghost,ice,poison	1	2018-11-16 05:58:59.492089	\N
-2696	1	admin	Rhydon	Rhydon es el pokemon numero #112	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/112.png	grass,water,fighting,ground,ice,steel	1	2018-11-16 05:58:59.605711	\N
-2706	1	admin	Mr. Mime	Mr. Mime es el pokemon numero #122	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/122.png	ghost,steel,poison	1	2018-11-16 05:58:59.710679	\N
-2715	1	admin	Lapras	Lapras es el pokemon numero #131	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/131.png	electric,fighting,grass,rock	1	2018-11-16 05:58:59.821949	\N
-2725	1	admin	Kabutops	Kabutops es el pokemon numero #141	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/141.png	grass,electric,fighting,ground	1	2018-11-16 05:58:59.928407	\N
-2733	1	admin	Mew	Mew es el pokemon numero #151	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/151.png	bug,dark,ghost	1	2018-11-16 05:59:00.032696	\N
-2742	1	admin	Croconaw	Croconaw es el pokemon numero #159	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/159.png	electric,grass	1	2018-11-16 05:59:00.139656	\N
-2752	1	admin	Ariados	Ariados es el pokemon numero #168	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/168.png	fire,flying,psychic,rock	1	2018-11-16 05:59:00.247298	\N
-2759	1	admin	Natu	Natu es el pokemon numero #177	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/177.png	dark,electric,ghost,ice,rock	1	2018-11-16 05:59:00.359914	\N
-2768	1	admin	Azumarill	Azumarill es el pokemon numero #184	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/184.png	electric,grass,poison	1	2018-11-16 05:59:00.466309	\N
-2777	1	admin	Yanma	Yanma es el pokemon numero #193	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/193.png	rock,electric,fire,flying,ice	1	2018-11-16 05:59:00.585919	\N
-2786	1	admin	Girafarig	Girafarig es el pokemon numero #203	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/203.png	bug,dark	1	2018-11-16 05:59:00.689607	\N
-2793	1	admin	Qwilfish	Qwilfish es el pokemon numero #211	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/211.png	electric,ground,psychic	1	2018-11-16 05:59:00.807169	\N
-2803	1	admin	Magcargo	Magcargo es el pokemon numero #219	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/219.png	ground,water,fighting,rock	1	2018-11-16 05:59:00.925728	\N
-2813	1	admin	Houndoom	Houndoom es el pokemon numero #229	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/229.png	fighting,ground,rock,water	1	2018-11-16 05:59:01.032483	\N
-2823	1	admin	Elekid	Elekid es el pokemon numero #239	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/239.png	ground	1	2018-11-16 05:59:01.136448	\N
-2832	1	admin	Tyranitar	Tyranitar es el pokemon numero #248	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/248.png	fighting,bug,grass,ground,steel,water,fairy	1	2018-11-16 05:59:01.244827	\N
-2839	1	admin	Blaziken	Blaziken es el pokemon numero #257	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/257.png	flying,ground,psychic,water	1	2018-11-16 05:59:01.374237	\N
-2847	1	admin	Linoone	Linoone es el pokemon numero #264	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/264.png	fighting	1	2018-11-16 05:59:01.493743	\N
-2857	1	admin	Seedot	Seedot es el pokemon numero #273	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/273.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:01.606419	\N
-2867	1	admin	Surskit	Surskit es el pokemon numero #283	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/283.png	electric,flying,rock	1	2018-11-16 05:59:01.712893	\N
-2876	1	admin	Whismur	Whismur es el pokemon numero #293	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/293.png	fighting	1	2018-11-16 05:59:01.853372	\N
-2886	1	admin	Mawile	Mawile es el pokemon numero #303	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/303.png	fire,ground	1	2018-11-16 05:59:01.9577	\N
-2897	1	admin	Volbeat	Volbeat es el pokemon numero #313	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/313.png	fire,flying,rock	1	2018-11-16 05:59:02.064567	\N
-2906	1	admin	Camerupt	Camerupt es el pokemon numero #323	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/323.png	water,ground	1	2018-11-16 05:59:02.166198	\N
-2916	1	admin	Cacturne	Cacturne es el pokemon numero #332	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/332.png	bug,fire,fighting,flying,ice,poison,fairy	1	2018-11-16 05:59:02.277522	\N
-2924	1	admin	Crawdaunt	Crawdaunt es el pokemon numero #342	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/342.png	bug,electric,fighting,grass,fairy	1	2018-11-16 05:59:02.38275	\N
-2932	1	admin	Milotic	Milotic es el pokemon numero #350	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/350.png	electric,grass	1	2018-11-16 05:59:02.489783	\N
-2942	1	admin	Victini	Victini es el pokemon numero #494	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/494.png	water,ground,rock,ghost,dark	1	2018-11-16 05:59:02.59724	\N
-2950	1	admin	Patrat	Patrat es el pokemon numero #504	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/504.png	fighting	1	2018-11-16 05:59:02.706822	\N
-2959	1	admin	Simisage	Simisage es el pokemon numero #512	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/512.png	fire,ice,poison,flying,bug	1	2018-11-16 05:59:02.812689	\N
-2969	1	admin	Blitzle	Blitzle es el pokemon numero #522	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/522.png	ground	1	2018-11-16 05:59:02.927032	\N
-2980	1	admin	Timburr	Timburr es el pokemon numero #532	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/532.png	flying,psychic,fairy	1	2018-11-16 05:59:03.035444	\N
-2988	1	admin	Swadloon	Swadloon es el pokemon numero #541	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/541.png	fire,flying,ice,poison,bug,rock	1	2018-11-16 05:59:03.141032	\N
-2998	1	admin	Basculin	Basculin es el pokemon numero #550	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/550.png	grass,electric	1	2018-11-16 05:59:03.246968	\N
-2630	1	admin	Paras	Paras es el pokemon numero #46	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/046.png	fire,flying,bug,ice,poison,rock	1	2018-11-16 05:58:58.80744	\N
-2640	1	admin	Mankey	Mankey es el pokemon numero #56	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/056.png	flying,psychic,fairy	1	2018-11-16 05:58:58.919045	\N
-2651	1	admin	Machop	Machop es el pokemon numero #66	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/066.png	flying,psychic,fairy	1	2018-11-16 05:58:59.05021	\N
-2661	1	admin	Ponyta	Ponyta es el pokemon numero #77	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/077.png	ground,rock,water	1	2018-11-16 05:58:59.167604	\N
-2669	1	admin	Seel	Seel es el pokemon numero #86	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/086.png	electric,grass	1	2018-11-16 05:58:59.295845	\N
-2679	1	admin	Onix	Onix es el pokemon numero #95	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/095.png	grass,water,fighting,ground,ice,steel	1	2018-11-16 05:58:59.407687	\N
-2687	1	admin	Cubone	Cubone es el pokemon numero #104	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/104.png	grass,ice,water	1	2018-11-16 05:58:59.518812	\N
-2698	1	admin	Tangela	Tangela es el pokemon numero #114	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/114.png	bug,fire,flying,ice,poison	1	2018-11-16 05:58:59.639249	\N
-2708	1	admin	Jynx	Jynx es el pokemon numero #124	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/124.png	bug,dark,fire,ghost,rock,steel	1	2018-11-16 05:58:59.753208	\N
-2717	1	admin	Vaporeon	Vaporeon es el pokemon numero #134	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/134.png	electric,grass	1	2018-11-16 05:58:59.864906	\N
-2727	1	admin	Articuno	Articuno es el pokemon numero #144	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/144.png	rock,electric,fire,steel	1	2018-11-16 05:58:59.994136	\N
-2738	1	admin	Meganium	Meganium es el pokemon numero #154	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/154.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:00.122092	\N
-2747	1	admin	Noctowl	Noctowl es el pokemon numero #164	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/164.png	electric,ice,rock	1	2018-11-16 05:59:00.230741	\N
-2757	1	admin	Cleffa	Cleffa es el pokemon numero #173	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/173.png	steel,poison	1	2018-11-16 05:59:00.341028	\N
-2766	1	admin	Bellossom	Bellossom es el pokemon numero #182	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/182.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:00.454603	\N
-2775	1	admin	Sunkern	Sunkern es el pokemon numero #191	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/191.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:00.568867	\N
-2785	1	admin	Unown	Unown es el pokemon numero #201	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/201.png	bug,dark,ghost	1	2018-11-16 05:59:00.687565	\N
-2794	1	admin	Scizor	Scizor es el pokemon numero #212	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/212.png	fire	1	2018-11-16 05:59:00.810056	\N
-2804	1	admin	Swinub	Swinub es el pokemon numero #220	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/220.png	fighting,fire,grass,steel,water	1	2018-11-16 05:59:00.931325	\N
-2814	1	admin	Kingdra	Kingdra es el pokemon numero #230	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/230.png	dragon,fairy	1	2018-11-16 05:59:01.045217	\N
-2824	1	admin	Magby	Magby es el pokemon numero #240	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/240.png	ground,rock,water	1	2018-11-16 05:59:01.1601	\N
-2855	1	admin	Lombre	Lombre es el pokemon numero #271	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/271.png	bug,flying,poison	1	2018-11-16 05:59:01.589192	\N
-2864	1	admin	Kirlia	Kirlia es el pokemon numero #281	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/281.png	ghost,steel,poison	1	2018-11-16 05:59:01.69886	\N
-2874	1	admin	Nincada	Nincada es el pokemon numero #290	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/290.png	fire,flying,ice,water	1	2018-11-16 05:59:01.817996	\N
-2884	1	admin	Skitty	Skitty es el pokemon numero #300	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/300.png	fighting	1	2018-11-16 05:59:01.932998	\N
-2894	1	admin	Manectric	Manectric es el pokemon numero #310	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/310.png	ground	1	2018-11-16 05:59:02.044377	\N
-2904	1	admin	Wailmer	Wailmer es el pokemon numero #320	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/320.png	electric,grass	1	2018-11-16 05:59:02.160065	\N
-2913	1	admin	Flygon	Flygon es el pokemon numero #330	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/330.png	ice,dragon,fairy	1	2018-11-16 05:59:02.269394	\N
-2923	1	admin	Barboach	Barboach es el pokemon numero #339	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/339.png	grass	1	2018-11-16 05:59:02.380198	\N
-2935	1	admin	Castform	Castform es el pokemon numero #351	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/351.png	fighting	1	2018-11-16 05:59:02.505108	\N
-2945	1	admin	Serperior	Serperior es el pokemon numero #497	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/497.png	fire,ice,poison,flying,bug	1	2018-11-16 05:59:02.617815	\N
-2955	1	admin	Herdier	Herdier es el pokemon numero #507	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/507.png	fighting	1	2018-11-16 05:59:02.734806	\N
-2963	1	admin	Simipour	Simipour es el pokemon numero #516	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/516.png	grass,electric	1	2018-11-16 05:59:02.854259	\N
-2973	1	admin	Boldore	Boldore es el pokemon numero #525	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/525.png	water,grass,fighting,ground,steel	1	2018-11-16 05:59:02.988378	\N
-2983	1	admin	Tympole	Tympole es el pokemon numero #535	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/535.png	grass,electric	1	2018-11-16 05:59:03.101826	\N
-2993	1	admin	Scolipede	Scolipede es el pokemon numero #545	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/545.png	fire,flying,psychic,rock	1	2018-11-16 05:59:03.216022	\N
-3002	1	admin	Darmanitan	Darmanitan es el pokemon numero #555	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/555.png	water,ground,rock	1	2018-11-16 05:59:03.329493	\N
-3012	1	admin	Carracosta	Carracosta es el pokemon numero #565	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/565.png	grass,electric,fighting,ground	1	2018-11-16 05:59:03.439886	\N
-3022	1	admin	Gothita	Gothita es el pokemon numero #574	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/574.png	bug,ghost,dark	1	2018-11-16 05:59:03.550041	\N
-3032	1	admin	Vanilluxe	Vanilluxe es el pokemon numero #584	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/584.png	fire,fighting,rock,steel	1	2018-11-16 05:59:03.66194	\N
-3041	1	admin	Jellicent	Jellicent es el pokemon numero #593	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/593.png	grass,electric,ghost,dark	1	2018-11-16 05:59:03.776271	\N
-3050	1	admin	Tynamo	Tynamo es el pokemon numero #602	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/602.png		1	2018-11-16 05:59:03.889538	\N
-2631	1	admin	Parasect	Parasect es el pokemon numero #47	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/047.png	fire,flying,bug,ice,poison,rock	1	2018-11-16 05:58:58.809645	\N
-2642	1	admin	Primeape	Primeape es el pokemon numero #57	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/057.png	flying,psychic,fairy	1	2018-11-16 05:58:58.9261	\N
-2652	1	admin	Machamp	Machamp es el pokemon numero #68	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/068.png	flying,psychic,fairy	1	2018-11-16 05:58:59.057658	\N
-2662	1	admin	Rapidash	Rapidash es el pokemon numero #78	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/078.png	ground,rock,water	1	2018-11-16 05:58:59.169465	\N
-2670	1	admin	Dewgong	Dewgong es el pokemon numero #87	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/087.png	electric,fighting,grass,rock	1	2018-11-16 05:58:59.297705	\N
-2680	1	admin	Drowzee	Drowzee es el pokemon numero #96	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/096.png	bug,dark,ghost	1	2018-11-16 05:58:59.414017	\N
-2689	1	admin	Marowak	Marowak es el pokemon numero #105	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/105.png	grass,ice,water	1	2018-11-16 05:58:59.526607	\N
-2699	1	admin	Kangaskhan	Kangaskhan es el pokemon numero #115	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/115.png	fighting	1	2018-11-16 05:58:59.655206	\N
-2709	1	admin	Electabuzz	Electabuzz es el pokemon numero #125	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/125.png	ground	1	2018-11-16 05:58:59.771887	\N
-2720	1	admin	Flareon	Flareon es el pokemon numero #136	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/136.png	ground,rock,water	1	2018-11-16 05:58:59.892466	\N
-2730	1	admin	Moltres	Moltres es el pokemon numero #146	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/146.png	rock,electric,water	1	2018-11-16 05:59:00.007023	\N
-2740	1	admin	Quilava	Quilava es el pokemon numero #156	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/156.png	ground,rock,water	1	2018-11-16 05:59:00.130076	\N
-2750	1	admin	Ledian	Ledian es el pokemon numero #166	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/166.png	rock,electric,fire,flying,ice	1	2018-11-16 05:59:00.243222	\N
-2783	1	admin	Slowking	Slowking es el pokemon numero #199	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/199.png	bug,dark,electric,ghost,grass	1	2018-11-16 05:59:00.676773	\N
-2795	1	admin	Snubbull	Snubbull es el pokemon numero #209	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/209.png	steel,poison	1	2018-11-16 05:59:00.811121	\N
-2805	1	admin	Corsola	Corsola es el pokemon numero #222	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/222.png	grass,electric,fighting,ground	1	2018-11-16 05:59:00.97562	\N
-2816	1	admin	Donphan	Donphan es el pokemon numero #232	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/232.png	grass,ice,water	1	2018-11-16 05:59:01.092966	\N
-2826	1	admin	Blissey	Blissey es el pokemon numero #242	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/242.png	fighting	1	2018-11-16 05:59:01.207694	\N
-2835	1	admin	Celebi	Celebi es el pokemon numero #251	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/251.png	bug,dark,fire,flying,ghost,ice,poison	1	2018-11-16 05:59:01.339365	\N
-2844	1	admin	Swampert	Swampert es el pokemon numero #260	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/260.png	grass	1	2018-11-16 05:59:01.452453	\N
-2853	1	admin	Dustox	Dustox es el pokemon numero #269	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/269.png	fire,flying,psychic,rock	1	2018-11-16 05:59:01.575918	\N
-2863	1	admin	Pelipper	Pelipper es el pokemon numero #279	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/279.png	electric,rock	1	2018-11-16 05:59:01.691974	\N
-2873	1	admin	Slaking	Slaking es el pokemon numero #289	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/289.png	fighting	1	2018-11-16 05:59:01.806226	\N
-2883	1	admin	Nosepass	Nosepass es el pokemon numero #299	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/299.png	fighting,grass,ground,steel,water	1	2018-11-16 05:59:01.921085	\N
-2893	1	admin	Electrike	Electrike es el pokemon numero #309	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/309.png	ground	1	2018-11-16 05:59:02.035285	\N
-2903	1	admin	Sharpedo	Sharpedo es el pokemon numero #319	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/319.png	bug,electric,fighting,grass,fairy	1	2018-11-16 05:59:02.154849	\N
-2914	1	admin	Vibrava	Vibrava es el pokemon numero #329	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/329.png	ice,dragon,fairy	1	2018-11-16 05:59:02.27121	\N
-2926	1	admin	Whiscash	Whiscash es el pokemon numero #340	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/340.png	grass	1	2018-11-16 05:59:02.387565	\N
-2936	1	admin	Kecleon	Kecleon es el pokemon numero #352	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/352.png	fighting	1	2018-11-16 05:59:02.513994	\N
-2946	1	admin	Tepig	Tepig es el pokemon numero #498	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/498.png	water,ground,rock	1	2018-11-16 05:59:02.64228	\N
-2956	1	admin	Stoutland	Stoutland es el pokemon numero #508	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/508.png	fighting	1	2018-11-16 05:59:02.77529	\N
-2966	1	admin	Musharna	Musharna es el pokemon numero #518	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/518.png	bug,ghost,dark	1	2018-11-16 05:59:02.898529	\N
-2976	1	admin	Swoobat	Swoobat es el pokemon numero #528	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/528.png	electric,ice,rock,ghost,dark	1	2018-11-16 05:59:03.013144	\N
-2986	1	admin	Throh	Throh es el pokemon numero #538	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/538.png	flying,psychic,fairy	1	2018-11-16 05:59:03.12803	\N
-2997	1	admin	Petilil	Petilil es el pokemon numero #548	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/548.png	fire,ice,poison,flying,bug	1	2018-11-16 05:59:03.246512	\N
-3007	1	admin	Scrafty	Scrafty es el pokemon numero #560	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/560.png	fighting,flying,fairy	1	2018-11-16 05:59:03.360329	\N
-3016	1	admin	Zorua	Zorua es el pokemon numero #570	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/570.png	fighting,bug,fairy	1	2018-11-16 05:59:03.472294	\N
-3027	1	admin	Reuniclus	Reuniclus es el pokemon numero #579	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/579.png	bug,ghost,dark	1	2018-11-16 05:59:03.592126	\N
-3062	1	admin	Beartic	Beartic es el pokemon numero #614	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/614.png	fire,fighting,rock,steel	1	2018-11-16 05:59:04.025265	\N
-3072	1	admin	Durant	Durant es el pokemon numero #632	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/632.png	fire	1	2018-11-16 05:59:04.138146	\N
-3081	1	admin	Zweilous	Zweilous es el pokemon numero #634	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/634.png	ice,fighting,bug,dragon,fairy	1	2018-11-16 05:59:04.251808	\N
-3090	1	admin	Reshiram	Reshiram es el pokemon numero #643	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/643.png	ground,rock,dragon	1	2018-11-16 05:59:04.364763	\N
-2632	1	admin	Venonat	Venonat es el pokemon numero #48	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/048.png	fire,flying,psychic,rock	1	2018-11-16 05:58:58.81612	\N
-2643	1	admin	Arcanine	Arcanine es el pokemon numero #59	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/059.png	ground,rock,water	1	2018-11-16 05:58:58.93629	\N
-2653	1	admin	Bellsprout	Bellsprout es el pokemon numero #69	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/069.png	fire,flying,ice,psychic	1	2018-11-16 05:58:59.076093	\N
-2663	1	admin	Slowpoke	Slowpoke es el pokemon numero #79	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/079.png	bug,dark,electric,ghost,grass	1	2018-11-16 05:58:59.198144	\N
-2672	1	admin	Grimer	Grimer es el pokemon numero #88	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/088.png	ground,psychic	1	2018-11-16 05:58:59.315868	\N
-2682	1	admin	Hypno	Hypno es el pokemon numero #97	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/097.png	bug,dark,ghost	1	2018-11-16 05:58:59.43775	\N
-2692	1	admin	Lickitung	Lickitung es el pokemon numero #108	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/108.png	fighting	1	2018-11-16 05:58:59.553092	\N
-2701	1	admin	Goldeen	Goldeen es el pokemon numero #118	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/118.png	electric,grass	1	2018-11-16 05:58:59.665969	\N
-2711	1	admin	Pinsir	Pinsir es el pokemon numero #127	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/127.png	fire,flying,rock	1	2018-11-16 05:58:59.782227	\N
-2721	1	admin	Porygon	Porygon es el pokemon numero #137	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/137.png	fighting	1	2018-11-16 05:58:59.897738	\N
-2731	1	admin	Dratini	Dratini es el pokemon numero #147	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/147.png	dragon,ice,fairy	1	2018-11-16 05:59:00.013156	\N
-2743	1	admin	Typhlosion	Typhlosion es el pokemon numero #157	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/157.png	ground,rock,water	1	2018-11-16 05:59:00.144127	\N
-2753	1	admin	Crobat	Crobat es el pokemon numero #169	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/169.png	electric,ice,psychic,rock	1	2018-11-16 05:59:00.262234	\N
-2762	1	admin	Xatu	Xatu es el pokemon numero #178	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/178.png	dark,electric,ghost,ice,rock	1	2018-11-16 05:59:00.387932	\N
-2771	1	admin	Hoppip	Hoppip es el pokemon numero #187	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/187.png	ice,fire,flying,poison,rock	1	2018-11-16 05:59:00.503527	\N
-2779	1	admin	Espeon	Espeon es el pokemon numero #196	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/196.png	bug,dark,ghost	1	2018-11-16 05:59:00.620175	\N
-2789	1	admin	Forretress	Forretress es el pokemon numero #205	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/205.png	fire	1	2018-11-16 05:59:00.735696	\N
-2799	1	admin	Sneasel	Sneasel es el pokemon numero #215	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/215.png	fighting,bug,fire,rock,steel,fairy	1	2018-11-16 05:59:00.850556	\N
-2806	1	admin	Delibird	Delibird es el pokemon numero #225	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/225.png	rock,electric,fire,steel	1	2018-11-16 05:59:00.976132	\N
-2817	1	admin	Porygon2	Porygon2 es el pokemon numero #233	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/233.png	fighting	1	2018-11-16 05:59:01.093466	\N
-2827	1	admin	Raikou	Raikou es el pokemon numero #243	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/243.png	ground	1	2018-11-16 05:59:01.208103	\N
-2836	1	admin	Treecko	Treecko es el pokemon numero #252	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/252.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:01.346477	\N
-2845	1	admin	Poochyena	Poochyena es el pokemon numero #261	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/261.png	fighting,bug,fairy	1	2018-11-16 05:59:01.462474	\N
-2854	1	admin	Lotad	Lotad es el pokemon numero #270	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/270.png	bug,flying,poison	1	2018-11-16 05:59:01.576429	\N
-2865	1	admin	Ralts	Ralts es el pokemon numero #280	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/280.png	ghost,steel,poison	1	2018-11-16 05:59:01.700878	\N
-2875	1	admin	Ninjask	Ninjask es el pokemon numero #291	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/291.png	rock,electric,fire,flying,ice	1	2018-11-16 05:59:01.822563	\N
-2885	1	admin	Delcatty	Delcatty es el pokemon numero #301	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/301.png	fighting	1	2018-11-16 05:59:01.937946	\N
-2895	1	admin	Plusle	Plusle es el pokemon numero #311	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/311.png	ground	1	2018-11-16 05:59:02.052525	\N
-2905	1	admin	Wailord	Wailord es el pokemon numero #321	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/321.png	electric,grass	1	2018-11-16 05:59:02.162137	\N
-2917	1	admin	Swablu	Swablu es el pokemon numero #333	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/333.png	electric,ice,rock	1	2018-11-16 05:59:02.282018	\N
-2927	1	admin	Baltoy	Baltoy es el pokemon numero #343	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/343.png	bug,dark,ghost,grass,water,ice	1	2018-11-16 05:59:02.401288	\N
-2937	1	admin	Shuppet	Shuppet es el pokemon numero #353	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/353.png	dark,ghost	1	2018-11-16 05:59:02.514693	\N
-2947	1	admin	Pignite	Pignite es el pokemon numero #499	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/499.png	water,ground,flying,psychic	1	2018-11-16 05:59:02.642908	\N
-2957	1	admin	Purrloin	Purrloin es el pokemon numero #509	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/509.png	fighting,bug,fairy	1	2018-11-16 05:59:02.782444	\N
-2967	1	admin	Tranquill	Tranquill es el pokemon numero #520	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/520.png	electric,ice,rock	1	2018-11-16 05:59:02.918186	\N
-2977	1	admin	Excadrill	Excadrill es el pokemon numero #530	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/530.png	fire,water,fighting,ground	1	2018-11-16 05:59:03.034191	\N
-2990	1	admin	Leavanny	Leavanny es el pokemon numero #542	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/542.png	fire,flying,ice,poison,bug,rock	1	2018-11-16 05:59:03.149649	\N
-3000	1	admin	Krokorok	Krokorok es el pokemon numero #552	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/552.png	water,grass,ice,fighting,bug,fairy	1	2018-11-16 05:59:03.262664	\N
-3010	1	admin	Yamask	Yamask es el pokemon numero #562	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/562.png	ghost,dark	1	2018-11-16 05:59:03.381014	\N
-3019	1	admin	Minccino	Minccino es el pokemon numero #572	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/572.png	fighting	1	2018-11-16 05:59:03.497038	\N
-3030	1	admin	Swanna	Swanna es el pokemon numero #581	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/581.png	electric,rock	1	2018-11-16 05:59:03.616668	\N
-3038	1	admin	Frillish	Frillish es el pokemon numero #592	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/592.png	grass,electric,ghost,dark	1	2018-11-16 05:59:03.745607	\N
-2633	1	admin	Dugtrio	Dugtrio es el pokemon numero #51	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/051.png	grass,ice,water	1	2018-11-16 05:58:58.820725	\N
-2641	1	admin	Growlithe	Growlithe es el pokemon numero #58	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/058.png	ground,rock,water	1	2018-11-16 05:58:58.925535	\N
-2650	1	admin	Machoke	Machoke es el pokemon numero #67	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/067.png	flying,psychic,fairy	1	2018-11-16 05:58:59.047381	\N
-2659	1	admin	Golem	Golem es el pokemon numero #76	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/076.png	grass,water,fighting,ground,ice,steel	1	2018-11-16 05:58:59.153848	\N
-2667	1	admin	Farfetch'd	Farfetch'd es el pokemon numero #83	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/083.png	electric,ice,rock	1	2018-11-16 05:58:59.277719	\N
-2676	1	admin	Gastly	Gastly es el pokemon numero #92	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/092.png	dark,ghost,psychic	1	2018-11-16 05:58:59.386761	\N
-2686	1	admin	Electrode	Electrode es el pokemon numero #101	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/101.png	ground	1	2018-11-16 05:58:59.49271	\N
-2695	1	admin	Rhyhorn	Rhyhorn es el pokemon numero #111	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/111.png	grass,water,fighting,ground,ice,steel	1	2018-11-16 05:58:59.597697	\N
-2704	1	admin	Starmie	Starmie es el pokemon numero #121	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/121.png	bug,dark,electric,ghost,grass	1	2018-11-16 05:58:59.69622	\N
-2714	1	admin	Gyarados	Gyarados es el pokemon numero #130	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/130.png	electric,rock	1	2018-11-16 05:58:59.807484	\N
-2722	1	admin	Kabuto	Kabuto es el pokemon numero #140	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/140.png	grass,electric,fighting,ground	1	2018-11-16 05:58:59.918	\N
-2732	1	admin	Dragonair	Dragonair es el pokemon numero #148	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/148.png	dragon,ice,fairy	1	2018-11-16 05:59:00.022099	\N
-2741	1	admin	Totodile	Totodile es el pokemon numero #158	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/158.png	electric,grass	1	2018-11-16 05:59:00.139192	\N
-2751	1	admin	Spinarak	Spinarak es el pokemon numero #167	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/167.png	fire,flying,psychic,rock	1	2018-11-16 05:59:00.246719	\N
-2758	1	admin	Togetic	Togetic es el pokemon numero #176	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/176.png	electric,ice,rock,steel,poison	1	2018-11-16 05:59:00.358577	\N
-2767	1	admin	Marill	Marill es el pokemon numero #183	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/183.png	electric,grass,poison	1	2018-11-16 05:59:00.463593	\N
-2776	1	admin	Sunflora	Sunflora es el pokemon numero #192	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/192.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:00.573515	\N
-2784	1	admin	Misdreavus	Misdreavus es el pokemon numero #200	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/200.png	dark,ghost	1	2018-11-16 05:59:00.684723	\N
-2792	1	admin	Granbull	Granbull es el pokemon numero #210	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/210.png	steel,poison	1	2018-11-16 05:59:00.806412	\N
-2802	1	admin	Slugma	Slugma es el pokemon numero #218	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/218.png	ground,rock,water	1	2018-11-16 05:59:00.918154	\N
-2812	1	admin	Houndour	Houndour es el pokemon numero #228	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/228.png	fighting,ground,rock,water	1	2018-11-16 05:59:01.021544	\N
-2821	1	admin	Smoochum	Smoochum es el pokemon numero #238	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/238.png	bug,dark,fire,ghost,rock,steel	1	2018-11-16 05:59:01.127025	\N
-2830	1	admin	Pupitar	Pupitar es el pokemon numero #247	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/247.png	grass,water,fighting,ground,ice,steel	1	2018-11-16 05:59:01.232287	\N
-2838	1	admin	Torchic	Torchic es el pokemon numero #255	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/255.png	ground,rock,water	1	2018-11-16 05:59:01.37373	\N
-2846	1	admin	Zigzagoon	Zigzagoon es el pokemon numero #263	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/263.png	fighting	1	2018-11-16 05:59:01.485939	\N
-2856	1	admin	Ludicolo	Ludicolo es el pokemon numero #272	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/272.png	bug,flying,poison	1	2018-11-16 05:59:01.605932	\N
-2866	1	admin	Gardevoir	Gardevoir es el pokemon numero #282	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/282.png	ghost,steel,poison	1	2018-11-16 05:59:01.710829	\N
-2877	1	admin	Shedinja	Shedinja es el pokemon numero #292	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/292.png	dark,fire,flying,ghost,rock	1	2018-11-16 05:59:01.85387	\N
-2887	1	admin	Sableye	Sableye es el pokemon numero #302	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/302.png	fairy	1	2018-11-16 05:59:01.958232	\N
-2896	1	admin	Minun	Minun es el pokemon numero #312	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/312.png	ground	1	2018-11-16 05:59:02.064058	\N
-2907	1	admin	Numel	Numel es el pokemon numero #322	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/322.png	water,ground	1	2018-11-16 05:59:02.166594	\N
-2915	1	admin	Cacnea	Cacnea es el pokemon numero #331	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/331.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:02.277037	\N
-2925	1	admin	Corphish	Corphish es el pokemon numero #341	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/341.png	electric,grass	1	2018-11-16 05:59:02.383158	\N
-2931	1	admin	Feebas	Feebas es el pokemon numero #349	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/349.png	electric,grass	1	2018-11-16 05:59:02.489276	\N
-2941	1	admin	Arceus	Arceus es el pokemon numero #493	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/493.png	fighting	1	2018-11-16 05:59:02.596736	\N
-2949	1	admin	Dewott	Dewott es el pokemon numero #502	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/502.png	grass,electric	1	2018-11-16 05:59:02.701449	\N
-2960	1	admin	Pansage	Pansage es el pokemon numero #511	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/511.png	fire,ice,poison,flying,bug	1	2018-11-16 05:59:02.813327	\N
-2970	1	admin	Unfezant	Unfezant es el pokemon numero #521	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/521.png	electric,ice,rock	1	2018-11-16 05:59:02.92752	\N
-2978	1	admin	Audino	Audino es el pokemon numero #531	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/531.png	fighting	1	2018-11-16 05:59:03.034714	\N
-2987	1	admin	Sawk	Sawk es el pokemon numero #539	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/539.png	flying,psychic,fairy	1	2018-11-16 05:59:03.139987	\N
-2996	1	admin	Lilligant	Lilligant es el pokemon numero #549	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/549.png	fire,ice,poison,flying,bug	1	2018-11-16 05:59:03.245952	\N
-3006	1	admin	Dwebble	Dwebble es el pokemon numero #557	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/557.png	water,rock,steel	1	2018-11-16 05:59:03.356293	\N
-2634	1	admin	Diglett	Diglett es el pokemon numero #50	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/050.png	grass,ice,water	1	2018-11-16 05:58:58.820676	\N
-2644	1	admin	Poliwhirl	Poliwhirl es el pokemon numero #61	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/061.png	electric,grass	1	2018-11-16 05:58:58.941229	\N
-2654	1	admin	Victreebel	Victreebel es el pokemon numero #71	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/071.png	fire,flying,ice,psychic	1	2018-11-16 05:58:59.080486	\N
-2666	1	admin	Magnemite	Magnemite es el pokemon numero #81	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/081.png	ground,fire,fighting	1	2018-11-16 05:58:59.216218	\N
-2675	1	admin	Cloyster	Cloyster es el pokemon numero #91	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/091.png	electric,fighting,grass,rock	1	2018-11-16 05:58:59.3415	\N
-2684	1	admin	Voltorb	Voltorb es el pokemon numero #100	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/100.png	ground	1	2018-11-16 05:58:59.461623	\N
-2694	1	admin	Weezing	Weezing es el pokemon numero #110	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/110.png	psychic	1	2018-11-16 05:58:59.581548	\N
-2705	1	admin	Staryu	Staryu es el pokemon numero #120	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/120.png	electric,grass	1	2018-11-16 05:58:59.70575	\N
-2716	1	admin	Ditto	Ditto es el pokemon numero #132	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/132.png	fighting	1	2018-11-16 05:58:59.856032	\N
-2726	1	admin	Aerodactyl	Aerodactyl es el pokemon numero #142	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/142.png	electric,ice,rock,steel,water	1	2018-11-16 05:58:59.981618	\N
-2737	1	admin	Chikorita	Chikorita es el pokemon numero #152	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/152.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:00.109387	\N
-2748	1	admin	Hoothoot	Hoothoot es el pokemon numero #163	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/163.png	electric,ice,rock	1	2018-11-16 05:59:00.237363	\N
-2761	1	admin	Igglybuff	Igglybuff es el pokemon numero #174	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/174.png	steel,poison	1	2018-11-16 05:59:00.36804	\N
-2770	1	admin	Politoed	Politoed es el pokemon numero #186	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/186.png	electric,grass	1	2018-11-16 05:59:00.491741	\N
-2780	1	admin	Quagsire	Quagsire es el pokemon numero #195	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/195.png	grass	1	2018-11-16 05:59:00.624705	\N
-2790	1	admin	Dunsparce	Dunsparce es el pokemon numero #206	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/206.png	fighting	1	2018-11-16 05:59:00.755102	\N
-2800	1	admin	Teddiursa	Teddiursa es el pokemon numero #216	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/216.png	fighting	1	2018-11-16 05:59:00.890086	\N
-2811	1	admin	Skarmory	Skarmory es el pokemon numero #227	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/227.png	electric,fire	1	2018-11-16 05:59:01.012463	\N
-2822	1	admin	Hitmontop	Hitmontop es el pokemon numero #237	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/237.png	flying,psychic,fairy	1	2018-11-16 05:59:01.132756	\N
-2833	1	admin	Lugia	Lugia es el pokemon numero #249	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/249.png	dark,electric,ghost,ice,rock	1	2018-11-16 05:59:01.282229	\N
-2842	1	admin	Mudkip	Mudkip es el pokemon numero #258	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/258.png	electric,grass	1	2018-11-16 05:59:01.402917	\N
-2851	1	admin	Beautifly	Beautifly es el pokemon numero #267	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/267.png	rock,electric,fire,flying,ice	1	2018-11-16 05:59:01.527265	\N
-2860	1	admin	Swellow	Swellow es el pokemon numero #277	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/277.png	electric,ice,rock	1	2018-11-16 05:59:01.644561	\N
-2870	1	admin	Breloom	Breloom es el pokemon numero #286	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/286.png	flying,fire,ice,poison,psychic,fairy	1	2018-11-16 05:59:01.764918	\N
-2880	1	admin	Makuhita	Makuhita es el pokemon numero #296	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/296.png	flying,psychic,fairy	1	2018-11-16 05:59:01.887062	\N
-2890	1	admin	Aggron	Aggron es el pokemon numero #306	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/306.png	fighting,ground,water	1	2018-11-16 05:59:02.005034	\N
-2900	1	admin	Gulpin	Gulpin es el pokemon numero #316	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/316.png	ground,psychic	1	2018-11-16 05:59:02.126381	\N
-2910	1	admin	Grumpig	Grumpig es el pokemon numero #326	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/326.png	bug,dark,ghost	1	2018-11-16 05:59:02.247767	\N
-2920	1	admin	Seviper	Seviper es el pokemon numero #336	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/336.png	ground,psychic	1	2018-11-16 05:59:02.367936	\N
-2933	1	admin	Cradily	Cradily es el pokemon numero #346	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/346.png	bug,fighting,ice,steel	1	2018-11-16 05:59:02.490292	\N
-2943	1	admin	Snivy	Snivy es el pokemon numero #495	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/495.png	fire,ice,poison,flying,bug	1	2018-11-16 05:59:02.610301	\N
-2953	1	admin	Watchog	Watchog es el pokemon numero #505	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/505.png	fighting	1	2018-11-16 05:59:02.732312	\N
-2964	1	admin	Panpour	Panpour es el pokemon numero #515	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/515.png	grass,electric	1	2018-11-16 05:59:02.860802	\N
-2974	1	admin	Gigalith	Gigalith es el pokemon numero #526	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/526.png	water,grass,fighting,ground,steel	1	2018-11-16 05:59:02.994964	\N
-2984	1	admin	Palpitoad	Palpitoad es el pokemon numero #536	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/536.png	grass	1	2018-11-16 05:59:03.114394	\N
-2994	1	admin	Cottonee	Cottonee es el pokemon numero #546	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/546.png	fire,ice,poison,flying,steel	1	2018-11-16 05:59:03.231868	\N
-3004	1	admin	Maractus	Maractus es el pokemon numero #556	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/556.png	fire,ice,poison,flying,bug	1	2018-11-16 05:59:03.35518	\N
-3018	1	admin	Trubbish	Trubbish es el pokemon numero #568	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/568.png	ground,psychic	1	2018-11-16 05:59:03.477007	\N
-3028	1	admin	Ducklett	Ducklett es el pokemon numero #580	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/580.png	electric,rock	1	2018-11-16 05:59:03.607319	\N
-3039	1	admin	Escavalier	Escavalier es el pokemon numero #589	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/589.png	fire	1	2018-11-16 05:59:03.746139	\N
-3048	1	admin	Klang	Klang es el pokemon numero #600	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/600.png	fire,fighting,ground	1	2018-11-16 05:59:03.866038	\N
-3057	1	admin	Chandelure	Chandelure es el pokemon numero #609	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/609.png	water,ground,rock,ghost,dark	1	2018-11-16 05:59:03.986303	\N
-2635	1	admin	Venomoth	Venomoth es el pokemon numero #49	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/049.png	fire,flying,psychic,rock	1	2018-11-16 05:58:58.825191	\N
-2645	1	admin	Poliwag	Poliwag es el pokemon numero #60	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/060.png	electric,grass	1	2018-11-16 05:58:58.945371	\N
-2656	1	admin	Weepinbell	Weepinbell es el pokemon numero #70	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/070.png	fire,flying,ice,psychic	1	2018-11-16 05:58:59.085019	\N
-2664	1	admin	Slowbro	Slowbro es el pokemon numero #80	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/080.png	bug,dark,electric,ghost,grass	1	2018-11-16 05:58:59.207268	\N
-2674	1	admin	Muk	Muk es el pokemon numero #89	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/089.png	ground,psychic	1	2018-11-16 05:58:59.326997	\N
-2683	1	admin	Krabby	Krabby es el pokemon numero #98	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/098.png	electric,grass	1	2018-11-16 05:58:59.446881	\N
-2693	1	admin	Koffing	Koffing es el pokemon numero #109	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/109.png	psychic	1	2018-11-16 05:58:59.571667	\N
-2703	1	admin	Seaking	Seaking es el pokemon numero #119	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/119.png	electric,grass	1	2018-11-16 05:58:59.689447	\N
-2713	1	admin	Magikarp	Magikarp es el pokemon numero #129	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/129.png	electric,grass	1	2018-11-16 05:58:59.806778	\N
-2724	1	admin	Omastar	Omastar es el pokemon numero #139	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/139.png	grass,electric,fighting,ground	1	2018-11-16 05:58:59.927883	\N
-2735	1	admin	Mewtwo	Mewtwo es el pokemon numero #150	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/150.png	bug,dark,ghost	1	2018-11-16 05:59:00.046702	\N
-2745	1	admin	Feraligatr	Feraligatr es el pokemon numero #160	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/160.png	electric,grass	1	2018-11-16 05:59:00.17448	\N
-2754	1	admin	Chinchou	Chinchou es el pokemon numero #170	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/170.png	grass,ground	1	2018-11-16 05:59:00.295657	\N
-2763	1	admin	Mareep	Mareep es el pokemon numero #179	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/179.png	ground	1	2018-11-16 05:59:00.420448	\N
-2772	1	admin	Skiploom	Skiploom es el pokemon numero #188	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/188.png	ice,fire,flying,poison,rock	1	2018-11-16 05:59:00.542332	\N
-2782	1	admin	Umbreon	Umbreon es el pokemon numero #197	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/197.png	fighting,bug,fairy	1	2018-11-16 05:59:00.673788	\N
-2797	1	admin	Steelix	Steelix es el pokemon numero #208	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/208.png	fighting,fire,ground,water	1	2018-11-16 05:59:00.820472	\N
-2808	1	admin	Remoraid	Remoraid es el pokemon numero #223	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/223.png	electric,grass	1	2018-11-16 05:59:00.984913	\N
-2818	1	admin	Stantler	Stantler es el pokemon numero #234	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/234.png	fighting	1	2018-11-16 05:59:01.10991	\N
-2828	1	admin	Entei	Entei es el pokemon numero #244	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/244.png	ground,rock,water	1	2018-11-16 05:59:01.226617	\N
-2837	1	admin	Grovyle	Grovyle es el pokemon numero #253	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/253.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:01.363279	\N
-2848	1	admin	Mightyena	Mightyena es el pokemon numero #262	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/262.png	fighting,bug,fairy	1	2018-11-16 05:59:01.499925	\N
-2858	1	admin	Nuzleaf	Nuzleaf es el pokemon numero #274	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/274.png	bug,fire,fighting,flying,ice,poison,fairy	1	2018-11-16 05:59:01.628588	\N
-2868	1	admin	Masquerain	Masquerain es el pokemon numero #284	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/284.png	rock,electric,fire,flying,ice	1	2018-11-16 05:59:01.745384	\N
-2879	1	admin	Loudred	Loudred es el pokemon numero #294	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/294.png	fighting	1	2018-11-16 05:59:01.867428	\N
-2889	1	admin	Lairon	Lairon es el pokemon numero #305	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/305.png	fighting,ground,water	1	2018-11-16 05:59:01.985168	\N
-2899	1	admin	Roselia	Roselia es el pokemon numero #315	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/315.png	fire,flying,ice,psychic	1	2018-11-16 05:59:02.10528	\N
-2909	1	admin	Spoink	Spoink es el pokemon numero #325	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/325.png	bug,dark,ghost	1	2018-11-16 05:59:02.223924	\N
-2919	1	admin	Zangoose	Zangoose es el pokemon numero #335	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/335.png	fighting	1	2018-11-16 05:59:02.341688	\N
-2929	1	admin	Lileep	Lileep es el pokemon numero #345	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/345.png	bug,fighting,ice,steel	1	2018-11-16 05:59:02.472175	\N
-2939	1	admin	Darkrai	Darkrai es el pokemon numero #491	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/491.png	fighting,bug,fairy	1	2018-11-16 05:59:02.591731	\N
-2952	1	admin	Oshawott	Oshawott es el pokemon numero #501	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/501.png	grass,electric	1	2018-11-16 05:59:02.711716	\N
-2961	1	admin	Pansear	Pansear es el pokemon numero #513	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/513.png	water,ground,rock	1	2018-11-16 05:59:02.830518	\N
-2972	1	admin	Zebstrika	Zebstrika es el pokemon numero #523	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/523.png	ground	1	2018-11-16 05:59:02.961669	\N
-2982	1	admin	Conkeldurr	Conkeldurr es el pokemon numero #534	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/534.png	flying,psychic,fairy	1	2018-11-16 05:59:03.083021	\N
-2992	1	admin	Whirlipede	Whirlipede es el pokemon numero #544	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/544.png	fire,flying,rock,psychic	1	2018-11-16 05:59:03.200861	\N
-3003	1	admin	Darumaka	Darumaka es el pokemon numero #554	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/554.png	water,ground,rock	1	2018-11-16 05:59:03.331222	\N
-3013	1	admin	Tirtouga	Tirtouga es el pokemon numero #564	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/564.png	grass,electric,fighting,ground	1	2018-11-16 05:59:03.451022	\N
-3023	1	admin	Gothorita	Gothorita es el pokemon numero #575	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/575.png	bug,ghost,dark	1	2018-11-16 05:59:03.573194	\N
-3035	1	admin	Deerling	Deerling es el pokemon numero #585	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/585.png	fire,ice,fighting,poison,flying,bug	1	2018-11-16 05:59:03.695431	\N
-3045	1	admin	Galvantula	Galvantula es el pokemon numero #596	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/596.png	fire,rock	1	2018-11-16 05:59:03.821873	\N
-3054	1	admin	Beheeyem	Beheeyem es el pokemon numero #606	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/606.png	bug,ghost,dark	1	2018-11-16 05:59:03.950582	\N
-2636	1	admin	Meowth	Meowth es el pokemon numero #52	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/052.png	fighting	1	2018-11-16 05:58:58.840625	\N
-2646	1	admin	Poliwrath	Poliwrath es el pokemon numero #62	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/062.png	electric,flying,grass,psychic,fairy	1	2018-11-16 05:58:58.970907	\N
-2657	1	admin	Tentacool	Tentacool es el pokemon numero #72	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/072.png	electric,ground,psychic	1	2018-11-16 05:58:59.092877	\N
-2690	1	admin	Hitmonlee	Hitmonlee es el pokemon numero #106	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/106.png	flying,psychic,fairy	1	2018-11-16 05:58:59.549993	\N
-2702	1	admin	Seadra	Seadra es el pokemon numero #117	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/117.png	electric,grass	1	2018-11-16 05:58:59.671754	\N
-2712	1	admin	Tauros	Tauros es el pokemon numero #128	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/128.png	fighting	1	2018-11-16 05:58:59.796018	\N
-2723	1	admin	Omanyte	Omanyte es el pokemon numero #138	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/138.png	grass,electric,fighting,ground	1	2018-11-16 05:58:59.919063	\N
-2734	1	admin	Dragonite	Dragonite es el pokemon numero #149	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/149.png	ice,dragon,rock,fairy	1	2018-11-16 05:59:00.043139	\N
-2744	1	admin	Sentret	Sentret es el pokemon numero #161	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/161.png	fighting	1	2018-11-16 05:59:00.171625	\N
-2755	1	admin	Lanturn	Lanturn es el pokemon numero #171	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/171.png	grass,ground	1	2018-11-16 05:59:00.322714	\N
-2765	1	admin	Flaaffy	Flaaffy es el pokemon numero #180	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/180.png	ground	1	2018-11-16 05:59:00.447141	\N
-2774	1	admin	Aipom	Aipom es el pokemon numero #190	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/190.png	fighting	1	2018-11-16 05:59:00.569124	\N
-2787	1	admin	Wobbuffet	Wobbuffet es el pokemon numero #202	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/202.png	bug,dark,ghost	1	2018-11-16 05:59:00.695857	\N
-2798	1	admin	Heracross	Heracross es el pokemon numero #214	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/214.png	flying,fire,psychic,fairy	1	2018-11-16 05:59:00.821339	\N
-2809	1	admin	Octillery	Octillery es el pokemon numero #224	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/224.png	electric,grass	1	2018-11-16 05:59:00.987493	\N
-2819	1	admin	Smeargle	Smeargle es el pokemon numero #235	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/235.png	fighting	1	2018-11-16 05:59:01.110424	\N
-2831	1	admin	Suicune	Suicune es el pokemon numero #245	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/245.png	electric,grass	1	2018-11-16 05:59:01.236168	\N
-2841	1	admin	Combusken	Combusken es el pokemon numero #256	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/256.png	flying,ground,psychic,water	1	2018-11-16 05:59:01.384861	\N
-2850	1	admin	Silcoon	Silcoon es el pokemon numero #266	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/266.png	fire,flying,rock	1	2018-11-16 05:59:01.515999	\N
-2861	1	admin	Taillow	Taillow es el pokemon numero #276	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/276.png	electric,ice,rock	1	2018-11-16 05:59:01.646144	\N
-2871	1	admin	Slakoth	Slakoth es el pokemon numero #287	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/287.png	fighting	1	2018-11-16 05:59:01.766471	\N
-2881	1	admin	Hariyama	Hariyama es el pokemon numero #297	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/297.png	flying,psychic,fairy	1	2018-11-16 05:59:01.888693	\N
-2891	1	admin	Meditite	Meditite es el pokemon numero #307	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/307.png	flying,ghost,fairy	1	2018-11-16 05:59:02.008977	\N
-2901	1	admin	Swalot	Swalot es el pokemon numero #317	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/317.png	ground,psychic	1	2018-11-16 05:59:02.127975	\N
-2911	1	admin	Spinda	Spinda es el pokemon numero #327	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/327.png	fighting	1	2018-11-16 05:59:02.249372	\N
-2921	1	admin	Lunatone	Lunatone es el pokemon numero #337	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/337.png	bug,dark,ghost,grass,steel,water	1	2018-11-16 05:59:02.369528	\N
-2934	1	admin	Armaldo	Armaldo es el pokemon numero #348	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/348.png	rock,steel,water	1	2018-11-16 05:59:02.491866	\N
-2944	1	admin	Servine	Servine es el pokemon numero #496	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/496.png	fire,ice,poison,flying,bug	1	2018-11-16 05:59:02.612273	\N
-2954	1	admin	Lillipup	Lillipup es el pokemon numero #506	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/506.png	fighting	1	2018-11-16 05:59:02.733943	\N
-2965	1	admin	Munna	Munna es el pokemon numero #517	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/517.png	bug,ghost,dark	1	2018-11-16 05:59:02.86245	\N
-2975	1	admin	Woobat	Woobat es el pokemon numero #527	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/527.png	electric,ice,rock,ghost,dark	1	2018-11-16 05:59:02.996574	\N
-2985	1	admin	Seismitoad	Seismitoad es el pokemon numero #537	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/537.png	grass	1	2018-11-16 05:59:03.122703	\N
-2995	1	admin	Whimsicott	Whimsicott es el pokemon numero #547	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/547.png	fire,ice,poison,flying,steel	1	2018-11-16 05:59:03.242455	\N
-3009	1	admin	Scraggy	Scraggy es el pokemon numero #559	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/559.png	fighting,flying,fairy	1	2018-11-16 05:59:03.366702	\N
-3020	1	admin	Zoroark	Zoroark es el pokemon numero #571	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/571.png	fighting,bug,fairy	1	2018-11-16 05:59:03.497555	\N
-3031	1	admin	Vanillite	Vanillite es el pokemon numero #582	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/582.png	fire,fighting,rock,steel	1	2018-11-16 05:59:03.622886	\N
-3040	1	admin	Amoonguss	Amoonguss es el pokemon numero #591	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/591.png	fire,ice,flying,psychic	1	2018-11-16 05:59:03.75178	\N
-3049	1	admin	Klinklang	Klinklang es el pokemon numero #601	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/601.png	fire,fighting,ground	1	2018-11-16 05:59:03.877219	\N
-3058	1	admin	Axew	Axew es el pokemon numero #610	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/610.png	ice,dragon,fairy	1	2018-11-16 05:59:03.998176	\N
-3071	1	admin	Golett	Golett es el pokemon numero #622	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/622.png	water,grass,ice,ghost,dark	1	2018-11-16 05:59:04.135603	\N
-3082	1	admin	Deino	Deino es el pokemon numero #633	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/633.png	ice,fighting,bug,dragon,fairy	1	2018-11-16 05:59:04.260944	\N
-3092	1	admin	Zekrom	Zekrom es el pokemon numero #644	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/644.png	ice,ground,dragon,fairy	1	2018-11-16 05:59:04.38148	\N
-2638	1	admin	Psyduck	Psyduck es el pokemon numero #54	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/054.png	electric,grass	1	2018-11-16 05:58:58.900803	\N
-2648	1	admin	Kadabra	Kadabra es el pokemon numero #64	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/064.png	bug,dark,ghost	1	2018-11-16 05:58:59.036894	\N
-2660	1	admin	Geodude	Geodude es el pokemon numero #74	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/074.png	grass,water,fighting,ground,ice,steel	1	2018-11-16 05:58:59.158263	\N
-2671	1	admin	Dodrio	Dodrio es el pokemon numero #85	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/085.png	electric,ice,rock	1	2018-11-16 05:58:59.29811	\N
-2678	1	admin	Gengar	Gengar es el pokemon numero #94	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/094.png	dark,ghost,psychic	1	2018-11-16 05:58:59.406597	\N
-2688	1	admin	Exeggutor	Exeggutor es el pokemon numero #103	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/103.png	bug,dark,fire,flying,ghost,ice,poison	1	2018-11-16 05:58:59.520855	\N
-2697	1	admin	Chansey	Chansey es el pokemon numero #113	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/113.png	fighting	1	2018-11-16 05:58:59.631676	\N
-2707	1	admin	Scyther	Scyther es el pokemon numero #123	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/123.png	rock,electric,fire,flying,ice	1	2018-11-16 05:58:59.751354	\N
-2718	1	admin	Eevee	Eevee es el pokemon numero #133	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/133.png	fighting	1	2018-11-16 05:58:59.866945	\N
-2728	1	admin	Snorlax	Snorlax es el pokemon numero #143	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/143.png	fighting	1	2018-11-16 05:58:59.996211	\N
-2736	1	admin	Bayleef	Bayleef es el pokemon numero #153	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/153.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:00.10856	\N
-2746	1	admin	Furret	Furret es el pokemon numero #162	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/162.png	fighting	1	2018-11-16 05:59:00.222944	\N
-2756	1	admin	Pichu	Pichu es el pokemon numero #172	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/172.png	ground	1	2018-11-16 05:59:00.331709	\N
-2764	1	admin	Ampharos	Ampharos es el pokemon numero #181	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/181.png	ground	1	2018-11-16 05:59:00.443035	\N
-2773	1	admin	Jumpluff	Jumpluff es el pokemon numero #189	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/189.png	ice,fire,flying,poison,rock	1	2018-11-16 05:59:00.554974	\N
-2781	1	admin	Murkrow	Murkrow es el pokemon numero #198	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/198.png	electric,ice,rock,fairy	1	2018-11-16 05:59:00.664691	\N
-2791	1	admin	Gligar	Gligar es el pokemon numero #207	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/207.png	ice,water	1	2018-11-16 05:59:00.774516	\N
-2801	1	admin	Ursaring	Ursaring es el pokemon numero #217	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/217.png	fighting	1	2018-11-16 05:59:00.892463	\N
-2810	1	admin	Mantine	Mantine es el pokemon numero #226	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/226.png	electric,rock	1	2018-11-16 05:59:01.001324	\N
-2820	1	admin	Tyrogue	Tyrogue es el pokemon numero #236	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/236.png	flying,psychic,fairy	1	2018-11-16 05:59:01.11587	\N
-2829	1	admin	Larvitar	Larvitar es el pokemon numero #246	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/246.png	grass,water,fighting,ground,ice,steel	1	2018-11-16 05:59:01.230025	\N
-2840	1	admin	Sceptile	Sceptile es el pokemon numero #254	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/254.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:01.378661	\N
-2849	1	admin	Wurmple	Wurmple es el pokemon numero #265	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/265.png	fire,flying,rock	1	2018-11-16 05:59:01.50981	\N
-2859	1	admin	Shiftry	Shiftry es el pokemon numero #275	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/275.png	bug,fire,fighting,flying,ice,poison,fairy	1	2018-11-16 05:59:01.634795	\N
-2869	1	admin	Shroomish	Shroomish es el pokemon numero #285	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/285.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:01.746135	\N
-2878	1	admin	Exploud	Exploud es el pokemon numero #295	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/295.png	fighting	1	2018-11-16 05:59:01.858348	\N
-2888	1	admin	Aron	Aron es el pokemon numero #304	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/304.png	fighting,ground,water	1	2018-11-16 05:59:01.970655	\N
-2898	1	admin	Illumise	Illumise es el pokemon numero #314	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/314.png	fire,flying,rock	1	2018-11-16 05:59:02.081489	\N
-2908	1	admin	Torkoal	Torkoal es el pokemon numero #324	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/324.png	ground,rock,water	1	2018-11-16 05:59:02.191592	\N
-2918	1	admin	Altaria	Altaria es el pokemon numero #334	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/334.png	ice,dragon,rock,fairy	1	2018-11-16 05:59:02.322932	\N
-2928	1	admin	Claydol	Claydol es el pokemon numero #344	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/344.png	bug,dark,ghost,grass,water,ice	1	2018-11-16 05:59:02.433544	\N
-2938	1	admin	Manaphy	Manaphy es el pokemon numero #490	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/490.png	electric,grass	1	2018-11-16 05:59:02.545499	\N
-2948	1	admin	Emboar	Emboar es el pokemon numero #500	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/500.png	water,ground,flying,psychic	1	2018-11-16 05:59:02.659783	\N
-2958	1	admin	Liepard	Liepard es el pokemon numero #510	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/510.png	fighting,bug,fairy	1	2018-11-16 05:59:02.78291	\N
-2968	1	admin	Pidove	Pidove es el pokemon numero #519	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/519.png	electric,ice,rock	1	2018-11-16 05:59:02.918751	\N
-2979	1	admin	Drilbur	Drilbur es el pokemon numero #529	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/529.png	water,grass,ice	1	2018-11-16 05:59:03.035026	\N
-2989	1	admin	Sewaddle	Sewaddle es el pokemon numero #540	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/540.png	fire,flying,ice,poison,bug,rock	1	2018-11-16 05:59:03.144909	\N
-2999	1	admin	Sandile	Sandile es el pokemon numero #551	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/551.png	water,grass,ice,fighting,bug,fairy	1	2018-11-16 05:59:03.251773	\N
-3008	1	admin	Sigilyph	Sigilyph es el pokemon numero #561	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/561.png	electric,ice,rock,ghost,dark	1	2018-11-16 05:59:03.362906	\N
-3017	1	admin	Garbodor	Garbodor es el pokemon numero #569	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/569.png	ground,psychic	1	2018-11-16 05:59:03.472858	\N
-3026	1	admin	Duosion	Duosion es el pokemon numero #578	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/578.png	bug,ghost,dark	1	2018-11-16 05:59:03.588023	\N
-3036	1	admin	Karrablast	Karrablast es el pokemon numero #588	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/588.png	fire,flying,rock	1	2018-11-16 05:59:03.69983	\N
-3005	1	admin	Crustle	Crustle es el pokemon numero #558	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/558.png	water,rock,steel	1	2018-11-16 05:59:03.355925	\N
-3015	1	admin	Archeops	Archeops es el pokemon numero #567	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/567.png	water,electric,ice,rock,steel	1	2018-11-16 05:59:03.462586	\N
-3024	1	admin	Solosis 	Solosis  es el pokemon numero #577	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/577.png	bug,ghost,dark	1	2018-11-16 05:59:03.573747	\N
-3033	1	admin	Emolga	Emolga es el pokemon numero #587	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/587.png	ice,rock	1	2018-11-16 05:59:03.681385	\N
-3043	1	admin	Joltik	Joltik es el pokemon numero #595	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/595.png	fire,rock	1	2018-11-16 05:59:03.786108	\N
-3051	1	admin	Eelektross	Eelektross es el pokemon numero #604	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/604.png		1	2018-11-16 05:59:03.892712	\N
-3059	1	admin	Haxorus	Haxorus es el pokemon numero #612	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/612.png	ice,dragon,fairy	1	2018-11-16 05:59:03.999233	\N
-3069	1	admin	Druddigon	Druddigon es el pokemon numero #621	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/621.png	ice,dragon,fairy	1	2018-11-16 05:59:04.124419	\N
-3078	1	admin	Bouffalant	Bouffalant es el pokemon numero #626	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/626.png	fighting	1	2018-11-16 05:59:04.23145	\N
-3085	1	admin	Virizion	Virizion es el pokemon numero #640	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/640.png	flying,fire,ice,poison,psychic,fairy	1	2018-11-16 05:59:04.335863	\N
-3096	1	admin	Meloetta	Meloetta es el pokemon numero #648	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/648.png	bug,dark	1	2018-11-16 05:59:04.450186	\N
-3106	1	admin	Greninja	Greninja es el pokemon numero #658	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/658.png	fairy,grass,electric,fighting,bug	1	2018-11-16 05:59:04.55971	\N
-3115	1	admin	Pyroar	Pyroar es el pokemon numero #668	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/668.png	water,rock,fighting,ground	1	2018-11-16 05:59:04.662056	\N
-3125	1	admin	Espurr	Espurr es el pokemon numero #677	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/677.png	ghost,dark,bug	1	2018-11-16 05:59:04.766272	\N
-3134	1	admin	Inkay	Inkay es el pokemon numero #686	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/686.png	fairy,bug	1	2018-11-16 05:59:04.872052	\N
-3143	1	admin	Noibat	Noibat es el pokemon numero #714	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/714.png	ice,rock,fairy,dragon	1	2018-11-16 05:59:04.978238	\N
-3150	1	admin	Lycanroc	Lycanroc es el pokemon numero #745	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/745.png	water,steel,grass,fighting,ground	1	2018-11-16 05:59:05.110797	\N
-3159	1	admin	Pyukumuku	Pyukumuku es el pokemon numero #771	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/771.png	grass,electric	1	2018-11-16 05:59:05.217022	\N
-3168	1	admin	Phione	Phione es el pokemon numero #489	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/489.png	electric,grass	1	2018-11-16 05:59:05.325365	\N
-3177	1	admin	Uxie	Uxie es el pokemon numero #480	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/480.png	bug,dark,ghost	1	2018-11-16 05:59:05.432877	\N
-3186	1	admin	Glaceon	Glaceon es el pokemon numero #471	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/471.png	fire,fighting,rock,steel	1	2018-11-16 05:59:05.538925	\N
-3196	1	admin	Weavile	Weavile es el pokemon numero #461	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/461.png	fighting,bug,fire,rock,steel,fairy	1	2018-11-16 05:59:05.645636	\N
-3205	1	admin	Drapion	Drapion es el pokemon numero #452	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/452.png	ground	1	2018-11-16 05:59:05.753101	\N
-3215	1	admin	Spiritomb	Spiritomb es el pokemon numero #442	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/442.png	fairy	1	2018-11-16 05:59:05.869546	\N
-3224	1	admin	Stunky	Stunky es el pokemon numero #434	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/434.png	ground	1	2018-11-16 05:59:05.97942	\N
-3233	1	admin	Ambipom	Ambipom es el pokemon numero #424	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/424.png	fighting	1	2018-11-16 05:59:06.095829	\N
-3243	1	admin	Combee	Combee es el pokemon numero #415	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/415.png	rock,electric,fire,flying,ice	1	2018-11-16 05:59:06.216892	\N
-3251	1	admin	Budew	Budew es el pokemon numero #406	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/406.png	fire,flying,ice,psychic	1	2018-11-16 05:59:06.321497	\N
-3259	1	admin	Bidoof	Bidoof es el pokemon numero #399	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/399.png	fighting	1	2018-11-16 05:59:06.452441	\N
-3269	1	admin	Torterra	Torterra es el pokemon numero #389	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/389.png	ice,bug,fire,flying	1	2018-11-16 05:59:06.557304	\N
-3278	1	admin	Registeel	Registeel es el pokemon numero #379	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/379.png	fighting,fire,ground	1	2018-11-16 05:59:06.662537	\N
-3288	1	admin	Luvdisc	Luvdisc es el pokemon numero #370	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/370.png	electric,grass	1	2018-11-16 05:59:06.78349	\N
-3298	1	admin	Wynaut	Wynaut es el pokemon numero #360	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/360.png	bug,dark,ghost	1	2018-11-16 05:59:06.887888	\N
-3308	1	admin	Poipole	Poipole es el pokemon numero #803	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/803.png	psychic,ground	1	2018-11-16 05:59:06.997742	\N
-3317	1	admin	Cosmoem	Cosmoem es el pokemon numero #790	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/790.png	ghost,dark,bug	1	2018-11-16 05:59:07.101656	\N
-3326	1	admin	Togedemaru	Togedemaru es el pokemon numero #777	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/777.png	fire,fighting,ground	1	2018-11-16 05:59:07.211386	\N
-3336	1	admin	Oranguru	Oranguru es el pokemon numero #765	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/765.png	dark,bug	1	2018-11-16 05:59:07.320363	\N
-3345	1	admin	Dewpider	Dewpider es el pokemon numero #751	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/751.png	flying,electric,rock	1	2018-11-16 05:59:07.422777	\N
-3353	1	admin	Crabrawler	Crabrawler es el pokemon numero #739	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/739.png	psychic,flying,fairy	1	2018-11-16 05:59:07.528909	\N
-3361	1	admin	Popplio	Popplio es el pokemon numero #728	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/728.png	grass,electric	1	2018-11-16 05:59:07.638646	\N
-3370	1	admin	Diancie	Diancie es el pokemon numero #719	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/719.png	steel,water,grass,ground	1	2018-11-16 05:59:07.744604	\N
-3379	1	admin	Klefki	Klefki es el pokemon numero #707	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/707.png	fire,ground	1	2018-11-16 05:59:07.848078	\N
-3389	1	admin	Clawitzer	Clawitzer es el pokemon numero #693	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/693.png	grass,electric	1	2018-11-16 05:59:07.965825	\N
-3014	1	admin	Archen	Archen es el pokemon numero #566	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/566.png	water,electric,ice,rock,steel	1	2018-11-16 05:59:03.461084	\N
-3025	1	admin	Gothitelle	Gothitelle es el pokemon numero #576	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/576.png	bug,ghost,dark	1	2018-11-16 05:59:03.574105	\N
-3034	1	admin	Sawsbuck	Sawsbuck es el pokemon numero #586	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/586.png	fire,ice,fighting,poison,flying,bug	1	2018-11-16 05:59:03.681868	\N
-3042	1	admin	Alomomola	Alomomola es el pokemon numero #594	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/594.png	grass,electric	1	2018-11-16 05:59:03.785576	\N
-3052	1	admin	Eelektrik	Eelektrik es el pokemon numero #603	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/603.png		1	2018-11-16 05:59:03.893252	\N
-3060	1	admin	Fraxure	Fraxure es el pokemon numero #611	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/611.png	ice,dragon,fairy	1	2018-11-16 05:59:03.999564	\N
-3067	1	admin	Mienshao	Mienshao es el pokemon numero #620	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/620.png	flying,psychic,fairy	1	2018-11-16 05:59:04.110611	\N
-3077	1	admin	Rufflet	Rufflet es el pokemon numero #627	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/627.png	electric,ice,rock	1	2018-11-16 05:59:04.223751	\N
-3086	1	admin	Cobalion	Cobalion es el pokemon numero #638	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/638.png	fire,fighting,ground	1	2018-11-16 05:59:04.336361	\N
-3095	1	admin	Keldeo	Keldeo es el pokemon numero #647	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/647.png	flying,grass,electric,fairy,psychic	1	2018-11-16 05:59:04.44032	\N
-3104	1	admin	Frogadier	Frogadier es el pokemon numero #657	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/657.png	grass,electric	1	2018-11-16 05:59:04.544857	\N
-3114	1	admin	Vivillon	Vivillon es el pokemon numero #666	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/666.png	fire,flying,electric,ice,rock	1	2018-11-16 05:59:04.647192	\N
-3123	1	admin	Furfrou	Furfrou es el pokemon numero #676	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/676.png	fighting	1	2018-11-16 05:59:04.751791	\N
-3132	1	admin	Slurpuff	Slurpuff es el pokemon numero #685	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/685.png	steel,poison	1	2018-11-16 05:59:04.855629	\N
-3142	1	admin	Goodra	Goodra es el pokemon numero #706	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/706.png	fairy,ice,dragon	1	2018-11-16 05:59:04.965848	\N
-3149	1	admin	Oricorio	Oricorio es el pokemon numero #741	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/741.png	water,electric,rock	1	2018-11-16 05:59:05.11025	\N
-3158	1	admin	Wimpod	Wimpod es el pokemon numero #767	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/767.png	flying,electric,rock	1	2018-11-16 05:59:05.216582	\N
-3167	1	admin	Blacephalon	Blacephalon es el pokemon numero #806	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/806.png	water,ghost,ground,dark,rock	1	2018-11-16 05:59:05.324844	\N
-3178	1	admin	Mesprit	Mesprit es el pokemon numero #481	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/481.png	bug,dark,ghost	1	2018-11-16 05:59:05.433387	\N
-3187	1	admin	Gliscor	Gliscor es el pokemon numero #472	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/472.png	ice,water	1	2018-11-16 05:59:05.539425	\N
-3197	1	admin	Magnezone	Magnezone es el pokemon numero #462	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/462.png	ground,fire,fighting	1	2018-11-16 05:59:05.646061	\N
-3206	1	admin	Croagunk	Croagunk es el pokemon numero #453	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/453.png	psychic,flying,ground	1	2018-11-16 05:59:05.753585	\N
-3213	1	admin	Gible	Gible es el pokemon numero #443	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/443.png	ice,dragon,fairy	1	2018-11-16 05:59:05.85991	\N
-3221	1	admin	Skuntank	Skuntank es el pokemon numero #435	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/435.png	ground	1	2018-11-16 05:59:05.966213	\N
-3229	1	admin	Mismagius	Mismagius es el pokemon numero #429	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/429.png	dark,ghost	1	2018-11-16 05:59:06.070767	\N
-3239	1	admin	Floatzel	Floatzel es el pokemon numero #419	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/419.png	electric,grass	1	2018-11-16 05:59:06.181225	\N
-3248	1	admin	Shieldon	Shieldon es el pokemon numero #410	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/410.png	fighting,ground,water	1	2018-11-16 05:59:06.28557	\N
-3257	1	admin	Kricketot	Kricketot es el pokemon numero #401	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/401.png	fire,flying,rock	1	2018-11-16 05:59:06.391261	\N
-3266	1	admin	Infernape	Infernape es el pokemon numero #392	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/392.png	flying,ground,psychic,water	1	2018-11-16 05:59:06.501588	\N
-3275	1	admin	Groudon	Groudon es el pokemon numero #383	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/383.png	grass,ice,water	1	2018-11-16 05:59:06.610616	\N
-3284	1	admin	Salamence	Salamence es el pokemon numero #373	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/373.png	ice,dragon,rock,fairy	1	2018-11-16 05:59:06.721734	\N
-3294	1	admin	Sealeo	Sealeo es el pokemon numero #364	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/364.png	electric,fighting,grass,rock	1	2018-11-16 05:59:06.828491	\N
-3301	1	admin	Dusclops	Dusclops es el pokemon numero #356	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/356.png	dark,ghost	1	2018-11-16 05:59:06.932432	\N
-3309	1	admin	Guzzlord	Guzzlord es el pokemon numero #799	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/799.png	fairy,fighting,bug,ice,dragon	1	2018-11-16 05:59:07.034971	\N
-3319	1	admin	Tapu Fini	Tapu Fini es el pokemon numero #788	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/788.png	grass,electric,poison	1	2018-11-16 05:59:07.144542	\N
-3329	1	admin	Minior	Minior es el pokemon numero #774	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/774.png	steel,water,electric,ice,rock	1	2018-11-16 05:59:07.24774	\N
-3338	1	admin	Bounsweet	Bounsweet es el pokemon numero #761	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/761.png	fire,flying,ice,poison,bug	1	2018-11-16 05:59:07.367838	\N
-3348	1	admin	Toxapex	Toxapex es el pokemon numero #748	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/748.png	psychic,electric,ground	1	2018-11-16 05:59:07.485596	\N
-3358	1	admin	Gumshoos	Gumshoos es el pokemon numero #735	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/735.png	fighting	1	2018-11-16 05:59:07.588888	\N
-3367	1	admin	Rowlet	Rowlet es el pokemon numero #722	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/722.png	fire,flying,ice,poison,rock	1	2018-11-16 05:59:07.692369	\N
-3377	1	admin	Trevenant	Trevenant es el pokemon numero #709	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/709.png	ghost,fire,flying,dark,ice	1	2018-11-16 05:59:07.796942	\N
-3387	1	admin	Tyrunt	Tyrunt es el pokemon numero #696	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/696.png	steel,ice,dragon,fighting,fairy,ground	1	2018-11-16 05:59:07.902013	\N
-3029	1	admin	Vanillish	Vanillish es el pokemon numero #583	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/583.png	fire,fighting,rock,steel	1	2018-11-16 05:59:03.613758	\N
-3037	1	admin	Foongus	Foongus es el pokemon numero #590	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/590.png	fire,ice,flying,psychic	1	2018-11-16 05:59:03.738308	\N
-3046	1	admin	Ferrothorn	Ferrothorn es el pokemon numero #598	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/598.png	fire,fighting	1	2018-11-16 05:59:03.849482	\N
-3055	1	admin	Litwick	Litwick es el pokemon numero #607	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/607.png	water,ground,rock,ghost,dark	1	2018-11-16 05:59:03.960597	\N
-3064	1	admin	Accelgor	Accelgor es el pokemon numero #617	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/617.png	fire,flying,rock	1	2018-11-16 05:59:04.071876	\N
-3074	1	admin	Mandibuzz	Mandibuzz es el pokemon numero #630	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/630.png	electric,ice,rock,fairy	1	2018-11-16 05:59:04.184797	\N
-3084	1	admin	Larvesta	Larvesta es el pokemon numero #636	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/636.png	rock,water,flying	1	2018-11-16 05:59:04.295959	\N
-3094	1	admin	Kyurem	Kyurem es el pokemon numero #646	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/646.png	fighting,rock,dragon,steel,fairy	1	2018-11-16 05:59:04.43249	\N
-3105	1	admin	Froakie	Froakie es el pokemon numero #656	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/656.png	grass,electric	1	2018-11-16 05:59:04.546791	\N
-3116	1	admin	Litleo	Litleo es el pokemon numero #667	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/667.png	rock,water,fighting,ground	1	2018-11-16 05:59:04.662593	\N
-3126	1	admin	Meowstic	Meowstic es el pokemon numero #678	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/678.png	ghost,dark,bug	1	2018-11-16 05:59:04.772849	\N
-3136	1	admin	Binacle	Binacle es el pokemon numero #688	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/688.png	electric,fighting,grass,ground	1	2018-11-16 05:59:04.893414	\N
-3166	1	admin	Kartana	Kartana es el pokemon numero #798	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/798.png	fire,fighting	1	2018-11-16 05:59:05.316321	\N
-3176	1	admin	Azelf	Azelf es el pokemon numero #482	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/482.png	bug,dark,ghost	1	2018-11-16 05:59:05.431949	\N
-3188	1	admin	Leafeon	Leafeon es el pokemon numero #470	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/470.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:05.540931	\N
-3198	1	admin	Abomasnow	Abomasnow es el pokemon numero #460	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/460.png	fire,bug,fighting,flying,poison,rock,steel	1	2018-11-16 05:59:05.652564	\N
-3208	1	admin	Hippowdon	Hippowdon es el pokemon numero #450	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/450.png	grass,ice,water	1	2018-11-16 05:59:05.763185	\N
-3217	1	admin	Happiny	Happiny es el pokemon numero #440	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/440.png	fighting	1	2018-11-16 05:59:05.875629	\N
-3227	1	admin	Glameow	Glameow es el pokemon numero #431	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/431.png	fighting	1	2018-11-16 05:59:05.9932	\N
-3234	1	admin	Shellos	Shellos es el pokemon numero #422	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/422.png	electric,grass	1	2018-11-16 05:59:06.107894	\N
-3244	1	admin	Wormadam	Wormadam es el pokemon numero #413	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/413.png	fire,flying,ice,poison,bug,rock	1	2018-11-16 05:59:06.242679	\N
-3253	1	admin	Luxray	Luxray es el pokemon numero #405	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/405.png	ground	1	2018-11-16 05:59:06.36106	\N
-3262	1	admin	Starly	Starly es el pokemon numero #396	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/396.png	electric,ice,rock	1	2018-11-16 05:59:06.47474	\N
-3271	1	admin	Deoxys	Deoxys es el pokemon numero #386	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/386.png	bug,dark,ghost	1	2018-11-16 05:59:06.585331	\N
-3281	1	admin	Regirock	Regirock es el pokemon numero #377	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/377.png	fighting,grass,ground,steel,water	1	2018-11-16 05:59:06.694602	\N
-3291	1	admin	Huntail	Huntail es el pokemon numero #367	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/367.png	electric,grass	1	2018-11-16 05:59:06.82079	\N
-3302	1	admin	Tropius	Tropius es el pokemon numero #357	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/357.png	ice,fire,flying,poison,rock	1	2018-11-16 05:59:06.934409	\N
-3312	1	admin	Celesteela	Celesteela es el pokemon numero #797	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/797.png	fire,electric	1	2018-11-16 05:59:07.045175	\N
-3321	1	admin	Kommo-o	Kommo-o es el pokemon numero #784	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/784.png	fairy,flying,psychic,ice,dragon	1	2018-11-16 05:59:07.158998	\N
-3330	1	admin	Type: Null	Type: Null es el pokemon numero #772	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/772.png	fighting	1	2018-11-16 05:59:07.288862	\N
-3341	1	admin	Stufful	Stufful es el pokemon numero #759	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/759.png	psychic,flying,fairy,fighting	1	2018-11-16 05:59:07.405932	\N
-3350	1	admin	Rockruff	Rockruff es el pokemon numero #744	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/744.png	water,steel,grass,fighting,ground	1	2018-11-16 05:59:07.516379	\N
-3359	1	admin	Trumbeak	Trumbeak es el pokemon numero #732	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/732.png	electric,ice,rock	1	2018-11-16 05:59:07.631989	\N
-3369	1	admin	Hoopa	Hoopa es el pokemon numero #720	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/720.png	ghost,dark	1	2018-11-16 05:59:07.743909	\N
-3380	1	admin	Sliggoo	Sliggoo es el pokemon numero #705	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/705.png	fairy,ice,dragon	1	2018-11-16 05:59:07.853944	\N
-3390	1	admin	Clauncher	Clauncher es el pokemon numero #692	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/692.png	grass,electric	1	2018-11-16 05:59:07.973925	\N
-3044	1	admin	Ferroseed	Ferroseed es el pokemon numero #597	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/597.png	fire,fighting	1	2018-11-16 05:59:03.820593	\N
-3053	1	admin	Elgyem	Elgyem es el pokemon numero #605	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/605.png	bug,ghost,dark	1	2018-11-16 05:59:03.93489	\N
-3063	1	admin	Cryogonal	Cryogonal es el pokemon numero #615	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/615.png	fire,fighting,rock,steel	1	2018-11-16 05:59:04.055352	\N
-3073	1	admin	Heatmor	Heatmor es el pokemon numero #631	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/631.png	water,ground,rock	1	2018-11-16 05:59:04.16668	\N
-3083	1	admin	Hydreigon	Hydreigon es el pokemon numero #635	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/635.png	ice,fighting,bug,dragon,fairy	1	2018-11-16 05:59:04.27706	\N
-3093	1	admin	Landorus	Landorus es el pokemon numero #645	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/645.png	ice,water	1	2018-11-16 05:59:04.388675	\N
-3102	1	admin	Delphox	Delphox es el pokemon numero #655	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/655.png	ghost,dark,water,rock,ground	1	2018-11-16 05:59:04.512348	\N
-3111	1	admin	Scatterbug	Scatterbug es el pokemon numero #664	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/664.png	fire,flying,rock	1	2018-11-16 05:59:04.621149	\N
-3121	1	admin	Gogoat	Gogoat es el pokemon numero #673	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/673.png	fire,flying,poison,ice,bug	1	2018-11-16 05:59:04.723364	\N
-3130	1	admin	Spritzee	Spritzee es el pokemon numero #682	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/682.png	steel,poison	1	2018-11-16 05:59:04.831055	\N
-3139	1	admin	Heliolisk	Heliolisk es el pokemon numero #695	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/695.png	fighting,ground	1	2018-11-16 05:59:04.938464	\N
-3146	1	admin	Volcanion	Volcanion es el pokemon numero #721	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/721.png	ground,electric,rock	1	2018-11-16 05:59:05.072708	\N
-3155	1	admin	Shiinotic	Shiinotic es el pokemon numero #756	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/756.png	steel,fire,flying,ice,poison	1	2018-11-16 05:59:05.180893	\N
-3164	1	admin	Solgaleo	Solgaleo es el pokemon numero #791	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/791.png	ghost,fire,dark,ground	1	2018-11-16 05:59:05.290829	\N
-3174	1	admin	Palkia	Palkia es el pokemon numero #484	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/484.png	dragon,fairy	1	2018-11-16 05:59:05.402677	\N
-3184	1	admin	Porygon-Z	Porygon-Z es el pokemon numero #474	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/474.png	fighting	1	2018-11-16 05:59:05.513388	\N
-3194	1	admin	Rhyperior	Rhyperior es el pokemon numero #464	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/464.png	grass,water,fighting,ground,ice,steel	1	2018-11-16 05:59:05.622665	\N
-3202	1	admin	Finneon	Finneon es el pokemon numero #456	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/456.png	electric,grass	1	2018-11-16 05:59:05.731841	\N
-3212	1	admin	Munchlax	Munchlax es el pokemon numero #446	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/446.png	fighting	1	2018-11-16 05:59:05.854173	\N
-3222	1	admin	Bronzor	Bronzor es el pokemon numero #436	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/436.png	fire,ground,ghost,dark	1	2018-11-16 05:59:05.967005	\N
-3230	1	admin	Lopunny	Lopunny es el pokemon numero #428	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/428.png	fighting	1	2018-11-16 05:59:06.075719	\N
-3241	1	admin	Buizel	Buizel es el pokemon numero #418	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/418.png	electric,grass	1	2018-11-16 05:59:06.201526	\N
-3249	1	admin	Rampardos	Rampardos es el pokemon numero #409	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/409.png	fighting,grass,ground,steel,water	1	2018-11-16 05:59:06.307807	\N
-3258	1	admin	Bibarel	Bibarel es el pokemon numero #400	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/400.png	electric,fighting,grass	1	2018-11-16 05:59:06.416646	\N
-3267	1	admin	Monferno	Monferno es el pokemon numero #391	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/391.png	flying,ground,psychic,water	1	2018-11-16 05:59:06.526221	\N
-3277	1	admin	Latios	Latios es el pokemon numero #381	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/381.png	bug,dark,dragon,ghost,ice,fairy	1	2018-11-16 05:59:06.640744	\N
-3286	1	admin	Bagon	Bagon es el pokemon numero #371	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/371.png	dragon,ice,fairy	1	2018-11-16 05:59:06.751315	\N
-3296	1	admin	Glalie	Glalie es el pokemon numero #362	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/362.png	fire,fighting,rock,steel	1	2018-11-16 05:59:06.86843	\N
-3305	1	admin	Stakataka	Stakataka es el pokemon numero #805	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/805.png	water,fighting,ground	1	2018-11-16 05:59:06.978838	\N
-3315	1	admin	Nihilego	Nihilego es el pokemon numero #793	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/793.png	steel,water,psychic,ground	1	2018-11-16 05:59:07.090099	\N
-3325	1	admin	Drampa	Drampa es el pokemon numero #780	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/780.png	fairy,fighting,ice,dragon	1	2018-11-16 05:59:07.200909	\N
-3335	1	admin	Passimian	Passimian es el pokemon numero #766	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/766.png	psychic,flying,fairy	1	2018-11-16 05:59:07.31903	\N
-3346	1	admin	Araquanid	Araquanid es el pokemon numero #752	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/752.png	flying,electric,rock	1	2018-11-16 05:59:07.424949	\N
-3355	1	admin	Vikavolt	Vikavolt es el pokemon numero #738	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/738.png	fire,rock	1	2018-11-16 05:59:07.538579	\N
-3365	1	admin	Torracat	Torracat es el pokemon numero #726	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/726.png	water,ground,rock	1	2018-11-16 05:59:07.649958	\N
-3374	1	admin	Bergmite	Bergmite es el pokemon numero #712	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/712.png	fire,steel,fighting,rock	1	2018-11-16 05:59:07.763305	\N
-3384	1	admin	Hawlucha	Hawlucha es el pokemon numero #701	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/701.png	electric,psychic,flying,ice,fairy	1	2018-11-16 05:59:07.878199	\N
-3047	1	admin	Klink	Klink es el pokemon numero #599	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/599.png	fire,fighting,ground	1	2018-11-16 05:59:03.861518	\N
-3056	1	admin	Lampent	Lampent es el pokemon numero #608	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/608.png	water,ground,rock,ghost,dark	1	2018-11-16 05:59:03.97913	\N
-3066	1	admin	Stunfisk	Stunfisk es el pokemon numero #618	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/618.png	water,grass,ice,ground	1	2018-11-16 05:59:04.098734	\N
-3076	1	admin	Braviary	Braviary es el pokemon numero #628	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/628.png	electric,ice,rock	1	2018-11-16 05:59:04.223204	\N
-3088	1	admin	Terrakion	Terrakion es el pokemon numero #639	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/639.png	water,grass,fighting,ground,steel,psychic,fairy	1	2018-11-16 05:59:04.340812	\N
-3097	1	admin	Chespin	Chespin es el pokemon numero #650	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/650.png	fire,flying,poison,ice,bug	1	2018-11-16 05:59:04.462996	\N
-3108	1	admin	Diggersby	Diggersby es el pokemon numero #660	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/660.png	water,grass,ice,fighting	1	2018-11-16 05:59:04.580327	\N
-3118	1	admin	Floette	Floette es el pokemon numero #670	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/670.png	steel,poison	1	2018-11-16 05:59:04.703628	\N
-3127	1	admin	Doublade	Doublade es el pokemon numero #680	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/680.png	fire,ghost,dark,ground	1	2018-11-16 05:59:04.816482	\N
-3138	1	admin	Dragalge	Dragalge es el pokemon numero #691	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/691.png	psychic,dragon,ice,ground	1	2018-11-16 05:59:04.938077	\N
-3152	1	admin	Toucannon	Toucannon es el pokemon numero #733	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/733.png	electric,ice,rock	1	2018-11-16 05:59:05.115459	\N
-3161	1	admin	Bruxish	Bruxish es el pokemon numero #779	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/779.png	ghost,dark,grass,electric,bug	1	2018-11-16 05:59:05.235446	\N
-3171	1	admin	Giratina	Giratina es el pokemon numero #487	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/487.png	dark,dragon,ghost,ice,fairy	1	2018-11-16 05:59:05.353379	\N
-3181	1	admin	Dusknoir	Dusknoir es el pokemon numero #477	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/477.png	dark,ghost	1	2018-11-16 05:59:05.469913	\N
-3191	1	admin	Magmortar	Magmortar es el pokemon numero #467	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/467.png	ground,rock,water	1	2018-11-16 05:59:05.599855	\N
-3201	1	admin	Lumineon	Lumineon es el pokemon numero #457	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/457.png	electric,grass	1	2018-11-16 05:59:05.714535	\N
-3211	1	admin	Riolu	Riolu es el pokemon numero #447	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/447.png	flying,psychic,fairy	1	2018-11-16 05:59:05.842415	\N
-3220	1	admin	Bronzong	Bronzong es el pokemon numero #437	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/437.png	fire,ground,ghost,dark	1	2018-11-16 05:59:05.962455	\N
-3232	1	admin	Drifblim	Drifblim es el pokemon numero #426	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/426.png	dark,electric,ghost,ice,rock	1	2018-11-16 05:59:06.083593	\N
-3242	1	admin	Vespiquen	Vespiquen es el pokemon numero #416	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/416.png	rock,electric,fire,flying,ice	1	2018-11-16 05:59:06.209928	\N
-3252	1	admin	Roserade	Roserade es el pokemon numero #407	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/407.png	fire,flying,ice,psychic	1	2018-11-16 05:59:06.323131	\N
-3261	1	admin	Staravia	Staravia es el pokemon numero #397	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/397.png	electric,ice,rock	1	2018-11-16 05:59:06.45775	\N
-3272	1	admin	Turtwig	Turtwig es el pokemon numero #387	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/387.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:06.588213	\N
-3282	1	admin	Metagross	Metagross es el pokemon numero #376	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/376.png	fire,ground,ghost,dark	1	2018-11-16 05:59:06.69756	\N
-3292	1	admin	Clamperl	Clamperl es el pokemon numero #366	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/366.png	electric,grass	1	2018-11-16 05:59:06.823708	\N
-3303	1	admin	Duskull	Duskull es el pokemon numero #355	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/355.png	dark,ghost	1	2018-11-16 05:59:06.937371	\N
-3314	1	admin	Xurkitree	Xurkitree es el pokemon numero #796	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/796.png	ground	1	2018-11-16 05:59:07.061102	\N
-3324	1	admin	Dhelmise	Dhelmise es el pokemon numero #781	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/781.png	ghost,fire,flying,dark,ice	1	2018-11-16 05:59:07.187507	\N
-3334	1	admin	Golisopod	Golisopod es el pokemon numero #768	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/768.png	flying,electric,rock	1	2018-11-16 05:59:07.302651	\N
-3343	1	admin	Lurantis	Lurantis es el pokemon numero #754	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/754.png	fire,flying,ice,poison,bug	1	2018-11-16 05:59:07.414127	\N
-3354	1	admin	Cutiefly	Cutiefly es el pokemon numero #742	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/742.png	fire,steel,flying,poison,rock	1	2018-11-16 05:59:07.531015	\N
-3364	1	admin	Incineroar	Incineroar es el pokemon numero #727	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/727.png	water,ground,fighting,rock	1	2018-11-16 05:59:07.644019	\N
-3373	1	admin	Avalugg	Avalugg es el pokemon numero #713	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/713.png	fire,steel,fighting,rock	1	2018-11-16 05:59:07.759935	\N
-3383	1	admin	Sylveon	Sylveon es el pokemon numero #700	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/700.png	steel,poison	1	2018-11-16 05:59:07.877633	\N
-3061	1	admin	Cubchoo	Cubchoo es el pokemon numero #613	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/613.png	fire,fighting,rock,steel	1	2018-11-16 05:59:04.001989	\N
-3070	1	admin	Golurk	Golurk es el pokemon numero #623	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/623.png	water,grass,ice,ghost,dark	1	2018-11-16 05:59:04.127322	\N
-3079	1	admin	Pawniard	Pawniard es el pokemon numero #624	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/624.png	fighting,fire,ground	1	2018-11-16 05:59:04.236951	\N
-3089	1	admin	Tornadus	Tornadus es el pokemon numero #641	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/641.png	electric,ice,rock	1	2018-11-16 05:59:04.348978	\N
-3099	1	admin	Quilladin	Quilladin es el pokemon numero #651	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/651.png	fire,flying,poison,ice,bug	1	2018-11-16 05:59:04.479856	\N
-3109	1	admin	Fletchling	Fletchling es el pokemon numero #661	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/661.png	ice,electric,rock	1	2018-11-16 05:59:04.591164	\N
-3119	1	admin	Florges	Florges es el pokemon numero #671	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/671.png	steel,poison	1	2018-11-16 05:59:04.715002	\N
-3129	1	admin	Aegislash	Aegislash es el pokemon numero #681	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/681.png	fire,ghost,dark,ground	1	2018-11-16 05:59:04.82903	\N
-3137	1	admin	Aurorus	Aurorus es el pokemon numero #699	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/699.png	steel,fighting,water,rock,grass,ground	1	2018-11-16 05:59:04.936052	\N
-3147	1	admin	Litten	Litten es el pokemon numero #725	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/725.png	water,ground,rock	1	2018-11-16 05:59:05.083918	\N
-3156	1	admin	Bewear	Bewear es el pokemon numero #760	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/760.png	psychic,flying,fairy,fighting	1	2018-11-16 05:59:05.195704	\N
-3165	1	admin	Buzzwole	Buzzwole es el pokemon numero #794	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/794.png	fire,psychic,flying,fairy	1	2018-11-16 05:59:05.309934	\N
-3175	1	admin	Dialga	Dialga es el pokemon numero #483	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/483.png	fighting,ground	1	2018-11-16 05:59:05.41918	\N
-3185	1	admin	Mamoswine	Mamoswine es el pokemon numero #473	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/473.png	fighting,fire,grass,steel,water	1	2018-11-16 05:59:05.529466	\N
-3195	1	admin	Lickilicky	Lickilicky es el pokemon numero #463	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/463.png	fighting	1	2018-11-16 05:59:05.643384	\N
-3207	1	admin	Skorupi	Skorupi es el pokemon numero #451	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/451.png	fire,flying,psychic,rock	1	2018-11-16 05:59:05.755943	\N
-3218	1	admin	Chatot	Chatot es el pokemon numero #441	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/441.png	electric,ice,rock	1	2018-11-16 05:59:05.87667	\N
-3228	1	admin	Honchkrow	Honchkrow es el pokemon numero #430	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/430.png	electric,ice,rock,fairy	1	2018-11-16 05:59:05.994066	\N
-3236	1	admin	Cherubi	Cherubi es el pokemon numero #420	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/420.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:06.108741	\N
-3245	1	admin	Burmy	Burmy es el pokemon numero #412	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/412.png	fire,flying,rock	1	2018-11-16 05:59:06.243514	\N
-3254	1	admin	Luxio	Luxio es el pokemon numero #404	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/404.png	ground	1	2018-11-16 05:59:06.361862	\N
-3263	1	admin	Empoleon	Empoleon es el pokemon numero #395	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/395.png	electric,fighting,ground	1	2018-11-16 05:59:06.475565	\N
-3273	1	admin	Jirachi	Jirachi es el pokemon numero #385	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/385.png	fire,ground,ghost,dark	1	2018-11-16 05:59:06.599979	\N
-3283	1	admin	Metang	Metang es el pokemon numero #375	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/375.png	fire,ground,ghost,dark	1	2018-11-16 05:59:06.711631	\N
-3293	1	admin	Walrein	Walrein es el pokemon numero #365	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/365.png	electric,fighting,grass,rock	1	2018-11-16 05:59:06.82784	\N
-3304	1	admin	Banette	Banette es el pokemon numero #354	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/354.png	dark,ghost	1	2018-11-16 05:59:06.948197	\N
-3313	1	admin	Pheromosa	Pheromosa es el pokemon numero #795	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/795.png	fire,psychic,flying,fairy	1	2018-11-16 05:59:07.059944	\N
-3323	1	admin	Jangmo-o	Jangmo-o es el pokemon numero #782	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/782.png	fairy,ice,dragon	1	2018-11-16 05:59:07.185493	\N
-3333	1	admin	Sandygast	Sandygast es el pokemon numero #769	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/769.png	ghost,dark,grass,water,ice	1	2018-11-16 05:59:07.300579	\N
-3342	1	admin	Morelull	Morelull es el pokemon numero #755	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/755.png	steel,fire,flying,ice,poison	1	2018-11-16 05:59:07.412348	\N
-3352	1	admin	Ribombee	Ribombee es el pokemon numero #743	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/743.png	fire,steel,flying,poison,rock	1	2018-11-16 05:59:07.523914	\N
-3363	1	admin	Primarina	Primarina es el pokemon numero #730	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/730.png	grass,electric,poison	1	2018-11-16 05:59:07.641527	\N
-3372	1	admin	Xerneas	Xerneas es el pokemon numero #716	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/716.png	steel,poison	1	2018-11-16 05:59:07.752728	\N
-3381	1	admin	Carbink	Carbink es el pokemon numero #703	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/703.png	steel,water,grass,ground	1	2018-11-16 05:59:07.865425	\N
-3391	1	admin	Skrelp	Skrelp es el pokemon numero #690	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/690.png	psychic,electric,ground	1	2018-11-16 05:59:07.974604	\N
-3065	1	admin	Shelmet	Shelmet es el pokemon numero #616	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/616.png	fire,flying,rock	1	2018-11-16 05:59:04.077065	\N
-3075	1	admin	Vullaby	Vullaby es el pokemon numero #629	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/629.png	electric,ice,rock,fairy	1	2018-11-16 05:59:04.222116	\N
-3087	1	admin	Volcarona	Volcarona es el pokemon numero #637	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/637.png	rock,water,flying	1	2018-11-16 05:59:04.339957	\N
-3098	1	admin	Genesect	Genesect es el pokemon numero #649	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/649.png	fire	1	2018-11-16 05:59:04.464241	\N
-3107	1	admin	Bunnelby	Bunnelby es el pokemon numero #659	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/659.png	fighting	1	2018-11-16 05:59:04.580018	\N
-3117	1	admin	Flabébé	Flabébé es el pokemon numero #669	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/669.png	steel,poison	1	2018-11-16 05:59:04.699827	\N
-3128	1	admin	Honedge	Honedge es el pokemon numero #679	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/679.png	fire,ghost,dark,ground	1	2018-11-16 05:59:04.819774	\N
-3140	1	admin	Barbaracle	Barbaracle es el pokemon numero #689	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/689.png	electric,fighting,grass,ground	1	2018-11-16 05:59:04.940464	\N
-3148	1	admin	Brionne	Brionne es el pokemon numero #729	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/729.png	grass,electric	1	2018-11-16 05:59:05.095091	\N
-3157	1	admin	Comfey	Comfey es el pokemon numero #764	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/764.png	steel,poison	1	2018-11-16 05:59:05.214097	\N
-3169	1	admin	Marshadow	Marshadow es el pokemon numero #802	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/802.png	ghost,psychic,flying,fairy	1	2018-11-16 05:59:05.338888	\N
-3180	1	admin	Rotom	Rotom es el pokemon numero #479	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/479.png	ghost,dark	1	2018-11-16 05:59:05.460281	\N
-3189	1	admin	Yanmega	Yanmega es el pokemon numero #469	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/469.png	rock,electric,fire,flying,ice	1	2018-11-16 05:59:05.584994	\N
-3199	1	admin	Snover	Snover es el pokemon numero #459	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/459.png	fire,bug,fighting,flying,poison,rock,steel	1	2018-11-16 05:59:05.705379	\N
-3210	1	admin	Hippopotas	Hippopotas es el pokemon numero #449	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/449.png	grass,ice,water	1	2018-11-16 05:59:05.836187	\N
-3223	1	admin	Bonsly	Bonsly es el pokemon numero #438	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/438.png	fighting,grass,ground,steel,water	1	2018-11-16 05:59:05.971008	\N
-3237	1	admin	Drifloon	Drifloon es el pokemon numero #425	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/425.png	dark,electric,ghost,ice,rock	1	2018-11-16 05:59:06.109856	\N
-3246	1	admin	Mothim	Mothim es el pokemon numero #414	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/414.png	rock,electric,fire,flying,ice	1	2018-11-16 05:59:06.254702	\N
-3255	1	admin	Shinx	Shinx es el pokemon numero #403	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/403.png	ground	1	2018-11-16 05:59:06.373075	\N
-3264	1	admin	Prinplup	Prinplup es el pokemon numero #394	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/394.png	electric,grass	1	2018-11-16 05:59:06.491189	\N
-3274	1	admin	Rayquaza	Rayquaza es el pokemon numero #384	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/384.png	ice,dragon,rock,fairy	1	2018-11-16 05:59:06.611139	\N
-3285	1	admin	Beldum	Beldum es el pokemon numero #374	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/374.png	fire,ground,ghost,dark	1	2018-11-16 05:59:06.735748	\N
-3295	1	admin	Spheal	Spheal es el pokemon numero #363	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/363.png	electric,fighting,grass,rock	1	2018-11-16 05:59:06.85764	\N
-3306	1	admin	Zeraora	Zeraora es el pokemon numero #807	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/807.png	ground	1	2018-11-16 05:59:06.979387	\N
-3316	1	admin	Lunala	Lunala es el pokemon numero #792	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/792.png	ghost,dark	1	2018-11-16 05:59:07.099211	\N
-3327	1	admin	Mimikyu	Mimikyu es el pokemon numero #778	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/778.png	ghost,steel	1	2018-11-16 05:59:07.222058	\N
-3337	1	admin	Tsareena	Tsareena es el pokemon numero #763	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/763.png	fire,flying,ice,poison,bug	1	2018-11-16 05:59:07.345379	\N
-3347	1	admin	Mudsdale	Mudsdale es el pokemon numero #750	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/750.png	water,grass,ice	1	2018-11-16 05:59:07.45852	\N
-3357	1	admin	Grubbin	Grubbin es el pokemon numero #736	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/736.png	fire,flying,rock	1	2018-11-16 05:59:07.578743	\N
-3368	1	admin	Dartrix	Dartrix es el pokemon numero #723	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/723.png	fire,flying,ice,poison,rock	1	2018-11-16 05:59:07.697415	\N
-3378	1	admin	Phantump	Phantump es el pokemon numero #708	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/708.png	ghost,fire,flying,dark,ice	1	2018-11-16 05:59:07.819553	\N
-3388	1	admin	Helioptile	Helioptile es el pokemon numero #694	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/694.png	fighting,ground	1	2018-11-16 05:59:07.948989	\N
-3068	1	admin	Mienfoo	Mienfoo es el pokemon numero #619	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/619.png	flying,psychic,fairy	1	2018-11-16 05:59:04.120107	\N
-3080	1	admin	Bisharp	Bisharp es el pokemon numero #625	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/625.png	fighting,fire,ground	1	2018-11-16 05:59:04.248121	\N
-3091	1	admin	Thundurus	Thundurus es el pokemon numero #642	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/642.png	ice,rock	1	2018-11-16 05:59:04.367909	\N
-3101	1	admin	Fennekin	Fennekin es el pokemon numero #653	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/653.png	water,rock,ground	1	2018-11-16 05:59:04.502976	\N
-3112	1	admin	Talonflame	Talonflame es el pokemon numero #663	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/663.png	water,rock,electric	1	2018-11-16 05:59:04.622617	\N
-3122	1	admin	Pancham	Pancham es el pokemon numero #674	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/674.png	psychic,flying,fairy	1	2018-11-16 05:59:04.741388	\N
-3133	1	admin	Swirlix	Swirlix es el pokemon numero #684	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/684.png	steel,poison	1	2018-11-16 05:59:04.861535	\N
-3144	1	admin	Pumpkaboo	Pumpkaboo es el pokemon numero #710	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/710.png	ghost,fire,flying,dark,ice	1	2018-11-16 05:59:04.980759	\N
-3153	1	admin	Mudbray	Mudbray es el pokemon numero #749	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/749.png	water,grass,ice	1	2018-11-16 05:59:05.120567	\N
-3162	1	admin	Hakamo-o	Hakamo-o es el pokemon numero #783	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/783.png	fairy,flying,psychic,ice,dragon	1	2018-11-16 05:59:05.253366	\N
-3172	1	admin	Regigigas	Regigigas es el pokemon numero #486	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/486.png	fighting	1	2018-11-16 05:59:05.370646	\N
-3182	1	admin	Probopass	Probopass es el pokemon numero #476	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/476.png	fighting,ground,water	1	2018-11-16 05:59:05.499875	\N
-3192	1	admin	Electivire	Electivire es el pokemon numero #466	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/466.png	ground	1	2018-11-16 05:59:05.619667	\N
-3203	1	admin	Carnivine	Carnivine es el pokemon numero #455	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/455.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:05.736364	\N
-3214	1	admin	Garchomp	Garchomp es el pokemon numero #445	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/445.png	ice,dragon,fairy	1	2018-11-16 05:59:05.868822	\N
-3225	1	admin	Chingling	Chingling es el pokemon numero #433	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/433.png	bug,dark,ghost	1	2018-11-16 05:59:05.990994	\N
-3235	1	admin	Gastrodon	Gastrodon es el pokemon numero #423	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/423.png	grass	1	2018-11-16 05:59:06.108393	\N
-3268	1	admin	Chimchar	Chimchar es el pokemon numero #390	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/390.png	ground,rock,water	1	2018-11-16 05:59:06.547823	\N
-3279	1	admin	Latias	Latias es el pokemon numero #380	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/380.png	bug,dark,dragon,ghost,ice,fairy	1	2018-11-16 05:59:06.666036	\N
-3289	1	admin	Relicanth	Relicanth es el pokemon numero #369	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/369.png	grass,electric,fighting,ground	1	2018-11-16 05:59:06.793032	\N
-3299	1	admin	Absol	Absol es el pokemon numero #359	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/359.png	fighting,bug,fairy	1	2018-11-16 05:59:06.912962	\N
-3310	1	admin	Magearna	Magearna es el pokemon numero #801	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/801.png	fire,ground	1	2018-11-16 05:59:07.036051	\N
-3322	1	admin	Tapu Lele	Tapu Lele es el pokemon numero #786	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/786.png	ghost,steel,poison	1	2018-11-16 05:59:07.160428	\N
-3332	1	admin	Palossand	Palossand es el pokemon numero #770	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/770.png	ghost,dark,grass,water,ice	1	2018-11-16 05:59:07.296326	\N
-3344	1	admin	Salandit	Salandit es el pokemon numero #757	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/757.png	water,psychic,ground,rock	1	2018-11-16 05:59:07.41775	\N
-3356	1	admin	Crabominable	Crabominable es el pokemon numero #740	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/740.png	steel,fire,psychic,flying,fighting,fairy	1	2018-11-16 05:59:07.540595	\N
-3366	1	admin	Decidueye	Decidueye es el pokemon numero #724	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/724.png	ghost,fire,flying,dark,ice	1	2018-11-16 05:59:07.661338	\N
-3376	1	admin	Gourgeist	Gourgeist es el pokemon numero #711	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/711.png	ghost,fire,flying,dark,ice	1	2018-11-16 05:59:07.782195	\N
-3386	1	admin	Tyrantrum	Tyrantrum es el pokemon numero #697	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/697.png	steel,ice,dragon,fighting,fairy,ground	1	2018-11-16 05:59:07.902117	\N
-3100	1	admin	Chesnaught	Chesnaught es el pokemon numero #652	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/652.png	fire,psychic,flying,poison,ice,fairy	1	2018-11-16 05:59:04.4822	\N
-3110	1	admin	Fletchinder	Fletchinder es el pokemon numero #662	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/662.png	water,rock,electric	1	2018-11-16 05:59:04.600303	\N
-3120	1	admin	Skiddo	Skiddo es el pokemon numero #672	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/672.png	fire,flying,poison,ice,bug	1	2018-11-16 05:59:04.722772	\N
-3131	1	admin	Aromatisse	Aromatisse es el pokemon numero #683	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/683.png	steel,poison	1	2018-11-16 05:59:04.840194	\N
-3141	1	admin	Dedenne	Dedenne es el pokemon numero #702	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/702.png	poison,ground	1	2018-11-16 05:59:04.958644	\N
-3151	1	admin	Charjabug	Charjabug es el pokemon numero #737	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/737.png	fire,rock	1	2018-11-16 05:59:05.115001	\N
-3160	1	admin	Komala	Komala es el pokemon numero #775	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/775.png	fighting	1	2018-11-16 05:59:05.228236	\N
-3170	1	admin	Cresselia	Cresselia es el pokemon numero #488	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/488.png	bug,dark,ghost	1	2018-11-16 05:59:05.344651	\N
-3179	1	admin	Froslass	Froslass es el pokemon numero #478	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/478.png	dark,fire,ghost,rock,steel	1	2018-11-16 05:59:05.460435	\N
-3190	1	admin	Togekiss	Togekiss es el pokemon numero #468	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/468.png	electric,ice,rock,steel,poison	1	2018-11-16 05:59:05.588782	\N
-3200	1	admin	Mantyke	Mantyke es el pokemon numero #458	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/458.png	electric,rock	1	2018-11-16 05:59:05.705942	\N
-3209	1	admin	Lucario	Lucario es el pokemon numero #448	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/448.png	fighting,fire,ground	1	2018-11-16 05:59:05.82687	\N
-3219	1	admin	Mime Jr.	Mime Jr. es el pokemon numero #439	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/439.png	ghost,steel,poison	1	2018-11-16 05:59:05.961735	\N
-3231	1	admin	Buneary	Buneary es el pokemon numero #427	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/427.png	fighting	1	2018-11-16 05:59:06.083087	\N
-3240	1	admin	Pachirisu	Pachirisu es el pokemon numero #417	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/417.png	ground	1	2018-11-16 05:59:06.201011	\N
-3250	1	admin	Cranidos	Cranidos es el pokemon numero #408	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/408.png	fighting,grass,ground,steel,water	1	2018-11-16 05:59:06.316935	\N
-3260	1	admin	Staraptor	Staraptor es el pokemon numero #398	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/398.png	electric,ice,rock	1	2018-11-16 05:59:06.457226	\N
-3270	1	admin	Grotle	Grotle es el pokemon numero #388	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/388.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:06.574635	\N
-3280	1	admin	Regice	Regice es el pokemon numero #378	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/378.png	fire,fighting,rock,steel	1	2018-11-16 05:59:06.691501	\N
-3290	1	admin	Gorebyss	Gorebyss es el pokemon numero #368	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/368.png	electric,grass	1	2018-11-16 05:59:06.810914	\N
-3300	1	admin	Chimecho	Chimecho es el pokemon numero #358	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/358.png	bug,dark,ghost	1	2018-11-16 05:59:06.924668	\N
-3311	1	admin	Necrozma	Necrozma es el pokemon numero #800	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/800.png	ghost,dark,bug	1	2018-11-16 05:59:07.039692	\N
-3320	1	admin	Tapu Koko	Tapu Koko es el pokemon numero #785	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/785.png	poison,ground	1	2018-11-16 05:59:07.155788	\N
-3331	1	admin	Silvally	Silvally es el pokemon numero #773	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/773.png	fighting	1	2018-11-16 05:59:07.291569	\N
-3340	1	admin	Salazzle	Salazzle es el pokemon numero #758	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/758.png	water,psychic,ground,rock	1	2018-11-16 05:59:07.40322	\N
-3351	1	admin	Wishiwashi	Wishiwashi es el pokemon numero #746	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/746.png	grass,electric	1	2018-11-16 05:59:07.519063	\N
-3360	1	admin	Pikipek	Pikipek es el pokemon numero #731	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/731.png	electric,ice,rock	1	2018-11-16 05:59:07.634716	\N
-3371	1	admin	Yveltal	Yveltal es el pokemon numero #717	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/717.png	electric,ice,rock,fairy	1	2018-11-16 05:59:07.749389	\N
-3382	1	admin	Goomy	Goomy es el pokemon numero #704	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/704.png	fairy,ice,dragon	1	2018-11-16 05:59:07.867246	\N
-3103	1	admin	Braixen	Braixen es el pokemon numero #654	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/654.png	water,rock,ground	1	2018-11-16 05:59:04.518499	\N
-3113	1	admin	Spewpa	Spewpa es el pokemon numero #665	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/665.png	fire,flying,rock	1	2018-11-16 05:59:04.638685	\N
-3124	1	admin	Pangoro	Pangoro es el pokemon numero #675	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/675.png	flying,fairy,fighting	1	2018-11-16 05:59:04.762463	\N
-3135	1	admin	Malamar	Malamar es el pokemon numero #687	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/687.png	fairy,bug	1	2018-11-16 05:59:04.883421	\N
-3145	1	admin	Zygarde	Zygarde es el pokemon numero #718	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/718.png	fairy,ice,dragon	1	2018-11-16 05:59:05.005948	\N
-3154	1	admin	Fomantis	Fomantis es el pokemon numero #753	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/753.png	fire,flying,ice,poison,bug	1	2018-11-16 05:59:05.130461	\N
-3163	1	admin	Tapu Bulu	Tapu Bulu es el pokemon numero #787	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/787.png	steel,fire,flying,ice,poison	1	2018-11-16 05:59:05.262007	\N
-3173	1	admin	Heatran	Heatran es el pokemon numero #485	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/485.png	ground,fighting,water	1	2018-11-16 05:59:05.381998	\N
-3183	1	admin	Gallade	Gallade es el pokemon numero #475	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/475.png	flying,ghost,fairy	1	2018-11-16 05:59:05.501473	\N
-3193	1	admin	Tangrowth	Tangrowth es el pokemon numero #465	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/465.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:05.621319	\N
-3204	1	admin	Toxicroak	Toxicroak es el pokemon numero #454	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/454.png	psychic,flying,ground	1	2018-11-16 05:59:05.744863	\N
-3216	1	admin	Gabite	Gabite es el pokemon numero #444	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/444.png	ice,dragon,fairy	1	2018-11-16 05:59:05.870982	\N
-3226	1	admin	Purugly	Purugly es el pokemon numero #432	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/432.png	fighting	1	2018-11-16 05:59:05.992609	\N
-3238	1	admin	Cherrim	Cherrim es el pokemon numero #421	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/421.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:06.117119	\N
-3247	1	admin	Bastiodon	Bastiodon es el pokemon numero #411	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/411.png	fighting,ground,water	1	2018-11-16 05:59:06.262225	\N
-3256	1	admin	Kricketune	Kricketune es el pokemon numero #402	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/402.png	fire,flying,rock	1	2018-11-16 05:59:06.381405	\N
-3265	1	admin	Piplup	Piplup es el pokemon numero #393	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/393.png	electric,grass	1	2018-11-16 05:59:06.500787	\N
-3276	1	admin	Kyogre	Kyogre es el pokemon numero #382	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/382.png	electric,grass	1	2018-11-16 05:59:06.634012	\N
-3287	1	admin	Shelgon	Shelgon es el pokemon numero #372	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/372.png	dragon,ice,fairy	1	2018-11-16 05:59:06.756465	\N
-3297	1	admin	Snorunt	Snorunt es el pokemon numero #361	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/361.png	fire,fighting,rock,steel	1	2018-11-16 05:59:06.878067	\N
-3307	1	admin	Naganadel	Naganadel es el pokemon numero #804	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/804.png	psychic,ground,ice,dragon	1	2018-11-16 05:59:06.997853	\N
-3318	1	admin	Cosmog	Cosmog es el pokemon numero #789	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/789.png	ghost,dark,bug	1	2018-11-16 05:59:07.121809	\N
-3328	1	admin	Turtonator	Turtonator es el pokemon numero #776	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/776.png	ground,rock,dragon	1	2018-11-16 05:59:07.242029	\N
-3339	1	admin	Steenee	Steenee es el pokemon numero #762	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/762.png	fire,flying,ice,poison,bug	1	2018-11-16 05:59:07.378958	\N
-3349	1	admin	Mareanie	Mareanie es el pokemon numero #747	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/747.png	psychic,electric,ground	1	2018-11-16 05:59:07.49845	\N
-3362	1	admin	Yungoos	Yungoos es el pokemon numero #734	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/734.png	fighting	1	2018-11-16 05:59:07.641729	\N
-3375	1	admin	Noivern	Noivern es el pokemon numero #715	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/715.png	fairy,dragon,ice,rock	1	2018-11-16 05:59:07.766072	\N
-3385	1	admin	Amaura	Amaura es el pokemon numero #698	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/698.png	steel,fighting,water,rock,grass,ground	1	2018-11-16 05:59:07.887674	\N
+COPY public."Repositories" (id, "idUser", username, title, description, image, tags, visibility, "createdAt", "updatedAt", slug, content) FROM stdin;
+3397	1	admin	Nuevo Repositorio	Es Solo Un Nuevo Repositorio	/public/repositories/images/1543065644038.png	nuevo	2	2018-11-24 07:20:44.046192	\N	nuevo-repositorio	Sin Descripcion
+3125	1	admin	Espurr	Espurr es el pokemon numero #677	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/677.png	ghost,dark,bug	1	2018-11-16 05:59:04.766272	\N	espurr	Sin Descripcion
+3344	1	admin	Salandit	Salandit es el pokemon numero #757	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/757.png	water,psychic,ground,rock	1	2018-11-16 05:59:07.41775	\N	salandit	Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed malesuada risus eu congue tristique. Aenean pharetra laoreet ligula, sit amet sagittis massa. Cras cursus ultricies egestas. Pellentesque iaculis tincidunt elit id convallis. Sed maximus ligula augue, vel convallis lectus iaculis ut. Proin diam enim, porttitor sollicitudin magna vitae, aliquam cursus ligula. Proin sit amet erat ac massa volutpat interdum. Donec ut tristique neque, vitae egestas arcu. Aliquam gravida mauris nec nunc lacinia pulvinar. In iaculis nec nisl sed volutpat. Nullam at hendrerit nunc, quis auctor nibh. Pellentesque volutpat luctus molestie. Morbi molestie purus ultrices, semper nunc accumsan, lobortis dolor. Maecenas lacinia, tortor vel suscipit vulputate, justo tellus molestie tortor, ac laoreet ipsum orci eget felis. Donec id magna vitae nulla feugiat molestie. Duis porttitor orci quis odio sagittis laoreet.\n\nIn dignissim eros quis laoreet vehicula. Nunc placerat ante vel fringilla semper. Duis non ornare ex, eu lacinia sapien. Mauris mauris arcu, pharetra vitae convallis et, elementum non sem. Nullam id ipsum orci. Maecenas sit amet libero erat. Maecenas quis nisi feugiat, finibus nisi nec, ullamcorper eros. Integer nec eleifend erat. Aenean ultricies nibh orci, ac luctus turpis dignissim faucibus. In erat elit, fermentum at arcu at, malesuada interdum orci. Nam ultrices finibus sagittis. Quisque feugiat vestibulum scelerisque.\n\nSed quis ultricies ex. Suspendisse vitae quam faucibus orci efficitur dictum. Donec ac tempus ipsum. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nunc commodo turpis vitae interdum viverra. Sed dignissim magna lacus, sit amet mollis est tempus at.
+3396	1	admin	Gato	Es solo un gato	/public/repositories/images/1542837643699.png	gato,cat,kawaii,moe	2	2018-11-21 16:00:43.725486	\N	gato	Sin Descripcion
+3398	1	admin	1111111	11111111111111	/public/repositories/images/1543205492940.jpg	11111111111	1	2018-11-25 22:11:32.971983	\N	\N	Sin Contenido
+3399	1	admin	11	1111	/public/repositories/images/1543205582179.jpg	11	1	2018-11-25 22:13:02.181692	\N	\N	Sin Contenido
+3346	1	admin	Araquanid	Araquanid es el pokemon numero #752111	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/752.png	flying,electric,rock	1	2018-11-16 05:59:07.424949	\N	araquanid	Sin Descripcion
+2585	1	admin	Squirtle	Squirtle es el pokemon numero #7	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/007.png	electric,grass	1	2018-11-16 05:58:58.20554	\N	squirtle	Sin Descripcion
+2586	1	admin	Ivysaur	Ivysaur es el pokemon numero #2	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/002.png	fire,flying,ice,psychic	1	2018-11-16 05:58:58.207023	\N	ivysaur	Sin Descripcion
+2587	1	admin	Charizard	Charizard es el pokemon numero #6	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/006.png	rock,electric,water	1	2018-11-16 05:58:58.218169	\N	charizard	Sin Descripcion
+2588	1	admin	Charmeleon	Charmeleon es el pokemon numero #5	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/005.png	ground,rock,water	1	2018-11-16 05:58:58.220323	\N	charmeleon	Sin Descripcion
+2589	1	admin	Wartortle	Wartortle es el pokemon numero #8	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/008.png	electric,grass	1	2018-11-16 05:58:58.225949	\N	wartortle	Sin Descripcion
+2590	1	admin	Bulbasaur	Bulbasaur es el pokemon numero #1	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/001.png	fire,flying,ice,psychic	1	2018-11-16 05:58:58.252687	\N	bulbasaur	Sin Descripcion
+2591	1	admin	Blastoise	Blastoise es el pokemon numero #9	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/009.png	electric,grass	1	2018-11-16 05:58:58.254838	\N	blastoise	Sin Descripcion
+2592	1	admin	Venusaur	Venusaur es el pokemon numero #3	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/003.png	fire,flying,ice,psychic	1	2018-11-16 05:58:58.259438	\N	venusaur	Sin Descripcion
+2593	1	admin	Charmander	Charmander es el pokemon numero #4	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/004.png	ground,rock,water	1	2018-11-16 05:58:58.261949	\N	charmander	Sin Descripcion
+2594	1	admin	Caterpie	Caterpie es el pokemon numero #10	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/010.png	fire,flying,rock	1	2018-11-16 05:58:58.261463	\N	caterpie	Sin Descripcion
+2595	1	admin	Metapod	Metapod es el pokemon numero #11	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/011.png	fire,flying,rock	1	2018-11-16 05:58:58.319933	\N	metapod	Sin Descripcion
+2596	1	admin	Butterfree	Butterfree es el pokemon numero #12	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/012.png	rock,electric,fire,flying,ice	1	2018-11-16 05:58:58.324873	\N	butterfree	Sin Descripcion
+2597	1	admin	Weedle	Weedle es el pokemon numero #13	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/013.png	fire,flying,psychic,rock	1	2018-11-16 05:58:58.337644	\N	weedle	Sin Descripcion
+2598	1	admin	Beedrill	Beedrill es el pokemon numero #15	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/015.png	fire,flying,psychic,rock	1	2018-11-16 05:58:58.348104	\N	beedrill	Sin Descripcion
+2599	1	admin	Kakuna	Kakuna es el pokemon numero #14	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/014.png	fire,flying,psychic,rock	1	2018-11-16 05:58:58.350144	\N	kakuna	Sin Descripcion
+2600	1	admin	Pidgey	Pidgey es el pokemon numero #16	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/016.png	electric,ice,rock	1	2018-11-16 05:58:58.383302	\N	pidgey	Sin Descripcion
+2601	1	admin	Pidgeot	Pidgeot es el pokemon numero #18	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/018.png	electric,ice,rock	1	2018-11-16 05:58:58.386539	\N	pidgeot	Sin Descripcion
+2602	1	admin	Pidgeotto	Pidgeotto es el pokemon numero #17	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/017.png	electric,ice,rock	1	2018-11-16 05:58:58.392595	\N	pidgeotto	Sin Descripcion
+2603	1	admin	Raticate	Raticate es el pokemon numero #20	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/020.png	fighting	1	2018-11-16 05:58:58.422183	\N	raticate	Sin Descripcion
+2604	1	admin	Rattata	Rattata es el pokemon numero #19	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/019.png	fighting	1	2018-11-16 05:58:58.423787	\N	rattata	Sin Descripcion
+2605	1	admin	Spearow	Spearow es el pokemon numero #21	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/021.png	electric,ice,rock	1	2018-11-16 05:58:58.425726	\N	spearow	Sin Descripcion
+2606	1	admin	Fearow	Fearow es el pokemon numero #22	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/022.png	electric,ice,rock	1	2018-11-16 05:58:58.451019	\N	fearow	Sin Descripcion
+2607	1	admin	Ekans	Ekans es el pokemon numero #23	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/023.png	ground,psychic	1	2018-11-16 05:58:58.459031	\N	ekans	Sin Descripcion
+2608	1	admin	Arbok	Arbok es el pokemon numero #24	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/024.png	ground,psychic	1	2018-11-16 05:58:58.47008	\N	arbok	Sin Descripcion
+2609	1	admin	Pikachu	Pikachu es el pokemon numero #25	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/025.png	ground	1	2018-11-16 05:58:58.47385	\N	pikachu	Sin Descripcion
+2610	1	admin	Raichu	Raichu es el pokemon numero #26	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/026.png	ground	1	2018-11-16 05:58:58.498134	\N	raichu	Sin Descripcion
+2611	1	admin	Sandshrew	Sandshrew es el pokemon numero #27	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/027.png	grass,ice,water	1	2018-11-16 05:58:58.506224	\N	sandshrew	Sin Descripcion
+2612	1	admin	Sandslash	Sandslash es el pokemon numero #28	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/028.png	grass,ice,water	1	2018-11-16 05:58:58.515336	\N	sandslash	Sin Descripcion
+2613	1	admin	Nidoran♀	Nidoran♀ es el pokemon numero #29	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/029.png	ground,psychic	1	2018-11-16 05:58:58.537283	\N	nidoran♀	Sin Descripcion
+2614	1	admin	Nidorina	Nidorina es el pokemon numero #30	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/030.png	ground,psychic	1	2018-11-16 05:58:58.546837	\N	nidorina	Sin Descripcion
+2615	1	admin	Nidoqueen	Nidoqueen es el pokemon numero #31	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/031.png	ground,ice,psychic,water	1	2018-11-16 05:58:58.548402	\N	nidoqueen	Sin Descripcion
+2616	1	admin	Nidoran♂	Nidoran♂ es el pokemon numero #32	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/032.png	ground,psychic	1	2018-11-16 05:58:58.566477	\N	nidoran♂	Sin Descripcion
+2617	1	admin	Nidorino	Nidorino es el pokemon numero #33	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/033.png	ground,psychic	1	2018-11-16 05:58:58.584565	\N	nidorino	Sin Descripcion
+2618	1	admin	Nidoking	Nidoking es el pokemon numero #34	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/034.png	ground,ice,psychic,water	1	2018-11-16 05:58:58.678252	\N	nidoking	Sin Descripcion
+2619	1	admin	Jigglypuff	Jigglypuff es el pokemon numero #39	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/039.png	steel,poison	1	2018-11-16 05:58:58.690871	\N	jigglypuff	Sin Descripcion
+2620	1	admin	Clefairy	Clefairy es el pokemon numero #35	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/035.png	steel,poison	1	2018-11-16 05:58:58.691765	\N	clefairy	Sin Descripcion
+2621	1	admin	Clefable	Clefable es el pokemon numero #36	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/036.png	steel,poison	1	2018-11-16 05:58:58.695607	\N	clefable	Sin Descripcion
+2622	1	admin	Vulpix	Vulpix es el pokemon numero #37	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/037.png	ground,rock,water	1	2018-11-16 05:58:58.696392	\N	vulpix	Sin Descripcion
+2623	1	admin	Wigglytuff	Wigglytuff es el pokemon numero #40	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/040.png	steel,poison	1	2018-11-16 05:58:58.701188	\N	wigglytuff	Sin Descripcion
+2624	1	admin	Ninetales	Ninetales es el pokemon numero #38	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/038.png	ground,rock,water	1	2018-11-16 05:58:58.704893	\N	ninetales	Sin Descripcion
+2625	1	admin	Golbat	Golbat es el pokemon numero #42	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/042.png	electric,ice,psychic,rock	1	2018-11-16 05:58:58.707008	\N	golbat	Sin Descripcion
+2626	1	admin	Zubat	Zubat es el pokemon numero #41	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/041.png	electric,ice,psychic,rock	1	2018-11-16 05:58:58.718171	\N	zubat	Sin Descripcion
+2628	1	admin	Gloom	Gloom es el pokemon numero #44	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/044.png	fire,flying,ice,psychic	1	2018-11-16 05:58:58.792065	\N	gloom	Sin Descripcion
+2627	1	admin	Oddish	Oddish es el pokemon numero #43	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/043.png	fire,flying,ice,psychic	1	2018-11-16 05:58:58.730434	\N	oddish	Sin Descripcion
+2637	1	admin	Persian	Persian es el pokemon numero #53	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/053.png	fighting	1	2018-11-16 05:58:58.862376	\N	persian	Sin Descripcion
+2647	1	admin	Abra	Abra es el pokemon numero #63	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/063.png	bug,dark,ghost	1	2018-11-16 05:58:58.973004	\N	abra	Sin Descripcion
+2655	1	admin	Tentacruel	Tentacruel es el pokemon numero #73	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/073.png	electric,ground,psychic	1	2018-11-16 05:58:59.083714	\N	tentacruel	Sin Descripcion
+2665	1	admin	Magneton	Magneton es el pokemon numero #82	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/082.png	ground,fire,fighting	1	2018-11-16 05:58:59.208689	\N	magneton	Sin Descripcion
+2673	1	admin	Shellder	Shellder es el pokemon numero #90	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/090.png	electric,grass	1	2018-11-16 05:58:59.323532	\N	shellder	Sin Descripcion
+2681	1	admin	Kingler	Kingler es el pokemon numero #99	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/099.png	electric,grass	1	2018-11-16 05:58:59.434827	\N	kingler	Sin Descripcion
+2691	1	admin	Hitmonchan	Hitmonchan es el pokemon numero #107	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/107.png	flying,psychic,fairy	1	2018-11-16 05:58:59.550512	\N	hitmonchan	Sin Descripcion
+2700	1	admin	Horsea	Horsea es el pokemon numero #116	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/116.png	electric,grass	1	2018-11-16 05:58:59.662633	\N	horsea	Sin Descripcion
+2710	1	admin	Magmar	Magmar es el pokemon numero #126	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/126.png	ground,rock,water	1	2018-11-16 05:58:59.772762	\N	magmar	Sin Descripcion
+2719	1	admin	Jolteon	Jolteon es el pokemon numero #135	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/135.png	ground	1	2018-11-16 05:58:59.889755	\N	jolteon	Sin Descripcion
+2729	1	admin	Zapdos	Zapdos es el pokemon numero #145	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/145.png	ice,rock	1	2018-11-16 05:59:00.004282	\N	zapdos	Sin Descripcion
+2739	1	admin	Cyndaquil	Cyndaquil es el pokemon numero #155	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/155.png	ground,rock,water	1	2018-11-16 05:59:00.125936	\N	cyndaquil	Sin Descripcion
+2749	1	admin	Ledyba	Ledyba es el pokemon numero #165	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/165.png	rock,electric,fire,flying,ice	1	2018-11-16 05:59:00.240472	\N	ledyba	Sin Descripcion
+2760	1	admin	Togepi	Togepi es el pokemon numero #175	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/175.png	steel,poison	1	2018-11-16 05:59:00.360535	\N	togepi	Sin Descripcion
+2769	1	admin	Sudowoodo	Sudowoodo es el pokemon numero #185	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/185.png	fighting,grass,ground,steel,water	1	2018-11-16 05:59:00.472515	\N	sudowoodo	Sin Descripcion
+2778	1	admin	Wooper	Wooper es el pokemon numero #194	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/194.png	grass	1	2018-11-16 05:59:00.594567	\N	wooper	Sin Descripcion
+2788	1	admin	Pineco	Pineco es el pokemon numero #204	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/204.png	fire,flying,rock	1	2018-11-16 05:59:00.697023	\N	pineco	Sin Descripcion
+2796	1	admin	Shuckle	Shuckle es el pokemon numero #213	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/213.png	rock,steel,water	1	2018-11-16 05:59:00.812218	\N	shuckle	Sin Descripcion
+2807	1	admin	Piloswine	Piloswine es el pokemon numero #221	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/221.png	fighting,fire,grass,steel,water	1	2018-11-16 05:59:00.976463	\N	piloswine	Sin Descripcion
+2815	1	admin	Phanpy	Phanpy es el pokemon numero #231	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/231.png	grass,ice,water	1	2018-11-16 05:59:01.086568	\N	phanpy	Sin Descripcion
+2825	1	admin	Miltank	Miltank es el pokemon numero #241	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/241.png	fighting	1	2018-11-16 05:59:01.20316	\N	miltank	Sin Descripcion
+2834	1	admin	Ho-Oh	Ho-Oh es el pokemon numero #250	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/250.png	rock,electric,water	1	2018-11-16 05:59:01.336616	\N	ho-oh	Sin Descripcion
+2843	1	admin	Marshtomp	Marshtomp es el pokemon numero #259	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/259.png	grass	1	2018-11-16 05:59:01.449814	\N	marshtomp	Sin Descripcion
+2852	1	admin	Cascoon	Cascoon es el pokemon numero #268	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/268.png	fire,flying,rock	1	2018-11-16 05:59:01.566465	\N	cascoon	Sin Descripcion
+2862	1	admin	Wingull	Wingull es el pokemon numero #278	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/278.png	electric,rock	1	2018-11-16 05:59:01.67734	\N	wingull	Sin Descripcion
+2872	1	admin	Vigoroth	Vigoroth es el pokemon numero #288	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/288.png	fighting	1	2018-11-16 05:59:01.799237	\N	vigoroth	Sin Descripcion
+2882	1	admin	Azurill	Azurill es el pokemon numero #298	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/298.png	steel,poison	1	2018-11-16 05:59:01.912504	\N	azurill	Sin Descripcion
+2892	1	admin	Medicham	Medicham es el pokemon numero #308	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/308.png	flying,ghost,fairy	1	2018-11-16 05:59:02.027354	\N	medicham	Sin Descripcion
+2902	1	admin	Carvanha	Carvanha es el pokemon numero #318	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/318.png	bug,electric,fighting,grass,fairy	1	2018-11-16 05:59:02.139534	\N	carvanha	Sin Descripcion
+2912	1	admin	Trapinch	Trapinch es el pokemon numero #328	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/328.png	grass,ice,water	1	2018-11-16 05:59:02.254968	\N	trapinch	Sin Descripcion
+2922	1	admin	Solrock	Solrock es el pokemon numero #338	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/338.png	bug,dark,ghost,grass,steel,water	1	2018-11-16 05:59:02.370426	\N	solrock	Sin Descripcion
+2930	1	admin	Anorith	Anorith es el pokemon numero #347	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/347.png	rock,steel,water	1	2018-11-16 05:59:02.482775	\N	anorith	Sin Descripcion
+2940	1	admin	Shaymin	Shaymin es el pokemon numero #492	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/492.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:02.593142	\N	shaymin	Sin Descripcion
+2951	1	admin	Samurott	Samurott es el pokemon numero #503	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/503.png	grass,electric	1	2018-11-16 05:59:02.708782	\N	samurott	Sin Descripcion
+2962	1	admin	Simisear	Simisear es el pokemon numero #514	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/514.png	water,ground,rock	1	2018-11-16 05:59:02.839262	\N	simisear	Sin Descripcion
+2971	1	admin	Roggenrola	Roggenrola es el pokemon numero #524	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/524.png	water,grass,fighting,ground,steel	1	2018-11-16 05:59:02.949629	\N	roggenrola	Sin Descripcion
+2981	1	admin	Gurdurr	Gurdurr es el pokemon numero #533	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/533.png	flying,psychic,fairy	1	2018-11-16 05:59:03.057423	\N	gurdurr	Sin Descripcion
+2991	1	admin	Venipede	Venipede es el pokemon numero #543	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/543.png	fire,flying,psychic,rock	1	2018-11-16 05:59:03.168699	\N	venipede	Sin Descripcion
+3001	1	admin	Krookodile	Krookodile es el pokemon numero #553	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/553.png	water,grass,ice,fighting,bug,fairy	1	2018-11-16 05:59:03.277656	\N	krookodile	Sin Descripcion
+3011	1	admin	Cofagrigus	Cofagrigus es el pokemon numero #563	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/563.png	ghost,dark	1	2018-11-16 05:59:03.390018	\N	cofagrigus	Sin Descripcion
+3021	1	admin	Cinccino	Cinccino es el pokemon numero #573	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/573.png	fighting	1	2018-11-16 05:59:03.499035	\N	cinccino	Sin Descripcion
+2629	1	admin	Vileplume	Vileplume es el pokemon numero #45	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/045.png	fire,flying,ice,psychic	1	2018-11-16 05:58:58.79696	\N	vileplume	Sin Descripcion
+2639	1	admin	Golduck	Golduck es el pokemon numero #55	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/055.png	electric,grass	1	2018-11-16 05:58:58.9054	\N	golduck	Sin Descripcion
+2649	1	admin	Alakazam	Alakazam es el pokemon numero #65	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/065.png	bug,dark,ghost	1	2018-11-16 05:58:59.037566	\N	alakazam	Sin Descripcion
+2658	1	admin	Graveler	Graveler es el pokemon numero #75	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/075.png	grass,water,fighting,ground,ice,steel	1	2018-11-16 05:58:59.15331	\N	graveler	Sin Descripcion
+2668	1	admin	Doduo	Doduo es el pokemon numero #84	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/084.png	electric,ice,rock	1	2018-11-16 05:58:59.281387	\N	doduo	Sin Descripcion
+2677	1	admin	Haunter	Haunter es el pokemon numero #93	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/093.png	dark,ghost,psychic	1	2018-11-16 05:58:59.387251	\N	haunter	Sin Descripcion
+2685	1	admin	Exeggcute	Exeggcute es el pokemon numero #102	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/102.png	bug,dark,fire,flying,ghost,ice,poison	1	2018-11-16 05:58:59.492089	\N	exeggcute	Sin Descripcion
+2696	1	admin	Rhydon	Rhydon es el pokemon numero #112	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/112.png	grass,water,fighting,ground,ice,steel	1	2018-11-16 05:58:59.605711	\N	rhydon	Sin Descripcion
+2706	1	admin	Mr. Mime	Mr. Mime es el pokemon numero #122	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/122.png	ghost,steel,poison	1	2018-11-16 05:58:59.710679	\N	mr. mime	Sin Descripcion
+2715	1	admin	Lapras	Lapras es el pokemon numero #131	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/131.png	electric,fighting,grass,rock	1	2018-11-16 05:58:59.821949	\N	lapras	Sin Descripcion
+2725	1	admin	Kabutops	Kabutops es el pokemon numero #141	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/141.png	grass,electric,fighting,ground	1	2018-11-16 05:58:59.928407	\N	kabutops	Sin Descripcion
+2733	1	admin	Mew	Mew es el pokemon numero #151	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/151.png	bug,dark,ghost	1	2018-11-16 05:59:00.032696	\N	mew	Sin Descripcion
+2742	1	admin	Croconaw	Croconaw es el pokemon numero #159	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/159.png	electric,grass	1	2018-11-16 05:59:00.139656	\N	croconaw	Sin Descripcion
+2752	1	admin	Ariados	Ariados es el pokemon numero #168	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/168.png	fire,flying,psychic,rock	1	2018-11-16 05:59:00.247298	\N	ariados	Sin Descripcion
+2759	1	admin	Natu	Natu es el pokemon numero #177	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/177.png	dark,electric,ghost,ice,rock	1	2018-11-16 05:59:00.359914	\N	natu	Sin Descripcion
+2768	1	admin	Azumarill	Azumarill es el pokemon numero #184	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/184.png	electric,grass,poison	1	2018-11-16 05:59:00.466309	\N	azumarill	Sin Descripcion
+2777	1	admin	Yanma	Yanma es el pokemon numero #193	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/193.png	rock,electric,fire,flying,ice	1	2018-11-16 05:59:00.585919	\N	yanma	Sin Descripcion
+2786	1	admin	Girafarig	Girafarig es el pokemon numero #203	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/203.png	bug,dark	1	2018-11-16 05:59:00.689607	\N	girafarig	Sin Descripcion
+2793	1	admin	Qwilfish	Qwilfish es el pokemon numero #211	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/211.png	electric,ground,psychic	1	2018-11-16 05:59:00.807169	\N	qwilfish	Sin Descripcion
+2803	1	admin	Magcargo	Magcargo es el pokemon numero #219	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/219.png	ground,water,fighting,rock	1	2018-11-16 05:59:00.925728	\N	magcargo	Sin Descripcion
+2813	1	admin	Houndoom	Houndoom es el pokemon numero #229	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/229.png	fighting,ground,rock,water	1	2018-11-16 05:59:01.032483	\N	houndoom	Sin Descripcion
+2823	1	admin	Elekid	Elekid es el pokemon numero #239	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/239.png	ground	1	2018-11-16 05:59:01.136448	\N	elekid	Sin Descripcion
+2832	1	admin	Tyranitar	Tyranitar es el pokemon numero #248	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/248.png	fighting,bug,grass,ground,steel,water,fairy	1	2018-11-16 05:59:01.244827	\N	tyranitar	Sin Descripcion
+2839	1	admin	Blaziken	Blaziken es el pokemon numero #257	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/257.png	flying,ground,psychic,water	1	2018-11-16 05:59:01.374237	\N	blaziken	Sin Descripcion
+2847	1	admin	Linoone	Linoone es el pokemon numero #264	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/264.png	fighting	1	2018-11-16 05:59:01.493743	\N	linoone	Sin Descripcion
+2857	1	admin	Seedot	Seedot es el pokemon numero #273	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/273.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:01.606419	\N	seedot	Sin Descripcion
+2867	1	admin	Surskit	Surskit es el pokemon numero #283	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/283.png	electric,flying,rock	1	2018-11-16 05:59:01.712893	\N	surskit	Sin Descripcion
+2876	1	admin	Whismur	Whismur es el pokemon numero #293	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/293.png	fighting	1	2018-11-16 05:59:01.853372	\N	whismur	Sin Descripcion
+2886	1	admin	Mawile	Mawile es el pokemon numero #303	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/303.png	fire,ground	1	2018-11-16 05:59:01.9577	\N	mawile	Sin Descripcion
+2897	1	admin	Volbeat	Volbeat es el pokemon numero #313	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/313.png	fire,flying,rock	1	2018-11-16 05:59:02.064567	\N	volbeat	Sin Descripcion
+2906	1	admin	Camerupt	Camerupt es el pokemon numero #323	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/323.png	water,ground	1	2018-11-16 05:59:02.166198	\N	camerupt	Sin Descripcion
+2916	1	admin	Cacturne	Cacturne es el pokemon numero #332	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/332.png	bug,fire,fighting,flying,ice,poison,fairy	1	2018-11-16 05:59:02.277522	\N	cacturne	Sin Descripcion
+2924	1	admin	Crawdaunt	Crawdaunt es el pokemon numero #342	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/342.png	bug,electric,fighting,grass,fairy	1	2018-11-16 05:59:02.38275	\N	crawdaunt	Sin Descripcion
+2932	1	admin	Milotic	Milotic es el pokemon numero #350	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/350.png	electric,grass	1	2018-11-16 05:59:02.489783	\N	milotic	Sin Descripcion
+2942	1	admin	Victini	Victini es el pokemon numero #494	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/494.png	water,ground,rock,ghost,dark	1	2018-11-16 05:59:02.59724	\N	victini	Sin Descripcion
+2950	1	admin	Patrat	Patrat es el pokemon numero #504	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/504.png	fighting	1	2018-11-16 05:59:02.706822	\N	patrat	Sin Descripcion
+2959	1	admin	Simisage	Simisage es el pokemon numero #512	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/512.png	fire,ice,poison,flying,bug	1	2018-11-16 05:59:02.812689	\N	simisage	Sin Descripcion
+2969	1	admin	Blitzle	Blitzle es el pokemon numero #522	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/522.png	ground	1	2018-11-16 05:59:02.927032	\N	blitzle	Sin Descripcion
+2980	1	admin	Timburr	Timburr es el pokemon numero #532	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/532.png	flying,psychic,fairy	1	2018-11-16 05:59:03.035444	\N	timburr	Sin Descripcion
+2988	1	admin	Swadloon	Swadloon es el pokemon numero #541	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/541.png	fire,flying,ice,poison,bug,rock	1	2018-11-16 05:59:03.141032	\N	swadloon	Sin Descripcion
+2998	1	admin	Basculin	Basculin es el pokemon numero #550	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/550.png	grass,electric	1	2018-11-16 05:59:03.246968	\N	basculin	Sin Descripcion
+2630	1	admin	Paras	Paras es el pokemon numero #46	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/046.png	fire,flying,bug,ice,poison,rock	1	2018-11-16 05:58:58.80744	\N	paras	Sin Descripcion
+2640	1	admin	Mankey	Mankey es el pokemon numero #56	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/056.png	flying,psychic,fairy	1	2018-11-16 05:58:58.919045	\N	mankey	Sin Descripcion
+2651	1	admin	Machop	Machop es el pokemon numero #66	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/066.png	flying,psychic,fairy	1	2018-11-16 05:58:59.05021	\N	machop	Sin Descripcion
+2661	1	admin	Ponyta	Ponyta es el pokemon numero #77	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/077.png	ground,rock,water	1	2018-11-16 05:58:59.167604	\N	ponyta	Sin Descripcion
+2669	1	admin	Seel	Seel es el pokemon numero #86	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/086.png	electric,grass	1	2018-11-16 05:58:59.295845	\N	seel	Sin Descripcion
+2679	1	admin	Onix	Onix es el pokemon numero #95	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/095.png	grass,water,fighting,ground,ice,steel	1	2018-11-16 05:58:59.407687	\N	onix	Sin Descripcion
+2687	1	admin	Cubone	Cubone es el pokemon numero #104	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/104.png	grass,ice,water	1	2018-11-16 05:58:59.518812	\N	cubone	Sin Descripcion
+2698	1	admin	Tangela	Tangela es el pokemon numero #114	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/114.png	bug,fire,flying,ice,poison	1	2018-11-16 05:58:59.639249	\N	tangela	Sin Descripcion
+2708	1	admin	Jynx	Jynx es el pokemon numero #124	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/124.png	bug,dark,fire,ghost,rock,steel	1	2018-11-16 05:58:59.753208	\N	jynx	Sin Descripcion
+2717	1	admin	Vaporeon	Vaporeon es el pokemon numero #134	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/134.png	electric,grass	1	2018-11-16 05:58:59.864906	\N	vaporeon	Sin Descripcion
+2727	1	admin	Articuno	Articuno es el pokemon numero #144	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/144.png	rock,electric,fire,steel	1	2018-11-16 05:58:59.994136	\N	articuno	Sin Descripcion
+2738	1	admin	Meganium	Meganium es el pokemon numero #154	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/154.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:00.122092	\N	meganium	Sin Descripcion
+2747	1	admin	Noctowl	Noctowl es el pokemon numero #164	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/164.png	electric,ice,rock	1	2018-11-16 05:59:00.230741	\N	noctowl	Sin Descripcion
+2757	1	admin	Cleffa	Cleffa es el pokemon numero #173	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/173.png	steel,poison	1	2018-11-16 05:59:00.341028	\N	cleffa	Sin Descripcion
+2766	1	admin	Bellossom	Bellossom es el pokemon numero #182	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/182.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:00.454603	\N	bellossom	Sin Descripcion
+2775	1	admin	Sunkern	Sunkern es el pokemon numero #191	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/191.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:00.568867	\N	sunkern	Sin Descripcion
+2785	1	admin	Unown	Unown es el pokemon numero #201	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/201.png	bug,dark,ghost	1	2018-11-16 05:59:00.687565	\N	unown	Sin Descripcion
+2794	1	admin	Scizor	Scizor es el pokemon numero #212	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/212.png	fire	1	2018-11-16 05:59:00.810056	\N	scizor	Sin Descripcion
+2804	1	admin	Swinub	Swinub es el pokemon numero #220	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/220.png	fighting,fire,grass,steel,water	1	2018-11-16 05:59:00.931325	\N	swinub	Sin Descripcion
+2814	1	admin	Kingdra	Kingdra es el pokemon numero #230	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/230.png	dragon,fairy	1	2018-11-16 05:59:01.045217	\N	kingdra	Sin Descripcion
+2824	1	admin	Magby	Magby es el pokemon numero #240	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/240.png	ground,rock,water	1	2018-11-16 05:59:01.1601	\N	magby	Sin Descripcion
+2855	1	admin	Lombre	Lombre es el pokemon numero #271	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/271.png	bug,flying,poison	1	2018-11-16 05:59:01.589192	\N	lombre	Sin Descripcion
+2864	1	admin	Kirlia	Kirlia es el pokemon numero #281	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/281.png	ghost,steel,poison	1	2018-11-16 05:59:01.69886	\N	kirlia	Sin Descripcion
+2874	1	admin	Nincada	Nincada es el pokemon numero #290	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/290.png	fire,flying,ice,water	1	2018-11-16 05:59:01.817996	\N	nincada	Sin Descripcion
+2884	1	admin	Skitty	Skitty es el pokemon numero #300	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/300.png	fighting	1	2018-11-16 05:59:01.932998	\N	skitty	Sin Descripcion
+2894	1	admin	Manectric	Manectric es el pokemon numero #310	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/310.png	ground	1	2018-11-16 05:59:02.044377	\N	manectric	Sin Descripcion
+2904	1	admin	Wailmer	Wailmer es el pokemon numero #320	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/320.png	electric,grass	1	2018-11-16 05:59:02.160065	\N	wailmer	Sin Descripcion
+2913	1	admin	Flygon	Flygon es el pokemon numero #330	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/330.png	ice,dragon,fairy	1	2018-11-16 05:59:02.269394	\N	flygon	Sin Descripcion
+2923	1	admin	Barboach	Barboach es el pokemon numero #339	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/339.png	grass	1	2018-11-16 05:59:02.380198	\N	barboach	Sin Descripcion
+2935	1	admin	Castform	Castform es el pokemon numero #351	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/351.png	fighting	1	2018-11-16 05:59:02.505108	\N	castform	Sin Descripcion
+2945	1	admin	Serperior	Serperior es el pokemon numero #497	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/497.png	fire,ice,poison,flying,bug	1	2018-11-16 05:59:02.617815	\N	serperior	Sin Descripcion
+2955	1	admin	Herdier	Herdier es el pokemon numero #507	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/507.png	fighting	1	2018-11-16 05:59:02.734806	\N	herdier	Sin Descripcion
+2963	1	admin	Simipour	Simipour es el pokemon numero #516	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/516.png	grass,electric	1	2018-11-16 05:59:02.854259	\N	simipour	Sin Descripcion
+2973	1	admin	Boldore	Boldore es el pokemon numero #525	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/525.png	water,grass,fighting,ground,steel	1	2018-11-16 05:59:02.988378	\N	boldore	Sin Descripcion
+2983	1	admin	Tympole	Tympole es el pokemon numero #535	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/535.png	grass,electric	1	2018-11-16 05:59:03.101826	\N	tympole	Sin Descripcion
+2993	1	admin	Scolipede	Scolipede es el pokemon numero #545	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/545.png	fire,flying,psychic,rock	1	2018-11-16 05:59:03.216022	\N	scolipede	Sin Descripcion
+3002	1	admin	Darmanitan	Darmanitan es el pokemon numero #555	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/555.png	water,ground,rock	1	2018-11-16 05:59:03.329493	\N	darmanitan	Sin Descripcion
+3012	1	admin	Carracosta	Carracosta es el pokemon numero #565	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/565.png	grass,electric,fighting,ground	1	2018-11-16 05:59:03.439886	\N	carracosta	Sin Descripcion
+3022	1	admin	Gothita	Gothita es el pokemon numero #574	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/574.png	bug,ghost,dark	1	2018-11-16 05:59:03.550041	\N	gothita	Sin Descripcion
+3032	1	admin	Vanilluxe	Vanilluxe es el pokemon numero #584	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/584.png	fire,fighting,rock,steel	1	2018-11-16 05:59:03.66194	\N	vanilluxe	Sin Descripcion
+3041	1	admin	Jellicent	Jellicent es el pokemon numero #593	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/593.png	grass,electric,ghost,dark	1	2018-11-16 05:59:03.776271	\N	jellicent	Sin Descripcion
+3050	1	admin	Tynamo	Tynamo es el pokemon numero #602	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/602.png		1	2018-11-16 05:59:03.889538	\N	tynamo	Sin Descripcion
+2631	1	admin	Parasect	Parasect es el pokemon numero #47	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/047.png	fire,flying,bug,ice,poison,rock	1	2018-11-16 05:58:58.809645	\N	parasect	Sin Descripcion
+2642	1	admin	Primeape	Primeape es el pokemon numero #57	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/057.png	flying,psychic,fairy	1	2018-11-16 05:58:58.9261	\N	primeape	Sin Descripcion
+2652	1	admin	Machamp	Machamp es el pokemon numero #68	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/068.png	flying,psychic,fairy	1	2018-11-16 05:58:59.057658	\N	machamp	Sin Descripcion
+2662	1	admin	Rapidash	Rapidash es el pokemon numero #78	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/078.png	ground,rock,water	1	2018-11-16 05:58:59.169465	\N	rapidash	Sin Descripcion
+2670	1	admin	Dewgong	Dewgong es el pokemon numero #87	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/087.png	electric,fighting,grass,rock	1	2018-11-16 05:58:59.297705	\N	dewgong	Sin Descripcion
+2680	1	admin	Drowzee	Drowzee es el pokemon numero #96	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/096.png	bug,dark,ghost	1	2018-11-16 05:58:59.414017	\N	drowzee	Sin Descripcion
+2689	1	admin	Marowak	Marowak es el pokemon numero #105	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/105.png	grass,ice,water	1	2018-11-16 05:58:59.526607	\N	marowak	Sin Descripcion
+2699	1	admin	Kangaskhan	Kangaskhan es el pokemon numero #115	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/115.png	fighting	1	2018-11-16 05:58:59.655206	\N	kangaskhan	Sin Descripcion
+2709	1	admin	Electabuzz	Electabuzz es el pokemon numero #125	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/125.png	ground	1	2018-11-16 05:58:59.771887	\N	electabuzz	Sin Descripcion
+2720	1	admin	Flareon	Flareon es el pokemon numero #136	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/136.png	ground,rock,water	1	2018-11-16 05:58:59.892466	\N	flareon	Sin Descripcion
+2730	1	admin	Moltres	Moltres es el pokemon numero #146	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/146.png	rock,electric,water	1	2018-11-16 05:59:00.007023	\N	moltres	Sin Descripcion
+2740	1	admin	Quilava	Quilava es el pokemon numero #156	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/156.png	ground,rock,water	1	2018-11-16 05:59:00.130076	\N	quilava	Sin Descripcion
+2750	1	admin	Ledian	Ledian es el pokemon numero #166	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/166.png	rock,electric,fire,flying,ice	1	2018-11-16 05:59:00.243222	\N	ledian	Sin Descripcion
+2783	1	admin	Slowking	Slowking es el pokemon numero #199	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/199.png	bug,dark,electric,ghost,grass	1	2018-11-16 05:59:00.676773	\N	slowking	Sin Descripcion
+2795	1	admin	Snubbull	Snubbull es el pokemon numero #209	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/209.png	steel,poison	1	2018-11-16 05:59:00.811121	\N	snubbull	Sin Descripcion
+2805	1	admin	Corsola	Corsola es el pokemon numero #222	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/222.png	grass,electric,fighting,ground	1	2018-11-16 05:59:00.97562	\N	corsola	Sin Descripcion
+2816	1	admin	Donphan	Donphan es el pokemon numero #232	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/232.png	grass,ice,water	1	2018-11-16 05:59:01.092966	\N	donphan	Sin Descripcion
+2826	1	admin	Blissey	Blissey es el pokemon numero #242	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/242.png	fighting	1	2018-11-16 05:59:01.207694	\N	blissey	Sin Descripcion
+2835	1	admin	Celebi	Celebi es el pokemon numero #251	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/251.png	bug,dark,fire,flying,ghost,ice,poison	1	2018-11-16 05:59:01.339365	\N	celebi	Sin Descripcion
+2844	1	admin	Swampert	Swampert es el pokemon numero #260	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/260.png	grass	1	2018-11-16 05:59:01.452453	\N	swampert	Sin Descripcion
+2853	1	admin	Dustox	Dustox es el pokemon numero #269	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/269.png	fire,flying,psychic,rock	1	2018-11-16 05:59:01.575918	\N	dustox	Sin Descripcion
+2863	1	admin	Pelipper	Pelipper es el pokemon numero #279	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/279.png	electric,rock	1	2018-11-16 05:59:01.691974	\N	pelipper	Sin Descripcion
+2873	1	admin	Slaking	Slaking es el pokemon numero #289	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/289.png	fighting	1	2018-11-16 05:59:01.806226	\N	slaking	Sin Descripcion
+2883	1	admin	Nosepass	Nosepass es el pokemon numero #299	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/299.png	fighting,grass,ground,steel,water	1	2018-11-16 05:59:01.921085	\N	nosepass	Sin Descripcion
+2893	1	admin	Electrike	Electrike es el pokemon numero #309	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/309.png	ground	1	2018-11-16 05:59:02.035285	\N	electrike	Sin Descripcion
+2903	1	admin	Sharpedo	Sharpedo es el pokemon numero #319	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/319.png	bug,electric,fighting,grass,fairy	1	2018-11-16 05:59:02.154849	\N	sharpedo	Sin Descripcion
+2914	1	admin	Vibrava	Vibrava es el pokemon numero #329	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/329.png	ice,dragon,fairy	1	2018-11-16 05:59:02.27121	\N	vibrava	Sin Descripcion
+2926	1	admin	Whiscash	Whiscash es el pokemon numero #340	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/340.png	grass	1	2018-11-16 05:59:02.387565	\N	whiscash	Sin Descripcion
+2936	1	admin	Kecleon	Kecleon es el pokemon numero #352	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/352.png	fighting	1	2018-11-16 05:59:02.513994	\N	kecleon	Sin Descripcion
+2946	1	admin	Tepig	Tepig es el pokemon numero #498	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/498.png	water,ground,rock	1	2018-11-16 05:59:02.64228	\N	tepig	Sin Descripcion
+2956	1	admin	Stoutland	Stoutland es el pokemon numero #508	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/508.png	fighting	1	2018-11-16 05:59:02.77529	\N	stoutland	Sin Descripcion
+2966	1	admin	Musharna	Musharna es el pokemon numero #518	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/518.png	bug,ghost,dark	1	2018-11-16 05:59:02.898529	\N	musharna	Sin Descripcion
+2976	1	admin	Swoobat	Swoobat es el pokemon numero #528	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/528.png	electric,ice,rock,ghost,dark	1	2018-11-16 05:59:03.013144	\N	swoobat	Sin Descripcion
+2986	1	admin	Throh	Throh es el pokemon numero #538	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/538.png	flying,psychic,fairy	1	2018-11-16 05:59:03.12803	\N	throh	Sin Descripcion
+2997	1	admin	Petilil	Petilil es el pokemon numero #548	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/548.png	fire,ice,poison,flying,bug	1	2018-11-16 05:59:03.246512	\N	petilil	Sin Descripcion
+3007	1	admin	Scrafty	Scrafty es el pokemon numero #560	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/560.png	fighting,flying,fairy	1	2018-11-16 05:59:03.360329	\N	scrafty	Sin Descripcion
+3016	1	admin	Zorua	Zorua es el pokemon numero #570	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/570.png	fighting,bug,fairy	1	2018-11-16 05:59:03.472294	\N	zorua	Sin Descripcion
+3027	1	admin	Reuniclus	Reuniclus es el pokemon numero #579	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/579.png	bug,ghost,dark	1	2018-11-16 05:59:03.592126	\N	reuniclus	Sin Descripcion
+3062	1	admin	Beartic	Beartic es el pokemon numero #614	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/614.png	fire,fighting,rock,steel	1	2018-11-16 05:59:04.025265	\N	beartic	Sin Descripcion
+3072	1	admin	Durant	Durant es el pokemon numero #632	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/632.png	fire	1	2018-11-16 05:59:04.138146	\N	durant	Sin Descripcion
+3081	1	admin	Zweilous	Zweilous es el pokemon numero #634	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/634.png	ice,fighting,bug,dragon,fairy	1	2018-11-16 05:59:04.251808	\N	zweilous	Sin Descripcion
+3090	1	admin	Reshiram	Reshiram es el pokemon numero #643	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/643.png	ground,rock,dragon	1	2018-11-16 05:59:04.364763	\N	reshiram	Sin Descripcion
+2632	1	admin	Venonat	Venonat es el pokemon numero #48	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/048.png	fire,flying,psychic,rock	1	2018-11-16 05:58:58.81612	\N	venonat	Sin Descripcion
+2643	1	admin	Arcanine	Arcanine es el pokemon numero #59	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/059.png	ground,rock,water	1	2018-11-16 05:58:58.93629	\N	arcanine	Sin Descripcion
+2653	1	admin	Bellsprout	Bellsprout es el pokemon numero #69	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/069.png	fire,flying,ice,psychic	1	2018-11-16 05:58:59.076093	\N	bellsprout	Sin Descripcion
+2663	1	admin	Slowpoke	Slowpoke es el pokemon numero #79	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/079.png	bug,dark,electric,ghost,grass	1	2018-11-16 05:58:59.198144	\N	slowpoke	Sin Descripcion
+2672	1	admin	Grimer	Grimer es el pokemon numero #88	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/088.png	ground,psychic	1	2018-11-16 05:58:59.315868	\N	grimer	Sin Descripcion
+2682	1	admin	Hypno	Hypno es el pokemon numero #97	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/097.png	bug,dark,ghost	1	2018-11-16 05:58:59.43775	\N	hypno	Sin Descripcion
+2692	1	admin	Lickitung	Lickitung es el pokemon numero #108	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/108.png	fighting	1	2018-11-16 05:58:59.553092	\N	lickitung	Sin Descripcion
+2701	1	admin	Goldeen	Goldeen es el pokemon numero #118	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/118.png	electric,grass	1	2018-11-16 05:58:59.665969	\N	goldeen	Sin Descripcion
+2711	1	admin	Pinsir	Pinsir es el pokemon numero #127	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/127.png	fire,flying,rock	1	2018-11-16 05:58:59.782227	\N	pinsir	Sin Descripcion
+2721	1	admin	Porygon	Porygon es el pokemon numero #137	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/137.png	fighting	1	2018-11-16 05:58:59.897738	\N	porygon	Sin Descripcion
+2731	1	admin	Dratini	Dratini es el pokemon numero #147	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/147.png	dragon,ice,fairy	1	2018-11-16 05:59:00.013156	\N	dratini	Sin Descripcion
+2743	1	admin	Typhlosion	Typhlosion es el pokemon numero #157	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/157.png	ground,rock,water	1	2018-11-16 05:59:00.144127	\N	typhlosion	Sin Descripcion
+2753	1	admin	Crobat	Crobat es el pokemon numero #169	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/169.png	electric,ice,psychic,rock	1	2018-11-16 05:59:00.262234	\N	crobat	Sin Descripcion
+2762	1	admin	Xatu	Xatu es el pokemon numero #178	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/178.png	dark,electric,ghost,ice,rock	1	2018-11-16 05:59:00.387932	\N	xatu	Sin Descripcion
+2771	1	admin	Hoppip	Hoppip es el pokemon numero #187	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/187.png	ice,fire,flying,poison,rock	1	2018-11-16 05:59:00.503527	\N	hoppip	Sin Descripcion
+2779	1	admin	Espeon	Espeon es el pokemon numero #196	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/196.png	bug,dark,ghost	1	2018-11-16 05:59:00.620175	\N	espeon	Sin Descripcion
+2789	1	admin	Forretress	Forretress es el pokemon numero #205	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/205.png	fire	1	2018-11-16 05:59:00.735696	\N	forretress	Sin Descripcion
+2799	1	admin	Sneasel	Sneasel es el pokemon numero #215	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/215.png	fighting,bug,fire,rock,steel,fairy	1	2018-11-16 05:59:00.850556	\N	sneasel	Sin Descripcion
+2806	1	admin	Delibird	Delibird es el pokemon numero #225	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/225.png	rock,electric,fire,steel	1	2018-11-16 05:59:00.976132	\N	delibird	Sin Descripcion
+2817	1	admin	Porygon2	Porygon2 es el pokemon numero #233	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/233.png	fighting	1	2018-11-16 05:59:01.093466	\N	porygon2	Sin Descripcion
+2827	1	admin	Raikou	Raikou es el pokemon numero #243	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/243.png	ground	1	2018-11-16 05:59:01.208103	\N	raikou	Sin Descripcion
+2836	1	admin	Treecko	Treecko es el pokemon numero #252	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/252.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:01.346477	\N	treecko	Sin Descripcion
+2845	1	admin	Poochyena	Poochyena es el pokemon numero #261	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/261.png	fighting,bug,fairy	1	2018-11-16 05:59:01.462474	\N	poochyena	Sin Descripcion
+2854	1	admin	Lotad	Lotad es el pokemon numero #270	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/270.png	bug,flying,poison	1	2018-11-16 05:59:01.576429	\N	lotad	Sin Descripcion
+2865	1	admin	Ralts	Ralts es el pokemon numero #280	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/280.png	ghost,steel,poison	1	2018-11-16 05:59:01.700878	\N	ralts	Sin Descripcion
+2875	1	admin	Ninjask	Ninjask es el pokemon numero #291	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/291.png	rock,electric,fire,flying,ice	1	2018-11-16 05:59:01.822563	\N	ninjask	Sin Descripcion
+2885	1	admin	Delcatty	Delcatty es el pokemon numero #301	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/301.png	fighting	1	2018-11-16 05:59:01.937946	\N	delcatty	Sin Descripcion
+2895	1	admin	Plusle	Plusle es el pokemon numero #311	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/311.png	ground	1	2018-11-16 05:59:02.052525	\N	plusle	Sin Descripcion
+2905	1	admin	Wailord	Wailord es el pokemon numero #321	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/321.png	electric,grass	1	2018-11-16 05:59:02.162137	\N	wailord	Sin Descripcion
+2917	1	admin	Swablu	Swablu es el pokemon numero #333	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/333.png	electric,ice,rock	1	2018-11-16 05:59:02.282018	\N	swablu	Sin Descripcion
+2927	1	admin	Baltoy	Baltoy es el pokemon numero #343	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/343.png	bug,dark,ghost,grass,water,ice	1	2018-11-16 05:59:02.401288	\N	baltoy	Sin Descripcion
+2937	1	admin	Shuppet	Shuppet es el pokemon numero #353	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/353.png	dark,ghost	1	2018-11-16 05:59:02.514693	\N	shuppet	Sin Descripcion
+2947	1	admin	Pignite	Pignite es el pokemon numero #499	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/499.png	water,ground,flying,psychic	1	2018-11-16 05:59:02.642908	\N	pignite	Sin Descripcion
+2957	1	admin	Purrloin	Purrloin es el pokemon numero #509	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/509.png	fighting,bug,fairy	1	2018-11-16 05:59:02.782444	\N	purrloin	Sin Descripcion
+2967	1	admin	Tranquill	Tranquill es el pokemon numero #520	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/520.png	electric,ice,rock	1	2018-11-16 05:59:02.918186	\N	tranquill	Sin Descripcion
+2977	1	admin	Excadrill	Excadrill es el pokemon numero #530	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/530.png	fire,water,fighting,ground	1	2018-11-16 05:59:03.034191	\N	excadrill	Sin Descripcion
+2990	1	admin	Leavanny	Leavanny es el pokemon numero #542	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/542.png	fire,flying,ice,poison,bug,rock	1	2018-11-16 05:59:03.149649	\N	leavanny	Sin Descripcion
+3000	1	admin	Krokorok	Krokorok es el pokemon numero #552	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/552.png	water,grass,ice,fighting,bug,fairy	1	2018-11-16 05:59:03.262664	\N	krokorok	Sin Descripcion
+3010	1	admin	Yamask	Yamask es el pokemon numero #562	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/562.png	ghost,dark	1	2018-11-16 05:59:03.381014	\N	yamask	Sin Descripcion
+3019	1	admin	Minccino	Minccino es el pokemon numero #572	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/572.png	fighting	1	2018-11-16 05:59:03.497038	\N	minccino	Sin Descripcion
+3030	1	admin	Swanna	Swanna es el pokemon numero #581	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/581.png	electric,rock	1	2018-11-16 05:59:03.616668	\N	swanna	Sin Descripcion
+3038	1	admin	Frillish	Frillish es el pokemon numero #592	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/592.png	grass,electric,ghost,dark	1	2018-11-16 05:59:03.745607	\N	frillish	Sin Descripcion
+2633	1	admin	Dugtrio	Dugtrio es el pokemon numero #51	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/051.png	grass,ice,water	1	2018-11-16 05:58:58.820725	\N	dugtrio	Sin Descripcion
+2641	1	admin	Growlithe	Growlithe es el pokemon numero #58	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/058.png	ground,rock,water	1	2018-11-16 05:58:58.925535	\N	growlithe	Sin Descripcion
+2650	1	admin	Machoke	Machoke es el pokemon numero #67	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/067.png	flying,psychic,fairy	1	2018-11-16 05:58:59.047381	\N	machoke	Sin Descripcion
+2659	1	admin	Golem	Golem es el pokemon numero #76	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/076.png	grass,water,fighting,ground,ice,steel	1	2018-11-16 05:58:59.153848	\N	golem	Sin Descripcion
+2667	1	admin	Farfetch'd	Farfetch'd es el pokemon numero #83	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/083.png	electric,ice,rock	1	2018-11-16 05:58:59.277719	\N	farfetch'd	Sin Descripcion
+2676	1	admin	Gastly	Gastly es el pokemon numero #92	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/092.png	dark,ghost,psychic	1	2018-11-16 05:58:59.386761	\N	gastly	Sin Descripcion
+2686	1	admin	Electrode	Electrode es el pokemon numero #101	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/101.png	ground	1	2018-11-16 05:58:59.49271	\N	electrode	Sin Descripcion
+2695	1	admin	Rhyhorn	Rhyhorn es el pokemon numero #111	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/111.png	grass,water,fighting,ground,ice,steel	1	2018-11-16 05:58:59.597697	\N	rhyhorn	Sin Descripcion
+2704	1	admin	Starmie	Starmie es el pokemon numero #121	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/121.png	bug,dark,electric,ghost,grass	1	2018-11-16 05:58:59.69622	\N	starmie	Sin Descripcion
+2714	1	admin	Gyarados	Gyarados es el pokemon numero #130	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/130.png	electric,rock	1	2018-11-16 05:58:59.807484	\N	gyarados	Sin Descripcion
+2722	1	admin	Kabuto	Kabuto es el pokemon numero #140	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/140.png	grass,electric,fighting,ground	1	2018-11-16 05:58:59.918	\N	kabuto	Sin Descripcion
+2732	1	admin	Dragonair	Dragonair es el pokemon numero #148	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/148.png	dragon,ice,fairy	1	2018-11-16 05:59:00.022099	\N	dragonair	Sin Descripcion
+2741	1	admin	Totodile	Totodile es el pokemon numero #158	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/158.png	electric,grass	1	2018-11-16 05:59:00.139192	\N	totodile	Sin Descripcion
+2751	1	admin	Spinarak	Spinarak es el pokemon numero #167	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/167.png	fire,flying,psychic,rock	1	2018-11-16 05:59:00.246719	\N	spinarak	Sin Descripcion
+2758	1	admin	Togetic	Togetic es el pokemon numero #176	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/176.png	electric,ice,rock,steel,poison	1	2018-11-16 05:59:00.358577	\N	togetic	Sin Descripcion
+2767	1	admin	Marill	Marill es el pokemon numero #183	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/183.png	electric,grass,poison	1	2018-11-16 05:59:00.463593	\N	marill	Sin Descripcion
+2776	1	admin	Sunflora	Sunflora es el pokemon numero #192	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/192.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:00.573515	\N	sunflora	Sin Descripcion
+2784	1	admin	Misdreavus	Misdreavus es el pokemon numero #200	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/200.png	dark,ghost	1	2018-11-16 05:59:00.684723	\N	misdreavus	Sin Descripcion
+2792	1	admin	Granbull	Granbull es el pokemon numero #210	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/210.png	steel,poison	1	2018-11-16 05:59:00.806412	\N	granbull	Sin Descripcion
+2802	1	admin	Slugma	Slugma es el pokemon numero #218	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/218.png	ground,rock,water	1	2018-11-16 05:59:00.918154	\N	slugma	Sin Descripcion
+2812	1	admin	Houndour	Houndour es el pokemon numero #228	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/228.png	fighting,ground,rock,water	1	2018-11-16 05:59:01.021544	\N	houndour	Sin Descripcion
+2821	1	admin	Smoochum	Smoochum es el pokemon numero #238	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/238.png	bug,dark,fire,ghost,rock,steel	1	2018-11-16 05:59:01.127025	\N	smoochum	Sin Descripcion
+2830	1	admin	Pupitar	Pupitar es el pokemon numero #247	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/247.png	grass,water,fighting,ground,ice,steel	1	2018-11-16 05:59:01.232287	\N	pupitar	Sin Descripcion
+2838	1	admin	Torchic	Torchic es el pokemon numero #255	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/255.png	ground,rock,water	1	2018-11-16 05:59:01.37373	\N	torchic	Sin Descripcion
+2846	1	admin	Zigzagoon	Zigzagoon es el pokemon numero #263	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/263.png	fighting	1	2018-11-16 05:59:01.485939	\N	zigzagoon	Sin Descripcion
+2856	1	admin	Ludicolo	Ludicolo es el pokemon numero #272	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/272.png	bug,flying,poison	1	2018-11-16 05:59:01.605932	\N	ludicolo	Sin Descripcion
+2866	1	admin	Gardevoir	Gardevoir es el pokemon numero #282	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/282.png	ghost,steel,poison	1	2018-11-16 05:59:01.710829	\N	gardevoir	Sin Descripcion
+2877	1	admin	Shedinja	Shedinja es el pokemon numero #292	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/292.png	dark,fire,flying,ghost,rock	1	2018-11-16 05:59:01.85387	\N	shedinja	Sin Descripcion
+2887	1	admin	Sableye	Sableye es el pokemon numero #302	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/302.png	fairy	1	2018-11-16 05:59:01.958232	\N	sableye	Sin Descripcion
+2896	1	admin	Minun	Minun es el pokemon numero #312	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/312.png	ground	1	2018-11-16 05:59:02.064058	\N	minun	Sin Descripcion
+2907	1	admin	Numel	Numel es el pokemon numero #322	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/322.png	water,ground	1	2018-11-16 05:59:02.166594	\N	numel	Sin Descripcion
+2915	1	admin	Cacnea	Cacnea es el pokemon numero #331	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/331.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:02.277037	\N	cacnea	Sin Descripcion
+2925	1	admin	Corphish	Corphish es el pokemon numero #341	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/341.png	electric,grass	1	2018-11-16 05:59:02.383158	\N	corphish	Sin Descripcion
+2931	1	admin	Feebas	Feebas es el pokemon numero #349	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/349.png	electric,grass	1	2018-11-16 05:59:02.489276	\N	feebas	Sin Descripcion
+2941	1	admin	Arceus	Arceus es el pokemon numero #493	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/493.png	fighting	1	2018-11-16 05:59:02.596736	\N	arceus	Sin Descripcion
+2949	1	admin	Dewott	Dewott es el pokemon numero #502	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/502.png	grass,electric	1	2018-11-16 05:59:02.701449	\N	dewott	Sin Descripcion
+2960	1	admin	Pansage	Pansage es el pokemon numero #511	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/511.png	fire,ice,poison,flying,bug	1	2018-11-16 05:59:02.813327	\N	pansage	Sin Descripcion
+2970	1	admin	Unfezant	Unfezant es el pokemon numero #521	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/521.png	electric,ice,rock	1	2018-11-16 05:59:02.92752	\N	unfezant	Sin Descripcion
+2978	1	admin	Audino	Audino es el pokemon numero #531	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/531.png	fighting	1	2018-11-16 05:59:03.034714	\N	audino	Sin Descripcion
+2987	1	admin	Sawk	Sawk es el pokemon numero #539	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/539.png	flying,psychic,fairy	1	2018-11-16 05:59:03.139987	\N	sawk	Sin Descripcion
+2996	1	admin	Lilligant	Lilligant es el pokemon numero #549	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/549.png	fire,ice,poison,flying,bug	1	2018-11-16 05:59:03.245952	\N	lilligant	Sin Descripcion
+3006	1	admin	Dwebble	Dwebble es el pokemon numero #557	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/557.png	water,rock,steel	1	2018-11-16 05:59:03.356293	\N	dwebble	Sin Descripcion
+2634	1	admin	Diglett	Diglett es el pokemon numero #50	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/050.png	grass,ice,water	1	2018-11-16 05:58:58.820676	\N	diglett	Sin Descripcion
+2644	1	admin	Poliwhirl	Poliwhirl es el pokemon numero #61	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/061.png	electric,grass	1	2018-11-16 05:58:58.941229	\N	poliwhirl	Sin Descripcion
+2654	1	admin	Victreebel	Victreebel es el pokemon numero #71	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/071.png	fire,flying,ice,psychic	1	2018-11-16 05:58:59.080486	\N	victreebel	Sin Descripcion
+2666	1	admin	Magnemite	Magnemite es el pokemon numero #81	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/081.png	ground,fire,fighting	1	2018-11-16 05:58:59.216218	\N	magnemite	Sin Descripcion
+2675	1	admin	Cloyster	Cloyster es el pokemon numero #91	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/091.png	electric,fighting,grass,rock	1	2018-11-16 05:58:59.3415	\N	cloyster	Sin Descripcion
+2684	1	admin	Voltorb	Voltorb es el pokemon numero #100	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/100.png	ground	1	2018-11-16 05:58:59.461623	\N	voltorb	Sin Descripcion
+2694	1	admin	Weezing	Weezing es el pokemon numero #110	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/110.png	psychic	1	2018-11-16 05:58:59.581548	\N	weezing	Sin Descripcion
+2705	1	admin	Staryu	Staryu es el pokemon numero #120	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/120.png	electric,grass	1	2018-11-16 05:58:59.70575	\N	staryu	Sin Descripcion
+2716	1	admin	Ditto	Ditto es el pokemon numero #132	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/132.png	fighting	1	2018-11-16 05:58:59.856032	\N	ditto	Sin Descripcion
+2726	1	admin	Aerodactyl	Aerodactyl es el pokemon numero #142	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/142.png	electric,ice,rock,steel,water	1	2018-11-16 05:58:59.981618	\N	aerodactyl	Sin Descripcion
+2737	1	admin	Chikorita	Chikorita es el pokemon numero #152	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/152.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:00.109387	\N	chikorita	Sin Descripcion
+2748	1	admin	Hoothoot	Hoothoot es el pokemon numero #163	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/163.png	electric,ice,rock	1	2018-11-16 05:59:00.237363	\N	hoothoot	Sin Descripcion
+2761	1	admin	Igglybuff	Igglybuff es el pokemon numero #174	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/174.png	steel,poison	1	2018-11-16 05:59:00.36804	\N	igglybuff	Sin Descripcion
+2770	1	admin	Politoed	Politoed es el pokemon numero #186	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/186.png	electric,grass	1	2018-11-16 05:59:00.491741	\N	politoed	Sin Descripcion
+2780	1	admin	Quagsire	Quagsire es el pokemon numero #195	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/195.png	grass	1	2018-11-16 05:59:00.624705	\N	quagsire	Sin Descripcion
+2790	1	admin	Dunsparce	Dunsparce es el pokemon numero #206	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/206.png	fighting	1	2018-11-16 05:59:00.755102	\N	dunsparce	Sin Descripcion
+2800	1	admin	Teddiursa	Teddiursa es el pokemon numero #216	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/216.png	fighting	1	2018-11-16 05:59:00.890086	\N	teddiursa	Sin Descripcion
+2811	1	admin	Skarmory	Skarmory es el pokemon numero #227	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/227.png	electric,fire	1	2018-11-16 05:59:01.012463	\N	skarmory	Sin Descripcion
+2822	1	admin	Hitmontop	Hitmontop es el pokemon numero #237	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/237.png	flying,psychic,fairy	1	2018-11-16 05:59:01.132756	\N	hitmontop	Sin Descripcion
+2833	1	admin	Lugia	Lugia es el pokemon numero #249	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/249.png	dark,electric,ghost,ice,rock	1	2018-11-16 05:59:01.282229	\N	lugia	Sin Descripcion
+2842	1	admin	Mudkip	Mudkip es el pokemon numero #258	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/258.png	electric,grass	1	2018-11-16 05:59:01.402917	\N	mudkip	Sin Descripcion
+2851	1	admin	Beautifly	Beautifly es el pokemon numero #267	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/267.png	rock,electric,fire,flying,ice	1	2018-11-16 05:59:01.527265	\N	beautifly	Sin Descripcion
+2860	1	admin	Swellow	Swellow es el pokemon numero #277	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/277.png	electric,ice,rock	1	2018-11-16 05:59:01.644561	\N	swellow	Sin Descripcion
+2870	1	admin	Breloom	Breloom es el pokemon numero #286	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/286.png	flying,fire,ice,poison,psychic,fairy	1	2018-11-16 05:59:01.764918	\N	breloom	Sin Descripcion
+2880	1	admin	Makuhita	Makuhita es el pokemon numero #296	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/296.png	flying,psychic,fairy	1	2018-11-16 05:59:01.887062	\N	makuhita	Sin Descripcion
+2890	1	admin	Aggron	Aggron es el pokemon numero #306	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/306.png	fighting,ground,water	1	2018-11-16 05:59:02.005034	\N	aggron	Sin Descripcion
+2900	1	admin	Gulpin	Gulpin es el pokemon numero #316	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/316.png	ground,psychic	1	2018-11-16 05:59:02.126381	\N	gulpin	Sin Descripcion
+2910	1	admin	Grumpig	Grumpig es el pokemon numero #326	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/326.png	bug,dark,ghost	1	2018-11-16 05:59:02.247767	\N	grumpig	Sin Descripcion
+2920	1	admin	Seviper	Seviper es el pokemon numero #336	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/336.png	ground,psychic	1	2018-11-16 05:59:02.367936	\N	seviper	Sin Descripcion
+2933	1	admin	Cradily	Cradily es el pokemon numero #346	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/346.png	bug,fighting,ice,steel	1	2018-11-16 05:59:02.490292	\N	cradily	Sin Descripcion
+2943	1	admin	Snivy	Snivy es el pokemon numero #495	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/495.png	fire,ice,poison,flying,bug	1	2018-11-16 05:59:02.610301	\N	snivy	Sin Descripcion
+2953	1	admin	Watchog	Watchog es el pokemon numero #505	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/505.png	fighting	1	2018-11-16 05:59:02.732312	\N	watchog	Sin Descripcion
+2964	1	admin	Panpour	Panpour es el pokemon numero #515	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/515.png	grass,electric	1	2018-11-16 05:59:02.860802	\N	panpour	Sin Descripcion
+2974	1	admin	Gigalith	Gigalith es el pokemon numero #526	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/526.png	water,grass,fighting,ground,steel	1	2018-11-16 05:59:02.994964	\N	gigalith	Sin Descripcion
+2984	1	admin	Palpitoad	Palpitoad es el pokemon numero #536	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/536.png	grass	1	2018-11-16 05:59:03.114394	\N	palpitoad	Sin Descripcion
+2994	1	admin	Cottonee	Cottonee es el pokemon numero #546	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/546.png	fire,ice,poison,flying,steel	1	2018-11-16 05:59:03.231868	\N	cottonee	Sin Descripcion
+3004	1	admin	Maractus	Maractus es el pokemon numero #556	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/556.png	fire,ice,poison,flying,bug	1	2018-11-16 05:59:03.35518	\N	maractus	Sin Descripcion
+3018	1	admin	Trubbish	Trubbish es el pokemon numero #568	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/568.png	ground,psychic	1	2018-11-16 05:59:03.477007	\N	trubbish	Sin Descripcion
+3028	1	admin	Ducklett	Ducklett es el pokemon numero #580	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/580.png	electric,rock	1	2018-11-16 05:59:03.607319	\N	ducklett	Sin Descripcion
+3039	1	admin	Escavalier	Escavalier es el pokemon numero #589	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/589.png	fire	1	2018-11-16 05:59:03.746139	\N	escavalier	Sin Descripcion
+3048	1	admin	Klang	Klang es el pokemon numero #600	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/600.png	fire,fighting,ground	1	2018-11-16 05:59:03.866038	\N	klang	Sin Descripcion
+3057	1	admin	Chandelure	Chandelure es el pokemon numero #609	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/609.png	water,ground,rock,ghost,dark	1	2018-11-16 05:59:03.986303	\N	chandelure	Sin Descripcion
+2635	1	admin	Venomoth	Venomoth es el pokemon numero #49	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/049.png	fire,flying,psychic,rock	1	2018-11-16 05:58:58.825191	\N	venomoth	Sin Descripcion
+2645	1	admin	Poliwag	Poliwag es el pokemon numero #60	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/060.png	electric,grass	1	2018-11-16 05:58:58.945371	\N	poliwag	Sin Descripcion
+2656	1	admin	Weepinbell	Weepinbell es el pokemon numero #70	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/070.png	fire,flying,ice,psychic	1	2018-11-16 05:58:59.085019	\N	weepinbell	Sin Descripcion
+2664	1	admin	Slowbro	Slowbro es el pokemon numero #80	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/080.png	bug,dark,electric,ghost,grass	1	2018-11-16 05:58:59.207268	\N	slowbro	Sin Descripcion
+2674	1	admin	Muk	Muk es el pokemon numero #89	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/089.png	ground,psychic	1	2018-11-16 05:58:59.326997	\N	muk	Sin Descripcion
+2683	1	admin	Krabby	Krabby es el pokemon numero #98	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/098.png	electric,grass	1	2018-11-16 05:58:59.446881	\N	krabby	Sin Descripcion
+2693	1	admin	Koffing	Koffing es el pokemon numero #109	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/109.png	psychic	1	2018-11-16 05:58:59.571667	\N	koffing	Sin Descripcion
+2703	1	admin	Seaking	Seaking es el pokemon numero #119	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/119.png	electric,grass	1	2018-11-16 05:58:59.689447	\N	seaking	Sin Descripcion
+2713	1	admin	Magikarp	Magikarp es el pokemon numero #129	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/129.png	electric,grass	1	2018-11-16 05:58:59.806778	\N	magikarp	Sin Descripcion
+2724	1	admin	Omastar	Omastar es el pokemon numero #139	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/139.png	grass,electric,fighting,ground	1	2018-11-16 05:58:59.927883	\N	omastar	Sin Descripcion
+2735	1	admin	Mewtwo	Mewtwo es el pokemon numero #150	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/150.png	bug,dark,ghost	1	2018-11-16 05:59:00.046702	\N	mewtwo	Sin Descripcion
+2745	1	admin	Feraligatr	Feraligatr es el pokemon numero #160	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/160.png	electric,grass	1	2018-11-16 05:59:00.17448	\N	feraligatr	Sin Descripcion
+2754	1	admin	Chinchou	Chinchou es el pokemon numero #170	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/170.png	grass,ground	1	2018-11-16 05:59:00.295657	\N	chinchou	Sin Descripcion
+2763	1	admin	Mareep	Mareep es el pokemon numero #179	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/179.png	ground	1	2018-11-16 05:59:00.420448	\N	mareep	Sin Descripcion
+2772	1	admin	Skiploom	Skiploom es el pokemon numero #188	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/188.png	ice,fire,flying,poison,rock	1	2018-11-16 05:59:00.542332	\N	skiploom	Sin Descripcion
+2782	1	admin	Umbreon	Umbreon es el pokemon numero #197	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/197.png	fighting,bug,fairy	1	2018-11-16 05:59:00.673788	\N	umbreon	Sin Descripcion
+2797	1	admin	Steelix	Steelix es el pokemon numero #208	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/208.png	fighting,fire,ground,water	1	2018-11-16 05:59:00.820472	\N	steelix	Sin Descripcion
+2808	1	admin	Remoraid	Remoraid es el pokemon numero #223	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/223.png	electric,grass	1	2018-11-16 05:59:00.984913	\N	remoraid	Sin Descripcion
+2818	1	admin	Stantler	Stantler es el pokemon numero #234	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/234.png	fighting	1	2018-11-16 05:59:01.10991	\N	stantler	Sin Descripcion
+2828	1	admin	Entei	Entei es el pokemon numero #244	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/244.png	ground,rock,water	1	2018-11-16 05:59:01.226617	\N	entei	Sin Descripcion
+2837	1	admin	Grovyle	Grovyle es el pokemon numero #253	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/253.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:01.363279	\N	grovyle	Sin Descripcion
+2848	1	admin	Mightyena	Mightyena es el pokemon numero #262	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/262.png	fighting,bug,fairy	1	2018-11-16 05:59:01.499925	\N	mightyena	Sin Descripcion
+2858	1	admin	Nuzleaf	Nuzleaf es el pokemon numero #274	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/274.png	bug,fire,fighting,flying,ice,poison,fairy	1	2018-11-16 05:59:01.628588	\N	nuzleaf	Sin Descripcion
+2868	1	admin	Masquerain	Masquerain es el pokemon numero #284	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/284.png	rock,electric,fire,flying,ice	1	2018-11-16 05:59:01.745384	\N	masquerain	Sin Descripcion
+2879	1	admin	Loudred	Loudred es el pokemon numero #294	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/294.png	fighting	1	2018-11-16 05:59:01.867428	\N	loudred	Sin Descripcion
+2889	1	admin	Lairon	Lairon es el pokemon numero #305	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/305.png	fighting,ground,water	1	2018-11-16 05:59:01.985168	\N	lairon	Sin Descripcion
+2899	1	admin	Roselia	Roselia es el pokemon numero #315	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/315.png	fire,flying,ice,psychic	1	2018-11-16 05:59:02.10528	\N	roselia	Sin Descripcion
+2909	1	admin	Spoink	Spoink es el pokemon numero #325	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/325.png	bug,dark,ghost	1	2018-11-16 05:59:02.223924	\N	spoink	Sin Descripcion
+2919	1	admin	Zangoose	Zangoose es el pokemon numero #335	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/335.png	fighting	1	2018-11-16 05:59:02.341688	\N	zangoose	Sin Descripcion
+2929	1	admin	Lileep	Lileep es el pokemon numero #345	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/345.png	bug,fighting,ice,steel	1	2018-11-16 05:59:02.472175	\N	lileep	Sin Descripcion
+2939	1	admin	Darkrai	Darkrai es el pokemon numero #491	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/491.png	fighting,bug,fairy	1	2018-11-16 05:59:02.591731	\N	darkrai	Sin Descripcion
+2952	1	admin	Oshawott	Oshawott es el pokemon numero #501	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/501.png	grass,electric	1	2018-11-16 05:59:02.711716	\N	oshawott	Sin Descripcion
+2961	1	admin	Pansear	Pansear es el pokemon numero #513	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/513.png	water,ground,rock	1	2018-11-16 05:59:02.830518	\N	pansear	Sin Descripcion
+2972	1	admin	Zebstrika	Zebstrika es el pokemon numero #523	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/523.png	ground	1	2018-11-16 05:59:02.961669	\N	zebstrika	Sin Descripcion
+2982	1	admin	Conkeldurr	Conkeldurr es el pokemon numero #534	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/534.png	flying,psychic,fairy	1	2018-11-16 05:59:03.083021	\N	conkeldurr	Sin Descripcion
+2992	1	admin	Whirlipede	Whirlipede es el pokemon numero #544	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/544.png	fire,flying,rock,psychic	1	2018-11-16 05:59:03.200861	\N	whirlipede	Sin Descripcion
+3003	1	admin	Darumaka	Darumaka es el pokemon numero #554	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/554.png	water,ground,rock	1	2018-11-16 05:59:03.331222	\N	darumaka	Sin Descripcion
+3013	1	admin	Tirtouga	Tirtouga es el pokemon numero #564	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/564.png	grass,electric,fighting,ground	1	2018-11-16 05:59:03.451022	\N	tirtouga	Sin Descripcion
+3023	1	admin	Gothorita	Gothorita es el pokemon numero #575	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/575.png	bug,ghost,dark	1	2018-11-16 05:59:03.573194	\N	gothorita	Sin Descripcion
+3035	1	admin	Deerling	Deerling es el pokemon numero #585	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/585.png	fire,ice,fighting,poison,flying,bug	1	2018-11-16 05:59:03.695431	\N	deerling	Sin Descripcion
+3045	1	admin	Galvantula	Galvantula es el pokemon numero #596	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/596.png	fire,rock	1	2018-11-16 05:59:03.821873	\N	galvantula	Sin Descripcion
+3054	1	admin	Beheeyem	Beheeyem es el pokemon numero #606	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/606.png	bug,ghost,dark	1	2018-11-16 05:59:03.950582	\N	beheeyem	Sin Descripcion
+2636	1	admin	Meowth	Meowth es el pokemon numero #52	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/052.png	fighting	1	2018-11-16 05:58:58.840625	\N	meowth	Sin Descripcion
+2646	1	admin	Poliwrath	Poliwrath es el pokemon numero #62	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/062.png	electric,flying,grass,psychic,fairy	1	2018-11-16 05:58:58.970907	\N	poliwrath	Sin Descripcion
+2657	1	admin	Tentacool	Tentacool es el pokemon numero #72	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/072.png	electric,ground,psychic	1	2018-11-16 05:58:59.092877	\N	tentacool	Sin Descripcion
+2690	1	admin	Hitmonlee	Hitmonlee es el pokemon numero #106	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/106.png	flying,psychic,fairy	1	2018-11-16 05:58:59.549993	\N	hitmonlee	Sin Descripcion
+2702	1	admin	Seadra	Seadra es el pokemon numero #117	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/117.png	electric,grass	1	2018-11-16 05:58:59.671754	\N	seadra	Sin Descripcion
+2712	1	admin	Tauros	Tauros es el pokemon numero #128	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/128.png	fighting	1	2018-11-16 05:58:59.796018	\N	tauros	Sin Descripcion
+2723	1	admin	Omanyte	Omanyte es el pokemon numero #138	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/138.png	grass,electric,fighting,ground	1	2018-11-16 05:58:59.919063	\N	omanyte	Sin Descripcion
+2734	1	admin	Dragonite	Dragonite es el pokemon numero #149	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/149.png	ice,dragon,rock,fairy	1	2018-11-16 05:59:00.043139	\N	dragonite	Sin Descripcion
+2744	1	admin	Sentret	Sentret es el pokemon numero #161	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/161.png	fighting	1	2018-11-16 05:59:00.171625	\N	sentret	Sin Descripcion
+2755	1	admin	Lanturn	Lanturn es el pokemon numero #171	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/171.png	grass,ground	1	2018-11-16 05:59:00.322714	\N	lanturn	Sin Descripcion
+2765	1	admin	Flaaffy	Flaaffy es el pokemon numero #180	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/180.png	ground	1	2018-11-16 05:59:00.447141	\N	flaaffy	Sin Descripcion
+2774	1	admin	Aipom	Aipom es el pokemon numero #190	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/190.png	fighting	1	2018-11-16 05:59:00.569124	\N	aipom	Sin Descripcion
+2787	1	admin	Wobbuffet	Wobbuffet es el pokemon numero #202	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/202.png	bug,dark,ghost	1	2018-11-16 05:59:00.695857	\N	wobbuffet	Sin Descripcion
+2798	1	admin	Heracross	Heracross es el pokemon numero #214	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/214.png	flying,fire,psychic,fairy	1	2018-11-16 05:59:00.821339	\N	heracross	Sin Descripcion
+2809	1	admin	Octillery	Octillery es el pokemon numero #224	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/224.png	electric,grass	1	2018-11-16 05:59:00.987493	\N	octillery	Sin Descripcion
+2819	1	admin	Smeargle	Smeargle es el pokemon numero #235	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/235.png	fighting	1	2018-11-16 05:59:01.110424	\N	smeargle	Sin Descripcion
+2831	1	admin	Suicune	Suicune es el pokemon numero #245	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/245.png	electric,grass	1	2018-11-16 05:59:01.236168	\N	suicune	Sin Descripcion
+2841	1	admin	Combusken	Combusken es el pokemon numero #256	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/256.png	flying,ground,psychic,water	1	2018-11-16 05:59:01.384861	\N	combusken	Sin Descripcion
+2850	1	admin	Silcoon	Silcoon es el pokemon numero #266	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/266.png	fire,flying,rock	1	2018-11-16 05:59:01.515999	\N	silcoon	Sin Descripcion
+2861	1	admin	Taillow	Taillow es el pokemon numero #276	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/276.png	electric,ice,rock	1	2018-11-16 05:59:01.646144	\N	taillow	Sin Descripcion
+2871	1	admin	Slakoth	Slakoth es el pokemon numero #287	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/287.png	fighting	1	2018-11-16 05:59:01.766471	\N	slakoth	Sin Descripcion
+2881	1	admin	Hariyama	Hariyama es el pokemon numero #297	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/297.png	flying,psychic,fairy	1	2018-11-16 05:59:01.888693	\N	hariyama	Sin Descripcion
+2891	1	admin	Meditite	Meditite es el pokemon numero #307	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/307.png	flying,ghost,fairy	1	2018-11-16 05:59:02.008977	\N	meditite	Sin Descripcion
+2901	1	admin	Swalot	Swalot es el pokemon numero #317	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/317.png	ground,psychic	1	2018-11-16 05:59:02.127975	\N	swalot	Sin Descripcion
+2911	1	admin	Spinda	Spinda es el pokemon numero #327	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/327.png	fighting	1	2018-11-16 05:59:02.249372	\N	spinda	Sin Descripcion
+2921	1	admin	Lunatone	Lunatone es el pokemon numero #337	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/337.png	bug,dark,ghost,grass,steel,water	1	2018-11-16 05:59:02.369528	\N	lunatone	Sin Descripcion
+2934	1	admin	Armaldo	Armaldo es el pokemon numero #348	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/348.png	rock,steel,water	1	2018-11-16 05:59:02.491866	\N	armaldo	Sin Descripcion
+2944	1	admin	Servine	Servine es el pokemon numero #496	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/496.png	fire,ice,poison,flying,bug	1	2018-11-16 05:59:02.612273	\N	servine	Sin Descripcion
+2954	1	admin	Lillipup	Lillipup es el pokemon numero #506	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/506.png	fighting	1	2018-11-16 05:59:02.733943	\N	lillipup	Sin Descripcion
+2965	1	admin	Munna	Munna es el pokemon numero #517	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/517.png	bug,ghost,dark	1	2018-11-16 05:59:02.86245	\N	munna	Sin Descripcion
+2975	1	admin	Woobat	Woobat es el pokemon numero #527	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/527.png	electric,ice,rock,ghost,dark	1	2018-11-16 05:59:02.996574	\N	woobat	Sin Descripcion
+2985	1	admin	Seismitoad	Seismitoad es el pokemon numero #537	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/537.png	grass	1	2018-11-16 05:59:03.122703	\N	seismitoad	Sin Descripcion
+2995	1	admin	Whimsicott	Whimsicott es el pokemon numero #547	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/547.png	fire,ice,poison,flying,steel	1	2018-11-16 05:59:03.242455	\N	whimsicott	Sin Descripcion
+3009	1	admin	Scraggy	Scraggy es el pokemon numero #559	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/559.png	fighting,flying,fairy	1	2018-11-16 05:59:03.366702	\N	scraggy	Sin Descripcion
+3020	1	admin	Zoroark	Zoroark es el pokemon numero #571	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/571.png	fighting,bug,fairy	1	2018-11-16 05:59:03.497555	\N	zoroark	Sin Descripcion
+3031	1	admin	Vanillite	Vanillite es el pokemon numero #582	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/582.png	fire,fighting,rock,steel	1	2018-11-16 05:59:03.622886	\N	vanillite	Sin Descripcion
+3040	1	admin	Amoonguss	Amoonguss es el pokemon numero #591	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/591.png	fire,ice,flying,psychic	1	2018-11-16 05:59:03.75178	\N	amoonguss	Sin Descripcion
+3049	1	admin	Klinklang	Klinklang es el pokemon numero #601	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/601.png	fire,fighting,ground	1	2018-11-16 05:59:03.877219	\N	klinklang	Sin Descripcion
+3058	1	admin	Axew	Axew es el pokemon numero #610	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/610.png	ice,dragon,fairy	1	2018-11-16 05:59:03.998176	\N	axew	Sin Descripcion
+3071	1	admin	Golett	Golett es el pokemon numero #622	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/622.png	water,grass,ice,ghost,dark	1	2018-11-16 05:59:04.135603	\N	golett	Sin Descripcion
+3082	1	admin	Deino	Deino es el pokemon numero #633	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/633.png	ice,fighting,bug,dragon,fairy	1	2018-11-16 05:59:04.260944	\N	deino	Sin Descripcion
+3092	1	admin	Zekrom	Zekrom es el pokemon numero #644	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/644.png	ice,ground,dragon,fairy	1	2018-11-16 05:59:04.38148	\N	zekrom	Sin Descripcion
+2638	1	admin	Psyduck	Psyduck es el pokemon numero #54	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/054.png	electric,grass	1	2018-11-16 05:58:58.900803	\N	psyduck	Sin Descripcion
+2648	1	admin	Kadabra	Kadabra es el pokemon numero #64	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/064.png	bug,dark,ghost	1	2018-11-16 05:58:59.036894	\N	kadabra	Sin Descripcion
+2660	1	admin	Geodude	Geodude es el pokemon numero #74	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/074.png	grass,water,fighting,ground,ice,steel	1	2018-11-16 05:58:59.158263	\N	geodude	Sin Descripcion
+2671	1	admin	Dodrio	Dodrio es el pokemon numero #85	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/085.png	electric,ice,rock	1	2018-11-16 05:58:59.29811	\N	dodrio	Sin Descripcion
+2678	1	admin	Gengar	Gengar es el pokemon numero #94	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/094.png	dark,ghost,psychic	1	2018-11-16 05:58:59.406597	\N	gengar	Sin Descripcion
+2688	1	admin	Exeggutor	Exeggutor es el pokemon numero #103	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/103.png	bug,dark,fire,flying,ghost,ice,poison	1	2018-11-16 05:58:59.520855	\N	exeggutor	Sin Descripcion
+2697	1	admin	Chansey	Chansey es el pokemon numero #113	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/113.png	fighting	1	2018-11-16 05:58:59.631676	\N	chansey	Sin Descripcion
+2707	1	admin	Scyther	Scyther es el pokemon numero #123	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/123.png	rock,electric,fire,flying,ice	1	2018-11-16 05:58:59.751354	\N	scyther	Sin Descripcion
+2718	1	admin	Eevee	Eevee es el pokemon numero #133	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/133.png	fighting	1	2018-11-16 05:58:59.866945	\N	eevee	Sin Descripcion
+2728	1	admin	Snorlax	Snorlax es el pokemon numero #143	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/143.png	fighting	1	2018-11-16 05:58:59.996211	\N	snorlax	Sin Descripcion
+2736	1	admin	Bayleef	Bayleef es el pokemon numero #153	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/153.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:00.10856	\N	bayleef	Sin Descripcion
+2746	1	admin	Furret	Furret es el pokemon numero #162	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/162.png	fighting	1	2018-11-16 05:59:00.222944	\N	furret	Sin Descripcion
+2756	1	admin	Pichu	Pichu es el pokemon numero #172	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/172.png	ground	1	2018-11-16 05:59:00.331709	\N	pichu	Sin Descripcion
+2764	1	admin	Ampharos	Ampharos es el pokemon numero #181	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/181.png	ground	1	2018-11-16 05:59:00.443035	\N	ampharos	Sin Descripcion
+2773	1	admin	Jumpluff	Jumpluff es el pokemon numero #189	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/189.png	ice,fire,flying,poison,rock	1	2018-11-16 05:59:00.554974	\N	jumpluff	Sin Descripcion
+2781	1	admin	Murkrow	Murkrow es el pokemon numero #198	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/198.png	electric,ice,rock,fairy	1	2018-11-16 05:59:00.664691	\N	murkrow	Sin Descripcion
+2791	1	admin	Gligar	Gligar es el pokemon numero #207	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/207.png	ice,water	1	2018-11-16 05:59:00.774516	\N	gligar	Sin Descripcion
+2801	1	admin	Ursaring	Ursaring es el pokemon numero #217	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/217.png	fighting	1	2018-11-16 05:59:00.892463	\N	ursaring	Sin Descripcion
+2810	1	admin	Mantine	Mantine es el pokemon numero #226	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/226.png	electric,rock	1	2018-11-16 05:59:01.001324	\N	mantine	Sin Descripcion
+2820	1	admin	Tyrogue	Tyrogue es el pokemon numero #236	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/236.png	flying,psychic,fairy	1	2018-11-16 05:59:01.11587	\N	tyrogue	Sin Descripcion
+2829	1	admin	Larvitar	Larvitar es el pokemon numero #246	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/246.png	grass,water,fighting,ground,ice,steel	1	2018-11-16 05:59:01.230025	\N	larvitar	Sin Descripcion
+2840	1	admin	Sceptile	Sceptile es el pokemon numero #254	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/254.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:01.378661	\N	sceptile	Sin Descripcion
+2849	1	admin	Wurmple	Wurmple es el pokemon numero #265	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/265.png	fire,flying,rock	1	2018-11-16 05:59:01.50981	\N	wurmple	Sin Descripcion
+2859	1	admin	Shiftry	Shiftry es el pokemon numero #275	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/275.png	bug,fire,fighting,flying,ice,poison,fairy	1	2018-11-16 05:59:01.634795	\N	shiftry	Sin Descripcion
+2869	1	admin	Shroomish	Shroomish es el pokemon numero #285	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/285.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:01.746135	\N	shroomish	Sin Descripcion
+2878	1	admin	Exploud	Exploud es el pokemon numero #295	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/295.png	fighting	1	2018-11-16 05:59:01.858348	\N	exploud	Sin Descripcion
+2888	1	admin	Aron	Aron es el pokemon numero #304	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/304.png	fighting,ground,water	1	2018-11-16 05:59:01.970655	\N	aron	Sin Descripcion
+2898	1	admin	Illumise	Illumise es el pokemon numero #314	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/314.png	fire,flying,rock	1	2018-11-16 05:59:02.081489	\N	illumise	Sin Descripcion
+2908	1	admin	Torkoal	Torkoal es el pokemon numero #324	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/324.png	ground,rock,water	1	2018-11-16 05:59:02.191592	\N	torkoal	Sin Descripcion
+2918	1	admin	Altaria	Altaria es el pokemon numero #334	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/334.png	ice,dragon,rock,fairy	1	2018-11-16 05:59:02.322932	\N	altaria	Sin Descripcion
+2928	1	admin	Claydol	Claydol es el pokemon numero #344	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/344.png	bug,dark,ghost,grass,water,ice	1	2018-11-16 05:59:02.433544	\N	claydol	Sin Descripcion
+2938	1	admin	Manaphy	Manaphy es el pokemon numero #490	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/490.png	electric,grass	1	2018-11-16 05:59:02.545499	\N	manaphy	Sin Descripcion
+2948	1	admin	Emboar	Emboar es el pokemon numero #500	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/500.png	water,ground,flying,psychic	1	2018-11-16 05:59:02.659783	\N	emboar	Sin Descripcion
+2958	1	admin	Liepard	Liepard es el pokemon numero #510	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/510.png	fighting,bug,fairy	1	2018-11-16 05:59:02.78291	\N	liepard	Sin Descripcion
+2968	1	admin	Pidove	Pidove es el pokemon numero #519	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/519.png	electric,ice,rock	1	2018-11-16 05:59:02.918751	\N	pidove	Sin Descripcion
+2979	1	admin	Drilbur	Drilbur es el pokemon numero #529	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/529.png	water,grass,ice	1	2018-11-16 05:59:03.035026	\N	drilbur	Sin Descripcion
+2989	1	admin	Sewaddle	Sewaddle es el pokemon numero #540	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/540.png	fire,flying,ice,poison,bug,rock	1	2018-11-16 05:59:03.144909	\N	sewaddle	Sin Descripcion
+2999	1	admin	Sandile	Sandile es el pokemon numero #551	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/551.png	water,grass,ice,fighting,bug,fairy	1	2018-11-16 05:59:03.251773	\N	sandile	Sin Descripcion
+3008	1	admin	Sigilyph	Sigilyph es el pokemon numero #561	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/561.png	electric,ice,rock,ghost,dark	1	2018-11-16 05:59:03.362906	\N	sigilyph	Sin Descripcion
+3017	1	admin	Garbodor	Garbodor es el pokemon numero #569	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/569.png	ground,psychic	1	2018-11-16 05:59:03.472858	\N	garbodor	Sin Descripcion
+3026	1	admin	Duosion	Duosion es el pokemon numero #578	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/578.png	bug,ghost,dark	1	2018-11-16 05:59:03.588023	\N	duosion	Sin Descripcion
+3036	1	admin	Karrablast	Karrablast es el pokemon numero #588	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/588.png	fire,flying,rock	1	2018-11-16 05:59:03.69983	\N	karrablast	Sin Descripcion
+3005	1	admin	Crustle	Crustle es el pokemon numero #558	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/558.png	water,rock,steel	1	2018-11-16 05:59:03.355925	\N	crustle	Sin Descripcion
+3015	1	admin	Archeops	Archeops es el pokemon numero #567	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/567.png	water,electric,ice,rock,steel	1	2018-11-16 05:59:03.462586	\N	archeops	Sin Descripcion
+3024	1	admin	Solosis 	Solosis  es el pokemon numero #577	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/577.png	bug,ghost,dark	1	2018-11-16 05:59:03.573747	\N	solosis	Sin Descripcion
+3033	1	admin	Emolga	Emolga es el pokemon numero #587	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/587.png	ice,rock	1	2018-11-16 05:59:03.681385	\N	emolga	Sin Descripcion
+3043	1	admin	Joltik	Joltik es el pokemon numero #595	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/595.png	fire,rock	1	2018-11-16 05:59:03.786108	\N	joltik	Sin Descripcion
+3051	1	admin	Eelektross	Eelektross es el pokemon numero #604	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/604.png		1	2018-11-16 05:59:03.892712	\N	eelektross	Sin Descripcion
+3059	1	admin	Haxorus	Haxorus es el pokemon numero #612	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/612.png	ice,dragon,fairy	1	2018-11-16 05:59:03.999233	\N	haxorus	Sin Descripcion
+3069	1	admin	Druddigon	Druddigon es el pokemon numero #621	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/621.png	ice,dragon,fairy	1	2018-11-16 05:59:04.124419	\N	druddigon	Sin Descripcion
+3078	1	admin	Bouffalant	Bouffalant es el pokemon numero #626	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/626.png	fighting	1	2018-11-16 05:59:04.23145	\N	bouffalant	Sin Descripcion
+3085	1	admin	Virizion	Virizion es el pokemon numero #640	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/640.png	flying,fire,ice,poison,psychic,fairy	1	2018-11-16 05:59:04.335863	\N	virizion	Sin Descripcion
+3096	1	admin	Meloetta	Meloetta es el pokemon numero #648	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/648.png	bug,dark	1	2018-11-16 05:59:04.450186	\N	meloetta	Sin Descripcion
+3106	1	admin	Greninja	Greninja es el pokemon numero #658	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/658.png	fairy,grass,electric,fighting,bug	1	2018-11-16 05:59:04.55971	\N	greninja	Sin Descripcion
+3115	1	admin	Pyroar	Pyroar es el pokemon numero #668	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/668.png	water,rock,fighting,ground	1	2018-11-16 05:59:04.662056	\N	pyroar	Sin Descripcion
+3134	1	admin	Inkay	Inkay es el pokemon numero #686	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/686.png	fairy,bug	1	2018-11-16 05:59:04.872052	\N	inkay	Sin Descripcion
+3143	1	admin	Noibat	Noibat es el pokemon numero #714	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/714.png	ice,rock,fairy,dragon	1	2018-11-16 05:59:04.978238	\N	noibat	Sin Descripcion
+3150	1	admin	Lycanroc	Lycanroc es el pokemon numero #745	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/745.png	water,steel,grass,fighting,ground	1	2018-11-16 05:59:05.110797	\N	lycanroc	Sin Descripcion
+3159	1	admin	Pyukumuku	Pyukumuku es el pokemon numero #771	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/771.png	grass,electric	1	2018-11-16 05:59:05.217022	\N	pyukumuku	Sin Descripcion
+3168	1	admin	Phione	Phione es el pokemon numero #489	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/489.png	electric,grass	1	2018-11-16 05:59:05.325365	\N	phione	Sin Descripcion
+3177	1	admin	Uxie	Uxie es el pokemon numero #480	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/480.png	bug,dark,ghost	1	2018-11-16 05:59:05.432877	\N	uxie	Sin Descripcion
+3186	1	admin	Glaceon	Glaceon es el pokemon numero #471	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/471.png	fire,fighting,rock,steel	1	2018-11-16 05:59:05.538925	\N	glaceon	Sin Descripcion
+3196	1	admin	Weavile	Weavile es el pokemon numero #461	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/461.png	fighting,bug,fire,rock,steel,fairy	1	2018-11-16 05:59:05.645636	\N	weavile	Sin Descripcion
+3205	1	admin	Drapion	Drapion es el pokemon numero #452	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/452.png	ground	1	2018-11-16 05:59:05.753101	\N	drapion	Sin Descripcion
+3215	1	admin	Spiritomb	Spiritomb es el pokemon numero #442	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/442.png	fairy	1	2018-11-16 05:59:05.869546	\N	spiritomb	Sin Descripcion
+3224	1	admin	Stunky	Stunky es el pokemon numero #434	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/434.png	ground	1	2018-11-16 05:59:05.97942	\N	stunky	Sin Descripcion
+3233	1	admin	Ambipom	Ambipom es el pokemon numero #424	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/424.png	fighting	1	2018-11-16 05:59:06.095829	\N	ambipom	Sin Descripcion
+3243	1	admin	Combee	Combee es el pokemon numero #415	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/415.png	rock,electric,fire,flying,ice	1	2018-11-16 05:59:06.216892	\N	combee	Sin Descripcion
+3251	1	admin	Budew	Budew es el pokemon numero #406	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/406.png	fire,flying,ice,psychic	1	2018-11-16 05:59:06.321497	\N	budew	Sin Descripcion
+3259	1	admin	Bidoof	Bidoof es el pokemon numero #399	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/399.png	fighting	1	2018-11-16 05:59:06.452441	\N	bidoof	Sin Descripcion
+3269	1	admin	Torterra	Torterra es el pokemon numero #389	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/389.png	ice,bug,fire,flying	1	2018-11-16 05:59:06.557304	\N	torterra	Sin Descripcion
+3278	1	admin	Registeel	Registeel es el pokemon numero #379	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/379.png	fighting,fire,ground	1	2018-11-16 05:59:06.662537	\N	registeel	Sin Descripcion
+3288	1	admin	Luvdisc	Luvdisc es el pokemon numero #370	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/370.png	electric,grass	1	2018-11-16 05:59:06.78349	\N	luvdisc	Sin Descripcion
+3298	1	admin	Wynaut	Wynaut es el pokemon numero #360	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/360.png	bug,dark,ghost	1	2018-11-16 05:59:06.887888	\N	wynaut	Sin Descripcion
+3308	1	admin	Poipole	Poipole es el pokemon numero #803	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/803.png	psychic,ground	1	2018-11-16 05:59:06.997742	\N	poipole	Sin Descripcion
+3317	1	admin	Cosmoem	Cosmoem es el pokemon numero #790	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/790.png	ghost,dark,bug	1	2018-11-16 05:59:07.101656	\N	cosmoem	Sin Descripcion
+3326	1	admin	Togedemaru	Togedemaru es el pokemon numero #777	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/777.png	fire,fighting,ground	1	2018-11-16 05:59:07.211386	\N	togedemaru	Sin Descripcion
+3336	1	admin	Oranguru	Oranguru es el pokemon numero #765	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/765.png	dark,bug	1	2018-11-16 05:59:07.320363	\N	oranguru	Sin Descripcion
+3345	1	admin	Dewpider	Dewpider es el pokemon numero #751	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/751.png	flying,electric,rock	1	2018-11-16 05:59:07.422777	\N	dewpider	Sin Descripcion
+3353	1	admin	Crabrawler	Crabrawler es el pokemon numero #739	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/739.png	psychic,flying,fairy	1	2018-11-16 05:59:07.528909	\N	crabrawler	Sin Descripcion
+3361	1	admin	Popplio	Popplio es el pokemon numero #728	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/728.png	grass,electric	1	2018-11-16 05:59:07.638646	\N	popplio	Sin Descripcion
+3370	1	admin	Diancie	Diancie es el pokemon numero #719	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/719.png	steel,water,grass,ground	1	2018-11-16 05:59:07.744604	\N	diancie	Sin Descripcion
+3379	1	admin	Klefki	Klefki es el pokemon numero #707	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/707.png	fire,ground	1	2018-11-16 05:59:07.848078	\N	klefki	Sin Descripcion
+3389	1	admin	Clawitzer	Clawitzer es el pokemon numero #693	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/693.png	grass,electric	1	2018-11-16 05:59:07.965825	\N	clawitzer	Sin Descripcion
+3014	1	admin	Archen	Archen es el pokemon numero #566	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/566.png	water,electric,ice,rock,steel	1	2018-11-16 05:59:03.461084	\N	archen	Sin Descripcion
+3025	1	admin	Gothitelle	Gothitelle es el pokemon numero #576	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/576.png	bug,ghost,dark	1	2018-11-16 05:59:03.574105	\N	gothitelle	Sin Descripcion
+3034	1	admin	Sawsbuck	Sawsbuck es el pokemon numero #586	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/586.png	fire,ice,fighting,poison,flying,bug	1	2018-11-16 05:59:03.681868	\N	sawsbuck	Sin Descripcion
+3042	1	admin	Alomomola	Alomomola es el pokemon numero #594	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/594.png	grass,electric	1	2018-11-16 05:59:03.785576	\N	alomomola	Sin Descripcion
+3052	1	admin	Eelektrik	Eelektrik es el pokemon numero #603	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/603.png		1	2018-11-16 05:59:03.893252	\N	eelektrik	Sin Descripcion
+3060	1	admin	Fraxure	Fraxure es el pokemon numero #611	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/611.png	ice,dragon,fairy	1	2018-11-16 05:59:03.999564	\N	fraxure	Sin Descripcion
+3067	1	admin	Mienshao	Mienshao es el pokemon numero #620	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/620.png	flying,psychic,fairy	1	2018-11-16 05:59:04.110611	\N	mienshao	Sin Descripcion
+3077	1	admin	Rufflet	Rufflet es el pokemon numero #627	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/627.png	electric,ice,rock	1	2018-11-16 05:59:04.223751	\N	rufflet	Sin Descripcion
+3086	1	admin	Cobalion	Cobalion es el pokemon numero #638	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/638.png	fire,fighting,ground	1	2018-11-16 05:59:04.336361	\N	cobalion	Sin Descripcion
+3095	1	admin	Keldeo	Keldeo es el pokemon numero #647	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/647.png	flying,grass,electric,fairy,psychic	1	2018-11-16 05:59:04.44032	\N	keldeo	Sin Descripcion
+3104	1	admin	Frogadier	Frogadier es el pokemon numero #657	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/657.png	grass,electric	1	2018-11-16 05:59:04.544857	\N	frogadier	Sin Descripcion
+3114	1	admin	Vivillon	Vivillon es el pokemon numero #666	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/666.png	fire,flying,electric,ice,rock	1	2018-11-16 05:59:04.647192	\N	vivillon	Sin Descripcion
+3123	1	admin	Furfrou	Furfrou es el pokemon numero #676	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/676.png	fighting	1	2018-11-16 05:59:04.751791	\N	furfrou	Sin Descripcion
+3132	1	admin	Slurpuff	Slurpuff es el pokemon numero #685	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/685.png	steel,poison	1	2018-11-16 05:59:04.855629	\N	slurpuff	Sin Descripcion
+3142	1	admin	Goodra	Goodra es el pokemon numero #706	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/706.png	fairy,ice,dragon	1	2018-11-16 05:59:04.965848	\N	goodra	Sin Descripcion
+3149	1	admin	Oricorio	Oricorio es el pokemon numero #741	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/741.png	water,electric,rock	1	2018-11-16 05:59:05.11025	\N	oricorio	Sin Descripcion
+3158	1	admin	Wimpod	Wimpod es el pokemon numero #767	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/767.png	flying,electric,rock	1	2018-11-16 05:59:05.216582	\N	wimpod	Sin Descripcion
+3167	1	admin	Blacephalon	Blacephalon es el pokemon numero #806	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/806.png	water,ghost,ground,dark,rock	1	2018-11-16 05:59:05.324844	\N	blacephalon	Sin Descripcion
+3178	1	admin	Mesprit	Mesprit es el pokemon numero #481	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/481.png	bug,dark,ghost	1	2018-11-16 05:59:05.433387	\N	mesprit	Sin Descripcion
+3187	1	admin	Gliscor	Gliscor es el pokemon numero #472	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/472.png	ice,water	1	2018-11-16 05:59:05.539425	\N	gliscor	Sin Descripcion
+3197	1	admin	Magnezone	Magnezone es el pokemon numero #462	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/462.png	ground,fire,fighting	1	2018-11-16 05:59:05.646061	\N	magnezone	Sin Descripcion
+3206	1	admin	Croagunk	Croagunk es el pokemon numero #453	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/453.png	psychic,flying,ground	1	2018-11-16 05:59:05.753585	\N	croagunk	Sin Descripcion
+3213	1	admin	Gible	Gible es el pokemon numero #443	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/443.png	ice,dragon,fairy	1	2018-11-16 05:59:05.85991	\N	gible	Sin Descripcion
+3221	1	admin	Skuntank	Skuntank es el pokemon numero #435	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/435.png	ground	1	2018-11-16 05:59:05.966213	\N	skuntank	Sin Descripcion
+3229	1	admin	Mismagius	Mismagius es el pokemon numero #429	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/429.png	dark,ghost	1	2018-11-16 05:59:06.070767	\N	mismagius	Sin Descripcion
+3239	1	admin	Floatzel	Floatzel es el pokemon numero #419	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/419.png	electric,grass	1	2018-11-16 05:59:06.181225	\N	floatzel	Sin Descripcion
+3248	1	admin	Shieldon	Shieldon es el pokemon numero #410	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/410.png	fighting,ground,water	1	2018-11-16 05:59:06.28557	\N	shieldon	Sin Descripcion
+3257	1	admin	Kricketot	Kricketot es el pokemon numero #401	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/401.png	fire,flying,rock	1	2018-11-16 05:59:06.391261	\N	kricketot	Sin Descripcion
+3266	1	admin	Infernape	Infernape es el pokemon numero #392	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/392.png	flying,ground,psychic,water	1	2018-11-16 05:59:06.501588	\N	infernape	Sin Descripcion
+3275	1	admin	Groudon	Groudon es el pokemon numero #383	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/383.png	grass,ice,water	1	2018-11-16 05:59:06.610616	\N	groudon	Sin Descripcion
+3284	1	admin	Salamence	Salamence es el pokemon numero #373	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/373.png	ice,dragon,rock,fairy	1	2018-11-16 05:59:06.721734	\N	salamence	Sin Descripcion
+3294	1	admin	Sealeo	Sealeo es el pokemon numero #364	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/364.png	electric,fighting,grass,rock	1	2018-11-16 05:59:06.828491	\N	sealeo	Sin Descripcion
+3301	1	admin	Dusclops	Dusclops es el pokemon numero #356	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/356.png	dark,ghost	1	2018-11-16 05:59:06.932432	\N	dusclops	Sin Descripcion
+3309	1	admin	Guzzlord	Guzzlord es el pokemon numero #799	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/799.png	fairy,fighting,bug,ice,dragon	1	2018-11-16 05:59:07.034971	\N	guzzlord	Sin Descripcion
+3319	1	admin	Tapu Fini	Tapu Fini es el pokemon numero #788	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/788.png	grass,electric,poison	1	2018-11-16 05:59:07.144542	\N	tapu fini	Sin Descripcion
+3329	1	admin	Minior	Minior es el pokemon numero #774	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/774.png	steel,water,electric,ice,rock	1	2018-11-16 05:59:07.24774	\N	minior	Sin Descripcion
+3338	1	admin	Bounsweet	Bounsweet es el pokemon numero #761	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/761.png	fire,flying,ice,poison,bug	1	2018-11-16 05:59:07.367838	\N	bounsweet	Sin Descripcion
+3348	1	admin	Toxapex	Toxapex es el pokemon numero #748	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/748.png	psychic,electric,ground	1	2018-11-16 05:59:07.485596	\N	toxapex	Sin Descripcion
+3358	1	admin	Gumshoos	Gumshoos es el pokemon numero #735	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/735.png	fighting	1	2018-11-16 05:59:07.588888	\N	gumshoos	Sin Descripcion
+3367	1	admin	Rowlet	Rowlet es el pokemon numero #722	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/722.png	fire,flying,ice,poison,rock	1	2018-11-16 05:59:07.692369	\N	rowlet	Sin Descripcion
+3377	1	admin	Trevenant	Trevenant es el pokemon numero #709	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/709.png	ghost,fire,flying,dark,ice	1	2018-11-16 05:59:07.796942	\N	trevenant	Sin Descripcion
+3387	1	admin	Tyrunt	Tyrunt es el pokemon numero #696	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/696.png	steel,ice,dragon,fighting,fairy,ground	1	2018-11-16 05:59:07.902013	\N	tyrunt	Sin Descripcion
+3029	1	admin	Vanillish	Vanillish es el pokemon numero #583	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/583.png	fire,fighting,rock,steel	1	2018-11-16 05:59:03.613758	\N	vanillish	Sin Descripcion
+3037	1	admin	Foongus	Foongus es el pokemon numero #590	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/590.png	fire,ice,flying,psychic	1	2018-11-16 05:59:03.738308	\N	foongus	Sin Descripcion
+3046	1	admin	Ferrothorn	Ferrothorn es el pokemon numero #598	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/598.png	fire,fighting	1	2018-11-16 05:59:03.849482	\N	ferrothorn	Sin Descripcion
+3055	1	admin	Litwick	Litwick es el pokemon numero #607	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/607.png	water,ground,rock,ghost,dark	1	2018-11-16 05:59:03.960597	\N	litwick	Sin Descripcion
+3064	1	admin	Accelgor	Accelgor es el pokemon numero #617	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/617.png	fire,flying,rock	1	2018-11-16 05:59:04.071876	\N	accelgor	Sin Descripcion
+3074	1	admin	Mandibuzz	Mandibuzz es el pokemon numero #630	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/630.png	electric,ice,rock,fairy	1	2018-11-16 05:59:04.184797	\N	mandibuzz	Sin Descripcion
+3084	1	admin	Larvesta	Larvesta es el pokemon numero #636	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/636.png	rock,water,flying	1	2018-11-16 05:59:04.295959	\N	larvesta	Sin Descripcion
+3094	1	admin	Kyurem	Kyurem es el pokemon numero #646	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/646.png	fighting,rock,dragon,steel,fairy	1	2018-11-16 05:59:04.43249	\N	kyurem	Sin Descripcion
+3105	1	admin	Froakie	Froakie es el pokemon numero #656	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/656.png	grass,electric	1	2018-11-16 05:59:04.546791	\N	froakie	Sin Descripcion
+3116	1	admin	Litleo	Litleo es el pokemon numero #667	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/667.png	rock,water,fighting,ground	1	2018-11-16 05:59:04.662593	\N	litleo	Sin Descripcion
+3126	1	admin	Meowstic	Meowstic es el pokemon numero #678	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/678.png	ghost,dark,bug	1	2018-11-16 05:59:04.772849	\N	meowstic	Sin Descripcion
+3136	1	admin	Binacle	Binacle es el pokemon numero #688	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/688.png	electric,fighting,grass,ground	1	2018-11-16 05:59:04.893414	\N	binacle	Sin Descripcion
+3166	1	admin	Kartana	Kartana es el pokemon numero #798	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/798.png	fire,fighting	1	2018-11-16 05:59:05.316321	\N	kartana	Sin Descripcion
+3176	1	admin	Azelf	Azelf es el pokemon numero #482	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/482.png	bug,dark,ghost	1	2018-11-16 05:59:05.431949	\N	azelf	Sin Descripcion
+3188	1	admin	Leafeon	Leafeon es el pokemon numero #470	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/470.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:05.540931	\N	leafeon	Sin Descripcion
+3198	1	admin	Abomasnow	Abomasnow es el pokemon numero #460	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/460.png	fire,bug,fighting,flying,poison,rock,steel	1	2018-11-16 05:59:05.652564	\N	abomasnow	Sin Descripcion
+3208	1	admin	Hippowdon	Hippowdon es el pokemon numero #450	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/450.png	grass,ice,water	1	2018-11-16 05:59:05.763185	\N	hippowdon	Sin Descripcion
+3217	1	admin	Happiny	Happiny es el pokemon numero #440	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/440.png	fighting	1	2018-11-16 05:59:05.875629	\N	happiny	Sin Descripcion
+3227	1	admin	Glameow	Glameow es el pokemon numero #431	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/431.png	fighting	1	2018-11-16 05:59:05.9932	\N	glameow	Sin Descripcion
+3234	1	admin	Shellos	Shellos es el pokemon numero #422	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/422.png	electric,grass	1	2018-11-16 05:59:06.107894	\N	shellos	Sin Descripcion
+3244	1	admin	Wormadam	Wormadam es el pokemon numero #413	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/413.png	fire,flying,ice,poison,bug,rock	1	2018-11-16 05:59:06.242679	\N	wormadam	Sin Descripcion
+3253	1	admin	Luxray	Luxray es el pokemon numero #405	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/405.png	ground	1	2018-11-16 05:59:06.36106	\N	luxray	Sin Descripcion
+3262	1	admin	Starly	Starly es el pokemon numero #396	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/396.png	electric,ice,rock	1	2018-11-16 05:59:06.47474	\N	starly	Sin Descripcion
+3271	1	admin	Deoxys	Deoxys es el pokemon numero #386	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/386.png	bug,dark,ghost	1	2018-11-16 05:59:06.585331	\N	deoxys	Sin Descripcion
+3281	1	admin	Regirock	Regirock es el pokemon numero #377	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/377.png	fighting,grass,ground,steel,water	1	2018-11-16 05:59:06.694602	\N	regirock	Sin Descripcion
+3291	1	admin	Huntail	Huntail es el pokemon numero #367	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/367.png	electric,grass	1	2018-11-16 05:59:06.82079	\N	huntail	Sin Descripcion
+3302	1	admin	Tropius	Tropius es el pokemon numero #357	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/357.png	ice,fire,flying,poison,rock	1	2018-11-16 05:59:06.934409	\N	tropius	Sin Descripcion
+3312	1	admin	Celesteela	Celesteela es el pokemon numero #797	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/797.png	fire,electric	1	2018-11-16 05:59:07.045175	\N	celesteela	Sin Descripcion
+3321	1	admin	Kommo-o	Kommo-o es el pokemon numero #784	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/784.png	fairy,flying,psychic,ice,dragon	1	2018-11-16 05:59:07.158998	\N	kommo-o	Sin Descripcion
+3330	1	admin	Type: Null	Type: Null es el pokemon numero #772	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/772.png	fighting	1	2018-11-16 05:59:07.288862	\N	type: null	Sin Descripcion
+3341	1	admin	Stufful	Stufful es el pokemon numero #759	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/759.png	psychic,flying,fairy,fighting	1	2018-11-16 05:59:07.405932	\N	stufful	Sin Descripcion
+3350	1	admin	Rockruff	Rockruff es el pokemon numero #744	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/744.png	water,steel,grass,fighting,ground	1	2018-11-16 05:59:07.516379	\N	rockruff	Sin Descripcion
+3359	1	admin	Trumbeak	Trumbeak es el pokemon numero #732	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/732.png	electric,ice,rock	1	2018-11-16 05:59:07.631989	\N	trumbeak	Sin Descripcion
+3369	1	admin	Hoopa	Hoopa es el pokemon numero #720	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/720.png	ghost,dark	1	2018-11-16 05:59:07.743909	\N	hoopa	Sin Descripcion
+3380	1	admin	Sliggoo	Sliggoo es el pokemon numero #705	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/705.png	fairy,ice,dragon	1	2018-11-16 05:59:07.853944	\N	sliggoo	Sin Descripcion
+3390	1	admin	Clauncher	Clauncher es el pokemon numero #692	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/692.png	grass,electric	1	2018-11-16 05:59:07.973925	\N	clauncher	Sin Descripcion
+3044	1	admin	Ferroseed	Ferroseed es el pokemon numero #597	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/597.png	fire,fighting	1	2018-11-16 05:59:03.820593	\N	ferroseed	Sin Descripcion
+3053	1	admin	Elgyem	Elgyem es el pokemon numero #605	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/605.png	bug,ghost,dark	1	2018-11-16 05:59:03.93489	\N	elgyem	Sin Descripcion
+3063	1	admin	Cryogonal	Cryogonal es el pokemon numero #615	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/615.png	fire,fighting,rock,steel	1	2018-11-16 05:59:04.055352	\N	cryogonal	Sin Descripcion
+3073	1	admin	Heatmor	Heatmor es el pokemon numero #631	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/631.png	water,ground,rock	1	2018-11-16 05:59:04.16668	\N	heatmor	Sin Descripcion
+3083	1	admin	Hydreigon	Hydreigon es el pokemon numero #635	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/635.png	ice,fighting,bug,dragon,fairy	1	2018-11-16 05:59:04.27706	\N	hydreigon	Sin Descripcion
+3093	1	admin	Landorus	Landorus es el pokemon numero #645	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/645.png	ice,water	1	2018-11-16 05:59:04.388675	\N	landorus	Sin Descripcion
+3102	1	admin	Delphox	Delphox es el pokemon numero #655	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/655.png	ghost,dark,water,rock,ground	1	2018-11-16 05:59:04.512348	\N	delphox	Sin Descripcion
+3111	1	admin	Scatterbug	Scatterbug es el pokemon numero #664	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/664.png	fire,flying,rock	1	2018-11-16 05:59:04.621149	\N	scatterbug	Sin Descripcion
+3121	1	admin	Gogoat	Gogoat es el pokemon numero #673	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/673.png	fire,flying,poison,ice,bug	1	2018-11-16 05:59:04.723364	\N	gogoat	Sin Descripcion
+3130	1	admin	Spritzee	Spritzee es el pokemon numero #682	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/682.png	steel,poison	1	2018-11-16 05:59:04.831055	\N	spritzee	Sin Descripcion
+3139	1	admin	Heliolisk	Heliolisk es el pokemon numero #695	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/695.png	fighting,ground	1	2018-11-16 05:59:04.938464	\N	heliolisk	Sin Descripcion
+3146	1	admin	Volcanion	Volcanion es el pokemon numero #721	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/721.png	ground,electric,rock	1	2018-11-16 05:59:05.072708	\N	volcanion	Sin Descripcion
+3155	1	admin	Shiinotic	Shiinotic es el pokemon numero #756	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/756.png	steel,fire,flying,ice,poison	1	2018-11-16 05:59:05.180893	\N	shiinotic	Sin Descripcion
+3164	1	admin	Solgaleo	Solgaleo es el pokemon numero #791	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/791.png	ghost,fire,dark,ground	1	2018-11-16 05:59:05.290829	\N	solgaleo	Sin Descripcion
+3174	1	admin	Palkia	Palkia es el pokemon numero #484	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/484.png	dragon,fairy	1	2018-11-16 05:59:05.402677	\N	palkia	Sin Descripcion
+3184	1	admin	Porygon-Z	Porygon-Z es el pokemon numero #474	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/474.png	fighting	1	2018-11-16 05:59:05.513388	\N	porygon-z	Sin Descripcion
+3194	1	admin	Rhyperior	Rhyperior es el pokemon numero #464	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/464.png	grass,water,fighting,ground,ice,steel	1	2018-11-16 05:59:05.622665	\N	rhyperior	Sin Descripcion
+3202	1	admin	Finneon	Finneon es el pokemon numero #456	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/456.png	electric,grass	1	2018-11-16 05:59:05.731841	\N	finneon	Sin Descripcion
+3212	1	admin	Munchlax	Munchlax es el pokemon numero #446	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/446.png	fighting	1	2018-11-16 05:59:05.854173	\N	munchlax	Sin Descripcion
+3222	1	admin	Bronzor	Bronzor es el pokemon numero #436	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/436.png	fire,ground,ghost,dark	1	2018-11-16 05:59:05.967005	\N	bronzor	Sin Descripcion
+3230	1	admin	Lopunny	Lopunny es el pokemon numero #428	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/428.png	fighting	1	2018-11-16 05:59:06.075719	\N	lopunny	Sin Descripcion
+3241	1	admin	Buizel	Buizel es el pokemon numero #418	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/418.png	electric,grass	1	2018-11-16 05:59:06.201526	\N	buizel	Sin Descripcion
+3249	1	admin	Rampardos	Rampardos es el pokemon numero #409	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/409.png	fighting,grass,ground,steel,water	1	2018-11-16 05:59:06.307807	\N	rampardos	Sin Descripcion
+3258	1	admin	Bibarel	Bibarel es el pokemon numero #400	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/400.png	electric,fighting,grass	1	2018-11-16 05:59:06.416646	\N	bibarel	Sin Descripcion
+3267	1	admin	Monferno	Monferno es el pokemon numero #391	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/391.png	flying,ground,psychic,water	1	2018-11-16 05:59:06.526221	\N	monferno	Sin Descripcion
+3277	1	admin	Latios	Latios es el pokemon numero #381	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/381.png	bug,dark,dragon,ghost,ice,fairy	1	2018-11-16 05:59:06.640744	\N	latios	Sin Descripcion
+3286	1	admin	Bagon	Bagon es el pokemon numero #371	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/371.png	dragon,ice,fairy	1	2018-11-16 05:59:06.751315	\N	bagon	Sin Descripcion
+3296	1	admin	Glalie	Glalie es el pokemon numero #362	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/362.png	fire,fighting,rock,steel	1	2018-11-16 05:59:06.86843	\N	glalie	Sin Descripcion
+3305	1	admin	Stakataka	Stakataka es el pokemon numero #805	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/805.png	water,fighting,ground	1	2018-11-16 05:59:06.978838	\N	stakataka	Sin Descripcion
+3315	1	admin	Nihilego	Nihilego es el pokemon numero #793	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/793.png	steel,water,psychic,ground	1	2018-11-16 05:59:07.090099	\N	nihilego	Sin Descripcion
+3325	1	admin	Drampa	Drampa es el pokemon numero #780	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/780.png	fairy,fighting,ice,dragon	1	2018-11-16 05:59:07.200909	\N	drampa	Sin Descripcion
+3335	1	admin	Passimian	Passimian es el pokemon numero #766	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/766.png	psychic,flying,fairy	1	2018-11-16 05:59:07.31903	\N	passimian	Sin Descripcion
+3355	1	admin	Vikavolt	Vikavolt es el pokemon numero #738	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/738.png	fire,rock	1	2018-11-16 05:59:07.538579	\N	vikavolt	Sin Descripcion
+3365	1	admin	Torracat	Torracat es el pokemon numero #726	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/726.png	water,ground,rock	1	2018-11-16 05:59:07.649958	\N	torracat	Sin Descripcion
+3374	1	admin	Bergmite	Bergmite es el pokemon numero #712	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/712.png	fire,steel,fighting,rock	1	2018-11-16 05:59:07.763305	\N	bergmite	Sin Descripcion
+3384	1	admin	Hawlucha	Hawlucha es el pokemon numero #701	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/701.png	electric,psychic,flying,ice,fairy	1	2018-11-16 05:59:07.878199	\N	hawlucha	Sin Descripcion
+3047	1	admin	Klink	Klink es el pokemon numero #599	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/599.png	fire,fighting,ground	1	2018-11-16 05:59:03.861518	\N	klink	Sin Descripcion
+3056	1	admin	Lampent	Lampent es el pokemon numero #608	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/608.png	water,ground,rock,ghost,dark	1	2018-11-16 05:59:03.97913	\N	lampent	Sin Descripcion
+3066	1	admin	Stunfisk	Stunfisk es el pokemon numero #618	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/618.png	water,grass,ice,ground	1	2018-11-16 05:59:04.098734	\N	stunfisk	Sin Descripcion
+3076	1	admin	Braviary	Braviary es el pokemon numero #628	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/628.png	electric,ice,rock	1	2018-11-16 05:59:04.223204	\N	braviary	Sin Descripcion
+3088	1	admin	Terrakion	Terrakion es el pokemon numero #639	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/639.png	water,grass,fighting,ground,steel,psychic,fairy	1	2018-11-16 05:59:04.340812	\N	terrakion	Sin Descripcion
+3097	1	admin	Chespin	Chespin es el pokemon numero #650	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/650.png	fire,flying,poison,ice,bug	1	2018-11-16 05:59:04.462996	\N	chespin	Sin Descripcion
+3108	1	admin	Diggersby	Diggersby es el pokemon numero #660	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/660.png	water,grass,ice,fighting	1	2018-11-16 05:59:04.580327	\N	diggersby	Sin Descripcion
+3118	1	admin	Floette	Floette es el pokemon numero #670	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/670.png	steel,poison	1	2018-11-16 05:59:04.703628	\N	floette	Sin Descripcion
+3127	1	admin	Doublade	Doublade es el pokemon numero #680	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/680.png	fire,ghost,dark,ground	1	2018-11-16 05:59:04.816482	\N	doublade	Sin Descripcion
+3138	1	admin	Dragalge	Dragalge es el pokemon numero #691	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/691.png	psychic,dragon,ice,ground	1	2018-11-16 05:59:04.938077	\N	dragalge	Sin Descripcion
+3152	1	admin	Toucannon	Toucannon es el pokemon numero #733	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/733.png	electric,ice,rock	1	2018-11-16 05:59:05.115459	\N	toucannon	Sin Descripcion
+3161	1	admin	Bruxish	Bruxish es el pokemon numero #779	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/779.png	ghost,dark,grass,electric,bug	1	2018-11-16 05:59:05.235446	\N	bruxish	Sin Descripcion
+3171	1	admin	Giratina	Giratina es el pokemon numero #487	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/487.png	dark,dragon,ghost,ice,fairy	1	2018-11-16 05:59:05.353379	\N	giratina	Sin Descripcion
+3181	1	admin	Dusknoir	Dusknoir es el pokemon numero #477	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/477.png	dark,ghost	1	2018-11-16 05:59:05.469913	\N	dusknoir	Sin Descripcion
+3191	1	admin	Magmortar	Magmortar es el pokemon numero #467	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/467.png	ground,rock,water	1	2018-11-16 05:59:05.599855	\N	magmortar	Sin Descripcion
+3201	1	admin	Lumineon	Lumineon es el pokemon numero #457	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/457.png	electric,grass	1	2018-11-16 05:59:05.714535	\N	lumineon	Sin Descripcion
+3211	1	admin	Riolu	Riolu es el pokemon numero #447	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/447.png	flying,psychic,fairy	1	2018-11-16 05:59:05.842415	\N	riolu	Sin Descripcion
+3220	1	admin	Bronzong	Bronzong es el pokemon numero #437	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/437.png	fire,ground,ghost,dark	1	2018-11-16 05:59:05.962455	\N	bronzong	Sin Descripcion
+3232	1	admin	Drifblim	Drifblim es el pokemon numero #426	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/426.png	dark,electric,ghost,ice,rock	1	2018-11-16 05:59:06.083593	\N	drifblim	Sin Descripcion
+3242	1	admin	Vespiquen	Vespiquen es el pokemon numero #416	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/416.png	rock,electric,fire,flying,ice	1	2018-11-16 05:59:06.209928	\N	vespiquen	Sin Descripcion
+3252	1	admin	Roserade	Roserade es el pokemon numero #407	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/407.png	fire,flying,ice,psychic	1	2018-11-16 05:59:06.323131	\N	roserade	Sin Descripcion
+3261	1	admin	Staravia	Staravia es el pokemon numero #397	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/397.png	electric,ice,rock	1	2018-11-16 05:59:06.45775	\N	staravia	Sin Descripcion
+3272	1	admin	Turtwig	Turtwig es el pokemon numero #387	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/387.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:06.588213	\N	turtwig	Sin Descripcion
+3282	1	admin	Metagross	Metagross es el pokemon numero #376	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/376.png	fire,ground,ghost,dark	1	2018-11-16 05:59:06.69756	\N	metagross	Sin Descripcion
+3292	1	admin	Clamperl	Clamperl es el pokemon numero #366	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/366.png	electric,grass	1	2018-11-16 05:59:06.823708	\N	clamperl	Sin Descripcion
+3303	1	admin	Duskull	Duskull es el pokemon numero #355	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/355.png	dark,ghost	1	2018-11-16 05:59:06.937371	\N	duskull	Sin Descripcion
+3314	1	admin	Xurkitree	Xurkitree es el pokemon numero #796	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/796.png	ground	1	2018-11-16 05:59:07.061102	\N	xurkitree	Sin Descripcion
+3324	1	admin	Dhelmise	Dhelmise es el pokemon numero #781	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/781.png	ghost,fire,flying,dark,ice	1	2018-11-16 05:59:07.187507	\N	dhelmise	Sin Descripcion
+3334	1	admin	Golisopod	Golisopod es el pokemon numero #768	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/768.png	flying,electric,rock	1	2018-11-16 05:59:07.302651	\N	golisopod	Sin Descripcion
+3343	1	admin	Lurantis	Lurantis es el pokemon numero #754	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/754.png	fire,flying,ice,poison,bug	1	2018-11-16 05:59:07.414127	\N	lurantis	Sin Descripcion
+3354	1	admin	Cutiefly	Cutiefly es el pokemon numero #742	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/742.png	fire,steel,flying,poison,rock	1	2018-11-16 05:59:07.531015	\N	cutiefly	Sin Descripcion
+3364	1	admin	Incineroar	Incineroar es el pokemon numero #727	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/727.png	water,ground,fighting,rock	1	2018-11-16 05:59:07.644019	\N	incineroar	Sin Descripcion
+3373	1	admin	Avalugg	Avalugg es el pokemon numero #713	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/713.png	fire,steel,fighting,rock	1	2018-11-16 05:59:07.759935	\N	avalugg	Sin Descripcion
+3383	1	admin	Sylveon	Sylveon es el pokemon numero #700	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/700.png	steel,poison	1	2018-11-16 05:59:07.877633	\N	sylveon	Sin Descripcion
+3061	1	admin	Cubchoo	Cubchoo es el pokemon numero #613	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/613.png	fire,fighting,rock,steel	1	2018-11-16 05:59:04.001989	\N	cubchoo	Sin Descripcion
+3070	1	admin	Golurk	Golurk es el pokemon numero #623	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/623.png	water,grass,ice,ghost,dark	1	2018-11-16 05:59:04.127322	\N	golurk	Sin Descripcion
+3079	1	admin	Pawniard	Pawniard es el pokemon numero #624	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/624.png	fighting,fire,ground	1	2018-11-16 05:59:04.236951	\N	pawniard	Sin Descripcion
+3089	1	admin	Tornadus	Tornadus es el pokemon numero #641	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/641.png	electric,ice,rock	1	2018-11-16 05:59:04.348978	\N	tornadus	Sin Descripcion
+3099	1	admin	Quilladin	Quilladin es el pokemon numero #651	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/651.png	fire,flying,poison,ice,bug	1	2018-11-16 05:59:04.479856	\N	quilladin	Sin Descripcion
+3109	1	admin	Fletchling	Fletchling es el pokemon numero #661	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/661.png	ice,electric,rock	1	2018-11-16 05:59:04.591164	\N	fletchling	Sin Descripcion
+3119	1	admin	Florges	Florges es el pokemon numero #671	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/671.png	steel,poison	1	2018-11-16 05:59:04.715002	\N	florges	Sin Descripcion
+3180	1	admin	Rotom	Rotom es el pokemon numero #479	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/479.png	ghost,dark	1	2018-11-16 05:59:05.460281	\N	rotom	Sin Descripcion
+3129	1	admin	Aegislash	Aegislash es el pokemon numero #681	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/681.png	fire,ghost,dark,ground	1	2018-11-16 05:59:04.82903	\N	aegislash	Sin Descripcion
+3137	1	admin	Aurorus	Aurorus es el pokemon numero #699	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/699.png	steel,fighting,water,rock,grass,ground	1	2018-11-16 05:59:04.936052	\N	aurorus	Sin Descripcion
+3147	1	admin	Litten	Litten es el pokemon numero #725	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/725.png	water,ground,rock	1	2018-11-16 05:59:05.083918	\N	litten	Sin Descripcion
+3156	1	admin	Bewear	Bewear es el pokemon numero #760	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/760.png	psychic,flying,fairy,fighting	1	2018-11-16 05:59:05.195704	\N	bewear	Sin Descripcion
+3165	1	admin	Buzzwole	Buzzwole es el pokemon numero #794	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/794.png	fire,psychic,flying,fairy	1	2018-11-16 05:59:05.309934	\N	buzzwole	Sin Descripcion
+3175	1	admin	Dialga	Dialga es el pokemon numero #483	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/483.png	fighting,ground	1	2018-11-16 05:59:05.41918	\N	dialga	Sin Descripcion
+3185	1	admin	Mamoswine	Mamoswine es el pokemon numero #473	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/473.png	fighting,fire,grass,steel,water	1	2018-11-16 05:59:05.529466	\N	mamoswine	Sin Descripcion
+3195	1	admin	Lickilicky	Lickilicky es el pokemon numero #463	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/463.png	fighting	1	2018-11-16 05:59:05.643384	\N	lickilicky	Sin Descripcion
+3207	1	admin	Skorupi	Skorupi es el pokemon numero #451	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/451.png	fire,flying,psychic,rock	1	2018-11-16 05:59:05.755943	\N	skorupi	Sin Descripcion
+3218	1	admin	Chatot	Chatot es el pokemon numero #441	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/441.png	electric,ice,rock	1	2018-11-16 05:59:05.87667	\N	chatot	Sin Descripcion
+3228	1	admin	Honchkrow	Honchkrow es el pokemon numero #430	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/430.png	electric,ice,rock,fairy	1	2018-11-16 05:59:05.994066	\N	honchkrow	Sin Descripcion
+3236	1	admin	Cherubi	Cherubi es el pokemon numero #420	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/420.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:06.108741	\N	cherubi	Sin Descripcion
+3245	1	admin	Burmy	Burmy es el pokemon numero #412	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/412.png	fire,flying,rock	1	2018-11-16 05:59:06.243514	\N	burmy	Sin Descripcion
+3254	1	admin	Luxio	Luxio es el pokemon numero #404	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/404.png	ground	1	2018-11-16 05:59:06.361862	\N	luxio	Sin Descripcion
+3263	1	admin	Empoleon	Empoleon es el pokemon numero #395	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/395.png	electric,fighting,ground	1	2018-11-16 05:59:06.475565	\N	empoleon	Sin Descripcion
+3273	1	admin	Jirachi	Jirachi es el pokemon numero #385	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/385.png	fire,ground,ghost,dark	1	2018-11-16 05:59:06.599979	\N	jirachi	Sin Descripcion
+3283	1	admin	Metang	Metang es el pokemon numero #375	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/375.png	fire,ground,ghost,dark	1	2018-11-16 05:59:06.711631	\N	metang	Sin Descripcion
+3293	1	admin	Walrein	Walrein es el pokemon numero #365	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/365.png	electric,fighting,grass,rock	1	2018-11-16 05:59:06.82784	\N	walrein	Sin Descripcion
+3304	1	admin	Banette	Banette es el pokemon numero #354	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/354.png	dark,ghost	1	2018-11-16 05:59:06.948197	\N	banette	Sin Descripcion
+3313	1	admin	Pheromosa	Pheromosa es el pokemon numero #795	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/795.png	fire,psychic,flying,fairy	1	2018-11-16 05:59:07.059944	\N	pheromosa	Sin Descripcion
+3323	1	admin	Jangmo-o	Jangmo-o es el pokemon numero #782	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/782.png	fairy,ice,dragon	1	2018-11-16 05:59:07.185493	\N	jangmo-o	Sin Descripcion
+3333	1	admin	Sandygast	Sandygast es el pokemon numero #769	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/769.png	ghost,dark,grass,water,ice	1	2018-11-16 05:59:07.300579	\N	sandygast	Sin Descripcion
+3342	1	admin	Morelull	Morelull es el pokemon numero #755	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/755.png	steel,fire,flying,ice,poison	1	2018-11-16 05:59:07.412348	\N	morelull	Sin Descripcion
+3352	1	admin	Ribombee	Ribombee es el pokemon numero #743	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/743.png	fire,steel,flying,poison,rock	1	2018-11-16 05:59:07.523914	\N	ribombee	Sin Descripcion
+3363	1	admin	Primarina	Primarina es el pokemon numero #730	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/730.png	grass,electric,poison	1	2018-11-16 05:59:07.641527	\N	primarina	Sin Descripcion
+3372	1	admin	Xerneas	Xerneas es el pokemon numero #716	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/716.png	steel,poison	1	2018-11-16 05:59:07.752728	\N	xerneas	Sin Descripcion
+3381	1	admin	Carbink	Carbink es el pokemon numero #703	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/703.png	steel,water,grass,ground	1	2018-11-16 05:59:07.865425	\N	carbink	Sin Descripcion
+3391	1	admin	Skrelp	Skrelp es el pokemon numero #690	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/690.png	psychic,electric,ground	1	2018-11-16 05:59:07.974604	\N	skrelp	Sin Descripcion
+3065	1	admin	Shelmet	Shelmet es el pokemon numero #616	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/616.png	fire,flying,rock	1	2018-11-16 05:59:04.077065	\N	shelmet	Sin Descripcion
+3075	1	admin	Vullaby	Vullaby es el pokemon numero #629	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/629.png	electric,ice,rock,fairy	1	2018-11-16 05:59:04.222116	\N	vullaby	Sin Descripcion
+3087	1	admin	Volcarona	Volcarona es el pokemon numero #637	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/637.png	rock,water,flying	1	2018-11-16 05:59:04.339957	\N	volcarona	Sin Descripcion
+3098	1	admin	Genesect	Genesect es el pokemon numero #649	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/649.png	fire	1	2018-11-16 05:59:04.464241	\N	genesect	Sin Descripcion
+3107	1	admin	Bunnelby	Bunnelby es el pokemon numero #659	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/659.png	fighting	1	2018-11-16 05:59:04.580018	\N	bunnelby	Sin Descripcion
+3117	1	admin	Flabébé	Flabébé es el pokemon numero #669	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/669.png	steel,poison	1	2018-11-16 05:59:04.699827	\N	flabébé	Sin Descripcion
+3128	1	admin	Honedge	Honedge es el pokemon numero #679	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/679.png	fire,ghost,dark,ground	1	2018-11-16 05:59:04.819774	\N	honedge	Sin Descripcion
+3140	1	admin	Barbaracle	Barbaracle es el pokemon numero #689	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/689.png	electric,fighting,grass,ground	1	2018-11-16 05:59:04.940464	\N	barbaracle	Sin Descripcion
+3148	1	admin	Brionne	Brionne es el pokemon numero #729	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/729.png	grass,electric	1	2018-11-16 05:59:05.095091	\N	brionne	Sin Descripcion
+3157	1	admin	Comfey	Comfey es el pokemon numero #764	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/764.png	steel,poison	1	2018-11-16 05:59:05.214097	\N	comfey	Sin Descripcion
+3169	1	admin	Marshadow	Marshadow es el pokemon numero #802	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/802.png	ghost,psychic,flying,fairy	1	2018-11-16 05:59:05.338888	\N	marshadow	Sin Descripcion
+3189	1	admin	Yanmega	Yanmega es el pokemon numero #469	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/469.png	rock,electric,fire,flying,ice	1	2018-11-16 05:59:05.584994	\N	yanmega	Sin Descripcion
+3199	1	admin	Snover	Snover es el pokemon numero #459	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/459.png	fire,bug,fighting,flying,poison,rock,steel	1	2018-11-16 05:59:05.705379	\N	snover	Sin Descripcion
+3210	1	admin	Hippopotas	Hippopotas es el pokemon numero #449	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/449.png	grass,ice,water	1	2018-11-16 05:59:05.836187	\N	hippopotas	Sin Descripcion
+3223	1	admin	Bonsly	Bonsly es el pokemon numero #438	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/438.png	fighting,grass,ground,steel,water	1	2018-11-16 05:59:05.971008	\N	bonsly	Sin Descripcion
+3237	1	admin	Drifloon	Drifloon es el pokemon numero #425	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/425.png	dark,electric,ghost,ice,rock	1	2018-11-16 05:59:06.109856	\N	drifloon	Sin Descripcion
+3246	1	admin	Mothim	Mothim es el pokemon numero #414	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/414.png	rock,electric,fire,flying,ice	1	2018-11-16 05:59:06.254702	\N	mothim	Sin Descripcion
+3255	1	admin	Shinx	Shinx es el pokemon numero #403	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/403.png	ground	1	2018-11-16 05:59:06.373075	\N	shinx	Sin Descripcion
+3264	1	admin	Prinplup	Prinplup es el pokemon numero #394	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/394.png	electric,grass	1	2018-11-16 05:59:06.491189	\N	prinplup	Sin Descripcion
+3274	1	admin	Rayquaza	Rayquaza es el pokemon numero #384	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/384.png	ice,dragon,rock,fairy	1	2018-11-16 05:59:06.611139	\N	rayquaza	Sin Descripcion
+3285	1	admin	Beldum	Beldum es el pokemon numero #374	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/374.png	fire,ground,ghost,dark	1	2018-11-16 05:59:06.735748	\N	beldum	Sin Descripcion
+3295	1	admin	Spheal	Spheal es el pokemon numero #363	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/363.png	electric,fighting,grass,rock	1	2018-11-16 05:59:06.85764	\N	spheal	Sin Descripcion
+3306	1	admin	Zeraora	Zeraora es el pokemon numero #807	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/807.png	ground	1	2018-11-16 05:59:06.979387	\N	zeraora	Sin Descripcion
+3316	1	admin	Lunala	Lunala es el pokemon numero #792	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/792.png	ghost,dark	1	2018-11-16 05:59:07.099211	\N	lunala	Sin Descripcion
+3327	1	admin	Mimikyu	Mimikyu es el pokemon numero #778	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/778.png	ghost,steel	1	2018-11-16 05:59:07.222058	\N	mimikyu	Sin Descripcion
+3337	1	admin	Tsareena	Tsareena es el pokemon numero #763	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/763.png	fire,flying,ice,poison,bug	1	2018-11-16 05:59:07.345379	\N	tsareena	Sin Descripcion
+3347	1	admin	Mudsdale	Mudsdale es el pokemon numero #750	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/750.png	water,grass,ice	1	2018-11-16 05:59:07.45852	\N	mudsdale	Sin Descripcion
+3357	1	admin	Grubbin	Grubbin es el pokemon numero #736	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/736.png	fire,flying,rock	1	2018-11-16 05:59:07.578743	\N	grubbin	Sin Descripcion
+3368	1	admin	Dartrix	Dartrix es el pokemon numero #723	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/723.png	fire,flying,ice,poison,rock	1	2018-11-16 05:59:07.697415	\N	dartrix	Sin Descripcion
+3378	1	admin	Phantump	Phantump es el pokemon numero #708	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/708.png	ghost,fire,flying,dark,ice	1	2018-11-16 05:59:07.819553	\N	phantump	Sin Descripcion
+3388	1	admin	Helioptile	Helioptile es el pokemon numero #694	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/694.png	fighting,ground	1	2018-11-16 05:59:07.948989	\N	helioptile	Sin Descripcion
+3068	1	admin	Mienfoo	Mienfoo es el pokemon numero #619	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/619.png	flying,psychic,fairy	1	2018-11-16 05:59:04.120107	\N	mienfoo	Sin Descripcion
+3080	1	admin	Bisharp	Bisharp es el pokemon numero #625	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/625.png	fighting,fire,ground	1	2018-11-16 05:59:04.248121	\N	bisharp	Sin Descripcion
+3091	1	admin	Thundurus	Thundurus es el pokemon numero #642	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/642.png	ice,rock	1	2018-11-16 05:59:04.367909	\N	thundurus	Sin Descripcion
+3101	1	admin	Fennekin	Fennekin es el pokemon numero #653	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/653.png	water,rock,ground	1	2018-11-16 05:59:04.502976	\N	fennekin	Sin Descripcion
+3112	1	admin	Talonflame	Talonflame es el pokemon numero #663	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/663.png	water,rock,electric	1	2018-11-16 05:59:04.622617	\N	talonflame	Sin Descripcion
+3122	1	admin	Pancham	Pancham es el pokemon numero #674	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/674.png	psychic,flying,fairy	1	2018-11-16 05:59:04.741388	\N	pancham	Sin Descripcion
+3133	1	admin	Swirlix	Swirlix es el pokemon numero #684	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/684.png	steel,poison	1	2018-11-16 05:59:04.861535	\N	swirlix	Sin Descripcion
+3144	1	admin	Pumpkaboo	Pumpkaboo es el pokemon numero #710	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/710.png	ghost,fire,flying,dark,ice	1	2018-11-16 05:59:04.980759	\N	pumpkaboo	Sin Descripcion
+3153	1	admin	Mudbray	Mudbray es el pokemon numero #749	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/749.png	water,grass,ice	1	2018-11-16 05:59:05.120567	\N	mudbray	Sin Descripcion
+3162	1	admin	Hakamo-o	Hakamo-o es el pokemon numero #783	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/783.png	fairy,flying,psychic,ice,dragon	1	2018-11-16 05:59:05.253366	\N	hakamo-o	Sin Descripcion
+3172	1	admin	Regigigas	Regigigas es el pokemon numero #486	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/486.png	fighting	1	2018-11-16 05:59:05.370646	\N	regigigas	Sin Descripcion
+3182	1	admin	Probopass	Probopass es el pokemon numero #476	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/476.png	fighting,ground,water	1	2018-11-16 05:59:05.499875	\N	probopass	Sin Descripcion
+3192	1	admin	Electivire	Electivire es el pokemon numero #466	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/466.png	ground	1	2018-11-16 05:59:05.619667	\N	electivire	Sin Descripcion
+3203	1	admin	Carnivine	Carnivine es el pokemon numero #455	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/455.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:05.736364	\N	carnivine	Sin Descripcion
+3214	1	admin	Garchomp	Garchomp es el pokemon numero #445	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/445.png	ice,dragon,fairy	1	2018-11-16 05:59:05.868822	\N	garchomp	Sin Descripcion
+3225	1	admin	Chingling	Chingling es el pokemon numero #433	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/433.png	bug,dark,ghost	1	2018-11-16 05:59:05.990994	\N	chingling	Sin Descripcion
+3235	1	admin	Gastrodon	Gastrodon es el pokemon numero #423	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/423.png	grass	1	2018-11-16 05:59:06.108393	\N	gastrodon	Sin Descripcion
+3268	1	admin	Chimchar	Chimchar es el pokemon numero #390	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/390.png	ground,rock,water	1	2018-11-16 05:59:06.547823	\N	chimchar	Sin Descripcion
+3279	1	admin	Latias	Latias es el pokemon numero #380	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/380.png	bug,dark,dragon,ghost,ice,fairy	1	2018-11-16 05:59:06.666036	\N	latias	Sin Descripcion
+3289	1	admin	Relicanth	Relicanth es el pokemon numero #369	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/369.png	grass,electric,fighting,ground	1	2018-11-16 05:59:06.793032	\N	relicanth	Sin Descripcion
+3299	1	admin	Absol	Absol es el pokemon numero #359	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/359.png	fighting,bug,fairy	1	2018-11-16 05:59:06.912962	\N	absol	Sin Descripcion
+3310	1	admin	Magearna	Magearna es el pokemon numero #801	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/801.png	fire,ground	1	2018-11-16 05:59:07.036051	\N	magearna	Sin Descripcion
+3322	1	admin	Tapu Lele	Tapu Lele es el pokemon numero #786	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/786.png	ghost,steel,poison	1	2018-11-16 05:59:07.160428	\N	tapu lele	Sin Descripcion
+3332	1	admin	Palossand	Palossand es el pokemon numero #770	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/770.png	ghost,dark,grass,water,ice	1	2018-11-16 05:59:07.296326	\N	palossand	Sin Descripcion
+3356	1	admin	Crabominable	Crabominable es el pokemon numero #740	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/740.png	steel,fire,psychic,flying,fighting,fairy	1	2018-11-16 05:59:07.540595	\N	crabominable	Sin Descripcion
+3366	1	admin	Decidueye	Decidueye es el pokemon numero #724	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/724.png	ghost,fire,flying,dark,ice	1	2018-11-16 05:59:07.661338	\N	decidueye	Sin Descripcion
+3376	1	admin	Gourgeist	Gourgeist es el pokemon numero #711	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/711.png	ghost,fire,flying,dark,ice	1	2018-11-16 05:59:07.782195	\N	gourgeist	Sin Descripcion
+3386	1	admin	Tyrantrum	Tyrantrum es el pokemon numero #697	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/697.png	steel,ice,dragon,fighting,fairy,ground	1	2018-11-16 05:59:07.902117	\N	tyrantrum	Sin Descripcion
+3100	1	admin	Chesnaught	Chesnaught es el pokemon numero #652	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/652.png	fire,psychic,flying,poison,ice,fairy	1	2018-11-16 05:59:04.4822	\N	chesnaught	Sin Descripcion
+3110	1	admin	Fletchinder	Fletchinder es el pokemon numero #662	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/662.png	water,rock,electric	1	2018-11-16 05:59:04.600303	\N	fletchinder	Sin Descripcion
+3120	1	admin	Skiddo	Skiddo es el pokemon numero #672	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/672.png	fire,flying,poison,ice,bug	1	2018-11-16 05:59:04.722772	\N	skiddo	Sin Descripcion
+3131	1	admin	Aromatisse	Aromatisse es el pokemon numero #683	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/683.png	steel,poison	1	2018-11-16 05:59:04.840194	\N	aromatisse	Sin Descripcion
+3141	1	admin	Dedenne	Dedenne es el pokemon numero #702	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/702.png	poison,ground	1	2018-11-16 05:59:04.958644	\N	dedenne	Sin Descripcion
+3151	1	admin	Charjabug	Charjabug es el pokemon numero #737	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/737.png	fire,rock	1	2018-11-16 05:59:05.115001	\N	charjabug	Sin Descripcion
+3160	1	admin	Komala	Komala es el pokemon numero #775	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/775.png	fighting	1	2018-11-16 05:59:05.228236	\N	komala	Sin Descripcion
+3170	1	admin	Cresselia	Cresselia es el pokemon numero #488	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/488.png	bug,dark,ghost	1	2018-11-16 05:59:05.344651	\N	cresselia	Sin Descripcion
+3179	1	admin	Froslass	Froslass es el pokemon numero #478	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/478.png	dark,fire,ghost,rock,steel	1	2018-11-16 05:59:05.460435	\N	froslass	Sin Descripcion
+3190	1	admin	Togekiss	Togekiss es el pokemon numero #468	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/468.png	electric,ice,rock,steel,poison	1	2018-11-16 05:59:05.588782	\N	togekiss	Sin Descripcion
+3200	1	admin	Mantyke	Mantyke es el pokemon numero #458	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/458.png	electric,rock	1	2018-11-16 05:59:05.705942	\N	mantyke	Sin Descripcion
+3209	1	admin	Lucario	Lucario es el pokemon numero #448	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/448.png	fighting,fire,ground	1	2018-11-16 05:59:05.82687	\N	lucario	Sin Descripcion
+3219	1	admin	Mime Jr.	Mime Jr. es el pokemon numero #439	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/439.png	ghost,steel,poison	1	2018-11-16 05:59:05.961735	\N	mime jr.	Sin Descripcion
+3231	1	admin	Buneary	Buneary es el pokemon numero #427	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/427.png	fighting	1	2018-11-16 05:59:06.083087	\N	buneary	Sin Descripcion
+3240	1	admin	Pachirisu	Pachirisu es el pokemon numero #417	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/417.png	ground	1	2018-11-16 05:59:06.201011	\N	pachirisu	Sin Descripcion
+3250	1	admin	Cranidos	Cranidos es el pokemon numero #408	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/408.png	fighting,grass,ground,steel,water	1	2018-11-16 05:59:06.316935	\N	cranidos	Sin Descripcion
+3260	1	admin	Staraptor	Staraptor es el pokemon numero #398	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/398.png	electric,ice,rock	1	2018-11-16 05:59:06.457226	\N	staraptor	Sin Descripcion
+3270	1	admin	Grotle	Grotle es el pokemon numero #388	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/388.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:06.574635	\N	grotle	Sin Descripcion
+3280	1	admin	Regice	Regice es el pokemon numero #378	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/378.png	fire,fighting,rock,steel	1	2018-11-16 05:59:06.691501	\N	regice	Sin Descripcion
+3290	1	admin	Gorebyss	Gorebyss es el pokemon numero #368	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/368.png	electric,grass	1	2018-11-16 05:59:06.810914	\N	gorebyss	Sin Descripcion
+3300	1	admin	Chimecho	Chimecho es el pokemon numero #358	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/358.png	bug,dark,ghost	1	2018-11-16 05:59:06.924668	\N	chimecho	Sin Descripcion
+3311	1	admin	Necrozma	Necrozma es el pokemon numero #800	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/800.png	ghost,dark,bug	1	2018-11-16 05:59:07.039692	\N	necrozma	Sin Descripcion
+3320	1	admin	Tapu Koko	Tapu Koko es el pokemon numero #785	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/785.png	poison,ground	1	2018-11-16 05:59:07.155788	\N	tapu koko	Sin Descripcion
+3331	1	admin	Silvally	Silvally es el pokemon numero #773	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/773.png	fighting	1	2018-11-16 05:59:07.291569	\N	silvally	Sin Descripcion
+3340	1	admin	Salazzle	Salazzle es el pokemon numero #758	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/758.png	water,psychic,ground,rock	1	2018-11-16 05:59:07.40322	\N	salazzle	Sin Descripcion
+3351	1	admin	Wishiwashi	Wishiwashi es el pokemon numero #746	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/746.png	grass,electric	1	2018-11-16 05:59:07.519063	\N	wishiwashi	Sin Descripcion
+3360	1	admin	Pikipek	Pikipek es el pokemon numero #731	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/731.png	electric,ice,rock	1	2018-11-16 05:59:07.634716	\N	pikipek	Sin Descripcion
+3371	1	admin	Yveltal	Yveltal es el pokemon numero #717	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/717.png	electric,ice,rock,fairy	1	2018-11-16 05:59:07.749389	\N	yveltal	Sin Descripcion
+3382	1	admin	Goomy	Goomy es el pokemon numero #704	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/704.png	fairy,ice,dragon	1	2018-11-16 05:59:07.867246	\N	goomy	Sin Descripcion
+3103	1	admin	Braixen	Braixen es el pokemon numero #654	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/654.png	water,rock,ground	1	2018-11-16 05:59:04.518499	\N	braixen	Sin Descripcion
+3113	1	admin	Spewpa	Spewpa es el pokemon numero #665	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/665.png	fire,flying,rock	1	2018-11-16 05:59:04.638685	\N	spewpa	Sin Descripcion
+3124	1	admin	Pangoro	Pangoro es el pokemon numero #675	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/675.png	flying,fairy,fighting	1	2018-11-16 05:59:04.762463	\N	pangoro	Sin Descripcion
+3135	1	admin	Malamar	Malamar es el pokemon numero #687	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/687.png	fairy,bug	1	2018-11-16 05:59:04.883421	\N	malamar	Sin Descripcion
+3145	1	admin	Zygarde	Zygarde es el pokemon numero #718	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/718.png	fairy,ice,dragon	1	2018-11-16 05:59:05.005948	\N	zygarde	Sin Descripcion
+3154	1	admin	Fomantis	Fomantis es el pokemon numero #753	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/753.png	fire,flying,ice,poison,bug	1	2018-11-16 05:59:05.130461	\N	fomantis	Sin Descripcion
+3163	1	admin	Tapu Bulu	Tapu Bulu es el pokemon numero #787	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/787.png	steel,fire,flying,ice,poison	1	2018-11-16 05:59:05.262007	\N	tapu bulu	Sin Descripcion
+3173	1	admin	Heatran	Heatran es el pokemon numero #485	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/485.png	ground,fighting,water	1	2018-11-16 05:59:05.381998	\N	heatran	Sin Descripcion
+3183	1	admin	Gallade	Gallade es el pokemon numero #475	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/475.png	flying,ghost,fairy	1	2018-11-16 05:59:05.501473	\N	gallade	Sin Descripcion
+3193	1	admin	Tangrowth	Tangrowth es el pokemon numero #465	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/465.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:05.621319	\N	tangrowth	Sin Descripcion
+3204	1	admin	Toxicroak	Toxicroak es el pokemon numero #454	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/454.png	psychic,flying,ground	1	2018-11-16 05:59:05.744863	\N	toxicroak	Sin Descripcion
+3216	1	admin	Gabite	Gabite es el pokemon numero #444	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/444.png	ice,dragon,fairy	1	2018-11-16 05:59:05.870982	\N	gabite	Sin Descripcion
+3226	1	admin	Purugly	Purugly es el pokemon numero #432	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/432.png	fighting	1	2018-11-16 05:59:05.992609	\N	purugly	Sin Descripcion
+3238	1	admin	Cherrim	Cherrim es el pokemon numero #421	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/421.png	bug,fire,flying,ice,poison	1	2018-11-16 05:59:06.117119	\N	cherrim	Sin Descripcion
+3247	1	admin	Bastiodon	Bastiodon es el pokemon numero #411	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/411.png	fighting,ground,water	1	2018-11-16 05:59:06.262225	\N	bastiodon	Sin Descripcion
+3256	1	admin	Kricketune	Kricketune es el pokemon numero #402	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/402.png	fire,flying,rock	1	2018-11-16 05:59:06.381405	\N	kricketune	Sin Descripcion
+3265	1	admin	Piplup	Piplup es el pokemon numero #393	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/393.png	electric,grass	1	2018-11-16 05:59:06.500787	\N	piplup	Sin Descripcion
+3276	1	admin	Kyogre	Kyogre es el pokemon numero #382	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/382.png	electric,grass	1	2018-11-16 05:59:06.634012	\N	kyogre	Sin Descripcion
+3287	1	admin	Shelgon	Shelgon es el pokemon numero #372	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/372.png	dragon,ice,fairy	1	2018-11-16 05:59:06.756465	\N	shelgon	Sin Descripcion
+3297	1	admin	Snorunt	Snorunt es el pokemon numero #361	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/361.png	fire,fighting,rock,steel	1	2018-11-16 05:59:06.878067	\N	snorunt	Sin Descripcion
+3307	1	admin	Naganadel	Naganadel es el pokemon numero #804	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/804.png	psychic,ground,ice,dragon	1	2018-11-16 05:59:06.997853	\N	naganadel	Sin Descripcion
+3318	1	admin	Cosmog	Cosmog es el pokemon numero #789	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/789.png	ghost,dark,bug	1	2018-11-16 05:59:07.121809	\N	cosmog	Sin Descripcion
+3328	1	admin	Turtonator	Turtonator es el pokemon numero #776	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/776.png	ground,rock,dragon	1	2018-11-16 05:59:07.242029	\N	turtonator	Sin Descripcion
+3339	1	admin	Steenee	Steenee es el pokemon numero #762	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/762.png	fire,flying,ice,poison,bug	1	2018-11-16 05:59:07.378958	\N	steenee	Sin Descripcion
+3349	1	admin	Mareanie	Mareanie es el pokemon numero #747	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/747.png	psychic,electric,ground	1	2018-11-16 05:59:07.49845	\N	mareanie	Sin Descripcion
+3362	1	admin	Yungoos	Yungoos es el pokemon numero #734	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/734.png	fighting	1	2018-11-16 05:59:07.641729	\N	yungoos	Sin Descripcion
+3375	1	admin	Noivern	Noivern es el pokemon numero #715	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/715.png	fairy,dragon,ice,rock	1	2018-11-16 05:59:07.766072	\N	noivern	Sin Descripcion
+3385	1	admin	Amaura	Amaura es el pokemon numero #698	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/698.png	steel,fighting,water,rock,grass,ground	1	2018-11-16 05:59:07.887674	\N	amaura	Sin Descripcion
 \.
 
 
@@ -1905,7 +1917,9 @@ COPY public."Repositories" (id, "idUser", username, title, description, image, t
 
 COPY public."RepositoryAuthors" (id, "idRepository", "idAuthor") FROM stdin;
 6	2585	3
-7	2585	3
+7	2585	1
+8	3396	3
+9	3344	3
 \.
 
 
@@ -1916,6 +1930,15 @@ COPY public."RepositoryAuthors" (id, "idRepository", "idAuthor") FROM stdin;
 COPY public."RepositoryComment" (id, "idUser", username, "idRepository", comment, "createdAt", "updatedAt") FROM stdin;
 13	1	admin	2622	Vulpix <3	2018-11-16 17:09:52.618972	\N
 14	1	admin	2783	dsdasd	2018-11-20 14:50:32.085589	\N
+15	1	admin	3391	Nuevo Comentario\n	2018-11-24 14:41:21.385227	\N
+16	2	Soriel	3345	Nuevo	2018-11-24 15:44:15.309763	\N
+17	2	Soriel	3345	NUevo2	2018-11-24 15:45:07.281748	\N
+18	2	Soriel	3391	Nuevo x2	2018-11-24 23:26:56.075059	\N
+19	1	admin	3396	\nLindo gatito ☺	2018-11-25 11:56:49.237752	\N
+20	1	admin	3397	Hi	2018-11-25 17:13:07.875024	\N
+21	1	admin	3344	hola\n	2018-11-25 17:37:18.580961	\N
+22	1	admin	3344	1111111111111111111111111	2018-11-25 21:30:42.484896	\N
+23	1	admin	3360	1111111111111111111\n	2018-11-25 23:14:51.482593	\N
 \.
 
 
@@ -1931,814 +1954,819 @@ COPY public."RepositoryEditorials" (id, "idRepository", "idCatalog") FROM stdin;
 -- Data for Name: RepositoryResources; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public."RepositoryResources" (id, "idUser", username, "idRepository", file, type, uploaded, "createdAt", "updatedAt") FROM stdin;
-5	1	admin	2590	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/001.png	1	f	2018-11-16 05:59:53.087909	\N
-6	1	admin	2586	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/002.png	1	f	2018-11-16 05:59:53.089146	\N
-7	1	admin	2593	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/004.png	1	f	2018-11-16 05:59:53.094097	\N
-8	1	admin	2585	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/007.png	1	f	2018-11-16 05:59:53.10021	\N
-9	1	admin	2588	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/005.png	1	f	2018-11-16 05:59:53.104344	\N
-10	1	admin	2592	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/003.png	1	f	2018-11-16 05:59:53.106015	\N
-11	1	admin	2594	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/010.png	1	f	2018-11-16 05:59:53.110065	\N
-12	1	admin	2591	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/009.png	1	f	2018-11-16 05:59:53.112059	\N
-13	1	admin	2589	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/008.png	1	f	2018-11-16 05:59:53.113043	\N
-14	1	admin	2587	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/006.png	1	f	2018-11-16 05:59:53.117954	\N
-15	1	admin	2598	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/015.png	1	f	2018-11-16 05:59:53.247777	\N
-16	1	admin	2599	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/014.png	1	f	2018-11-16 05:59:53.248476	\N
-17	1	admin	2601	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/018.png	1	f	2018-11-16 05:59:53.250296	\N
-18	1	admin	2596	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/012.png	1	f	2018-11-16 05:59:53.250841	\N
-19	1	admin	2595	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/011.png	1	f	2018-11-16 05:59:53.251523	\N
-20	1	admin	2597	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/013.png	1	f	2018-11-16 05:59:53.253929	\N
-21	1	admin	2600	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/016.png	1	f	2018-11-16 05:59:53.257268	\N
-22	1	admin	2602	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/017.png	1	f	2018-11-16 05:59:53.259436	\N
-23	1	admin	2604	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/019.png	1	f	2018-11-16 05:59:53.265269	\N
-24	1	admin	2603	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/020.png	1	f	2018-11-16 05:59:53.270539	\N
-25	1	admin	2605	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/021.png	1	f	2018-11-16 05:59:53.359323	\N
-26	1	admin	2606	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/022.png	1	f	2018-11-16 05:59:53.360125	\N
-27	1	admin	2607	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/023.png	1	f	2018-11-16 05:59:53.365754	\N
-28	1	admin	2608	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/024.png	1	f	2018-11-16 05:59:53.369073	\N
-29	1	admin	2609	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/025.png	1	f	2018-11-16 05:59:53.3705	\N
-30	1	admin	2610	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/026.png	1	f	2018-11-16 05:59:53.372407	\N
-31	1	admin	2611	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/027.png	1	f	2018-11-16 05:59:53.38181	\N
-32	1	admin	2612	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/028.png	1	f	2018-11-16 05:59:53.393257	\N
-33	1	admin	2613	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/029.png	1	f	2018-11-16 05:59:53.39434	\N
-34	1	admin	2614	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/030.png	1	f	2018-11-16 05:59:53.415594	\N
-35	1	admin	2615	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/031.png	1	f	2018-11-16 05:59:53.463341	\N
-36	1	admin	2616	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/032.png	1	f	2018-11-16 05:59:53.464812	\N
-37	1	admin	2618	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/034.png	1	f	2018-11-16 05:59:53.479553	\N
-38	1	admin	2620	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/035.png	1	f	2018-11-16 05:59:53.48036	\N
-39	1	admin	2617	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/033.png	1	f	2018-11-16 05:59:53.482414	\N
-40	1	admin	2621	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/036.png	1	f	2018-11-16 05:59:53.483598	\N
-41	1	admin	2622	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/037.png	1	f	2018-11-16 05:59:53.499459	\N
-42	1	admin	2624	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/038.png	1	f	2018-11-16 05:59:53.530309	\N
-43	1	admin	2619	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/039.png	1	f	2018-11-16 05:59:53.533092	\N
-44	1	admin	2623	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/040.png	1	f	2018-11-16 05:59:53.565958	\N
-45	1	admin	2626	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/041.png	1	f	2018-11-16 05:59:53.571046	\N
-46	1	admin	2627	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/043.png	1	f	2018-11-16 05:59:53.593299	\N
-47	1	admin	2625	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/042.png	1	f	2018-11-16 05:59:53.594033	\N
-48	1	admin	2628	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/044.png	1	f	2018-11-16 05:59:53.59759	\N
-49	1	admin	2629	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/045.png	1	f	2018-11-16 05:59:53.599462	\N
-50	1	admin	2630	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/046.png	1	f	2018-11-16 05:59:53.649545	\N
-51	1	admin	2631	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/047.png	1	f	2018-11-16 05:59:53.652178	\N
-52	1	admin	2632	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/048.png	1	f	2018-11-16 05:59:53.664607	\N
-53	1	admin	2634	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/050.png	1	f	2018-11-16 05:59:53.677243	\N
-54	1	admin	2635	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/049.png	1	f	2018-11-16 05:59:53.677965	\N
-55	1	admin	2633	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/051.png	1	f	2018-11-16 05:59:53.701904	\N
-65	1	admin	2645	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/060.png	1	f	2018-11-16 05:59:53.815654	\N
-74	1	admin	2656	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/070.png	1	f	2018-11-16 05:59:53.923664	\N
-83	1	admin	2664	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/080.png	1	f	2018-11-16 05:59:54.034817	\N
-94	1	admin	2674	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/089.png	1	f	2018-11-16 05:59:54.21718	\N
-102	1	admin	2681	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/099.png	1	f	2018-11-16 05:59:54.328852	\N
-111	1	admin	2691	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/107.png	1	f	2018-11-16 05:59:54.472296	\N
-121	1	admin	2702	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/117.png	1	f	2018-11-16 05:59:54.586392	\N
-131	1	admin	2711	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/127.png	1	f	2018-11-16 05:59:54.700741	\N
-141	1	admin	2721	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/137.png	1	f	2018-11-16 05:59:54.811198	\N
-151	1	admin	2730	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/146.png	1	f	2018-11-16 05:59:54.922115	\N
-161	1	admin	2740	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/156.png	1	f	2018-11-16 05:59:55.037279	\N
-168	1	admin	2747	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/164.png	1	f	2018-11-16 05:59:55.145495	\N
-179	1	admin	2757	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/173.png	1	f	2018-11-16 05:59:55.266334	\N
-188	1	admin	2766	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/182.png	1	f	2018-11-16 05:59:55.375761	\N
-197	1	admin	2776	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/192.png	1	f	2018-11-16 05:59:55.491413	\N
-205	1	admin	2795	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/209.png	1	f	2018-11-16 05:59:55.602794	\N
-214	1	admin	2823	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/239.png	1	f	2018-11-16 05:59:55.713556	\N
-224	1	admin	2858	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/274.png	1	f	2018-11-16 05:59:55.82332	\N
-233	1	admin	2894	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/310.png	1	f	2018-11-16 05:59:55.936753	\N
-241	1	admin	2935	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/351.png	1	f	2018-11-16 05:59:56.055022	\N
-250	1	admin	3274	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/384.png	1	f	2018-11-16 05:59:56.166144	\N
-259	1	admin	3235	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/423.png	1	f	2018-11-16 05:59:56.267123	\N
-269	1	admin	3203	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/455.png	1	f	2018-11-16 05:59:56.380923	\N
-279	1	admin	2948	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/500.png	1	f	2018-11-16 05:59:56.488858	\N
-289	1	admin	2977	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/530.png	1	f	2018-11-16 05:59:56.598879	\N
-299	1	admin	3015	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/567.png	1	f	2018-11-16 05:59:56.717837	\N
-309	1	admin	3053	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/605.png	1	f	2018-11-16 05:59:56.847145	\N
-320	1	admin	3084	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/636.png	1	f	2018-11-16 05:59:56.957413	\N
-328	1	admin	3124	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/675.png	1	f	2018-11-16 05:59:57.06746	\N
-338	1	admin	3184	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/474.png	1	f	2018-11-16 05:59:57.185461	\N
-346	1	admin	3196	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/461.png	1	f	2018-11-16 05:59:57.294806	\N
-356	1	admin	3211	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/447.png	1	f	2018-11-16 05:59:57.414582	\N
-366	1	admin	3225	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/433.png	1	f	2018-11-16 05:59:57.525095	\N
-376	1	admin	3236	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/420.png	1	f	2018-11-16 05:59:57.641024	\N
-387	1	admin	3251	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/406.png	1	f	2018-11-16 05:59:57.762875	\N
-396	1	admin	3264	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/394.png	1	f	2018-11-16 05:59:57.87615	\N
-406	1	admin	3277	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/381.png	1	f	2018-11-16 05:59:57.986551	\N
-415	1	admin	3290	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/368.png	1	f	2018-11-16 05:59:58.096455	\N
-424	1	admin	3301	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/356.png	1	f	2018-11-16 05:59:58.214073	\N
-433	1	admin	2928	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/344.png	1	f	2018-11-16 05:59:58.321309	\N
-443	1	admin	2916	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/332.png	1	f	2018-11-16 05:59:58.444557	\N
-452	1	admin	2904	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/320.png	1	f	2018-11-16 05:59:58.552023	\N
-461	1	admin	2891	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/307.png	1	f	2018-11-16 05:59:58.663328	\N
-470	1	admin	2878	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/295.png	1	f	2018-11-16 05:59:58.775403	\N
-478	1	admin	2871	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/287.png	1	f	2018-11-16 05:59:58.883247	\N
-487	1	admin	2861	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/276.png	1	f	2018-11-16 05:59:58.995173	\N
-498	1	admin	2844	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/260.png	1	f	2018-11-16 05:59:59.112335	\N
-508	1	admin	2829	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/246.png	1	f	2018-11-16 05:59:59.239389	\N
-517	1	admin	2817	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/233.png	1	f	2018-11-16 05:59:59.350802	\N
-526	1	admin	2804	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/220.png	1	f	2018-11-16 05:59:59.46098	\N
-536	1	admin	2791	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/207.png	1	f	2018-11-16 05:59:59.570304	\N
-544	1	admin	3308	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/803.png	1	f	2018-11-16 05:59:59.68046	\N
-554	1	admin	3165	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/794.png	1	f	2018-11-16 05:59:59.791896	\N
-564	1	admin	3321	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/784.png	1	f	2018-11-16 05:59:59.901945	\N
-572	1	admin	3329	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/774.png	1	f	2018-11-16 06:00:00.010766	\N
-582	1	admin	3335	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/766.png	1	f	2018-11-16 06:00:00.118898	\N
-592	1	admin	3155	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/756.png	1	f	2018-11-16 06:00:00.226045	\N
-56	1	admin	2636	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/052.png	1	f	2018-11-16 05:59:53.707713	\N
-64	1	admin	2644	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/061.png	1	f	2018-11-16 05:59:53.813723	\N
-75	1	admin	2654	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/071.png	1	f	2018-11-16 05:59:53.924575	\N
-84	1	admin	2666	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/081.png	1	f	2018-11-16 05:59:54.037977	\N
-93	1	admin	2673	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/090.png	1	f	2018-11-16 05:59:54.214244	\N
-104	1	admin	2684	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/100.png	1	f	2018-11-16 05:59:54.348906	\N
-112	1	admin	2694	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/110.png	1	f	2018-11-16 05:59:54.486423	\N
-122	1	admin	2701	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/118.png	1	f	2018-11-16 05:59:54.595601	\N
-132	1	admin	2712	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/128.png	1	f	2018-11-16 05:59:54.706351	\N
-142	1	admin	2723	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/138.png	1	f	2018-11-16 05:59:54.813167	\N
-152	1	admin	2732	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/148.png	1	f	2018-11-16 05:59:54.927556	\N
-162	1	admin	2741	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/158.png	1	f	2018-11-16 05:59:55.039022	\N
-169	1	admin	2751	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/167.png	1	f	2018-11-16 05:59:55.152387	\N
-177	1	admin	2761	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/174.png	1	f	2018-11-16 05:59:55.2634	\N
-186	1	admin	2767	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/183.png	1	f	2018-11-16 05:59:55.372859	\N
-196	1	admin	2777	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/193.png	1	f	2018-11-16 05:59:55.488536	\N
-204	1	admin	2796	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/213.png	1	f	2018-11-16 05:59:55.599878	\N
-213	1	admin	2826	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/242.png	1	f	2018-11-16 05:59:55.710615	\N
-222	1	admin	2860	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/277.png	1	f	2018-11-16 05:59:55.81995	\N
-232	1	admin	2898	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/314.png	1	f	2018-11-16 05:59:55.933861	\N
-243	1	admin	3303	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/355.png	1	f	2018-11-16 05:59:56.088667	\N
-253	1	admin	3263	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/395.png	1	f	2018-11-16 05:59:56.199334	\N
-262	1	admin	3221	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/435.png	1	f	2018-11-16 05:59:56.310585	\N
-274	1	admin	3179	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/478.png	1	f	2018-11-16 05:59:56.423102	\N
-284	1	admin	2960	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/511.png	1	f	2018-11-16 05:59:56.535034	\N
-294	1	admin	2997	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/548.png	1	f	2018-11-16 05:59:56.644201	\N
-304	1	admin	3035	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/585.png	1	f	2018-11-16 05:59:56.757234	\N
-337	1	admin	3185	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/473.png	1	f	2018-11-16 05:59:57.183568	\N
-347	1	admin	3199	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/459.png	1	f	2018-11-16 05:59:57.306878	\N
-357	1	admin	3212	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/446.png	1	f	2018-11-16 05:59:57.41841	\N
-367	1	admin	3226	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/432.png	1	f	2018-11-16 05:59:57.530824	\N
-377	1	admin	3241	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/418.png	1	f	2018-11-16 05:59:57.642134	\N
-386	1	admin	3253	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/405.png	1	f	2018-11-16 05:59:57.759951	\N
-395	1	admin	3266	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/392.png	1	f	2018-11-16 05:59:57.873251	\N
-404	1	admin	3278	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/379.png	1	f	2018-11-16 05:59:57.983221	\N
-414	1	admin	3292	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/366.png	1	f	2018-11-16 05:59:58.093549	\N
-425	1	admin	3304	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/354.png	1	f	2018-11-16 05:59:58.218196	\N
-434	1	admin	2924	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/342.png	1	f	2018-11-16 05:59:58.326822	\N
-442	1	admin	2915	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/331.png	1	f	2018-11-16 05:59:58.441667	\N
-451	1	admin	2903	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/319.png	1	f	2018-11-16 05:59:58.549113	\N
-463	1	admin	2890	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/306.png	1	f	2018-11-16 05:59:58.674719	\N
-473	1	admin	2877	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/292.png	1	f	2018-11-16 05:59:58.788202	\N
-482	1	admin	2866	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/282.png	1	f	2018-11-16 05:59:58.904212	\N
-490	1	admin	2853	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/269.png	1	f	2018-11-16 05:59:59.013948	\N
-500	1	admin	2841	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/256.png	1	f	2018-11-16 05:59:59.124607	\N
-507	1	admin	2827	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/243.png	1	f	2018-11-16 05:59:59.238204	\N
-516	1	admin	2815	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/231.png	1	f	2018-11-16 05:59:59.349639	\N
-525	1	admin	2803	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/219.png	1	f	2018-11-16 05:59:59.45806	\N
-535	1	admin	2789	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/205.png	1	f	2018-11-16 05:59:59.567913	\N
-545	1	admin	3169	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/802.png	1	f	2018-11-16 05:59:59.682968	\N
-555	1	admin	3316	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/792.png	1	f	2018-11-16 05:59:59.79602	\N
-565	1	admin	3162	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/783.png	1	f	2018-11-16 05:59:59.912615	\N
-575	1	admin	3331	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/773.png	1	f	2018-11-16 06:00:00.023933	\N
-585	1	admin	3337	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/763.png	1	f	2018-11-16 06:00:00.136471	\N
-593	1	admin	3343	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/754.png	1	f	2018-11-16 06:00:00.262905	\N
-604	1	admin	3150	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/745.png	1	f	2018-11-16 06:00:00.383551	\N
-614	1	admin	3362	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/734.png	1	f	2018-11-16 06:00:00.499534	\N
-624	1	admin	3366	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/724.png	1	f	2018-11-16 06:00:00.62732	\N
-57	1	admin	2637	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/053.png	1	f	2018-11-16 05:59:53.709355	\N
-66	1	admin	2646	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/062.png	1	f	2018-11-16 05:59:53.823501	\N
-76	1	admin	2657	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/072.png	1	f	2018-11-16 05:59:53.936142	\N
-86	1	admin	2665	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/082.png	1	f	2018-11-16 05:59:54.052347	\N
-95	1	admin	2676	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/092.png	1	f	2018-11-16 05:59:54.232668	\N
-105	1	admin	2686	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/101.png	1	f	2018-11-16 05:59:54.34971	\N
-113	1	admin	2695	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/111.png	1	f	2018-11-16 05:59:54.487247	\N
-123	1	admin	2703	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/119.png	1	f	2018-11-16 05:59:54.596441	\N
-133	1	admin	2713	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/129.png	1	f	2018-11-16 05:59:54.707202	\N
-143	1	admin	2724	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/139.png	1	f	2018-11-16 05:59:54.819445	\N
-153	1	admin	2734	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/149.png	1	f	2018-11-16 05:59:54.931782	\N
-163	1	admin	2742	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/159.png	1	f	2018-11-16 05:59:55.0399	\N
-170	1	admin	2752	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/168.png	1	f	2018-11-16 05:59:55.153221	\N
-178	1	admin	2760	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/175.png	1	f	2018-11-16 05:59:55.264212	\N
-187	1	admin	2768	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/184.png	1	f	2018-11-16 05:59:55.373702	\N
-221	1	admin	2850	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/266.png	1	f	2018-11-16 05:59:55.810525	\N
-231	1	admin	2889	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/305.png	1	f	2018-11-16 05:59:55.926004	\N
-240	1	admin	2930	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/347.png	1	f	2018-11-16 05:59:56.052974	\N
-251	1	admin	3267	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/391.png	1	f	2018-11-16 05:59:56.179744	\N
-261	1	admin	3231	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/427.png	1	f	2018-11-16 05:59:56.289516	\N
-271	1	admin	3194	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/464.png	1	f	2018-11-16 05:59:56.405722	\N
-280	1	admin	2941	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/493.png	1	f	2018-11-16 05:59:56.513746	\N
-290	1	admin	2982	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/534.png	1	f	2018-11-16 05:59:56.625286	\N
-300	1	admin	3020	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/571.png	1	f	2018-11-16 05:59:56.737998	\N
-310	1	admin	3056	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/608.png	1	f	2018-11-16 05:59:56.848705	\N
-321	1	admin	3094	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/646.png	1	f	2018-11-16 05:59:56.964103	\N
-330	1	admin	3133	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/684.png	1	f	2018-11-16 05:59:57.083257	\N
-340	1	admin	3188	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/470.png	1	f	2018-11-16 05:59:57.192625	\N
-349	1	admin	3202	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/456.png	1	f	2018-11-16 05:59:57.319047	\N
-358	1	admin	3213	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/443.png	1	f	2018-11-16 05:59:57.422946	\N
-368	1	admin	3228	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/430.png	1	f	2018-11-16 05:59:57.536187	\N
-378	1	admin	3240	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/417.png	1	f	2018-11-16 05:59:57.646362	\N
-388	1	admin	3255	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/403.png	1	f	2018-11-16 05:59:57.7674	\N
-397	1	admin	3268	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/390.png	1	f	2018-11-16 05:59:57.881184	\N
-407	1	admin	3280	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/378.png	1	f	2018-11-16 05:59:57.994186	\N
-417	1	admin	3293	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/365.png	1	f	2018-11-16 05:59:58.104574	\N
-426	1	admin	2936	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/352.png	1	f	2018-11-16 05:59:58.226815	\N
-435	1	admin	2925	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/341.png	1	f	2018-11-16 05:59:58.339906	\N
-444	1	admin	2914	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/329.png	1	f	2018-11-16 05:59:58.450533	\N
-455	1	admin	2900	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/316.png	1	f	2018-11-16 05:59:58.566808	\N
-466	1	admin	2887	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/302.png	1	f	2018-11-16 05:59:58.687489	\N
-474	1	admin	2845	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/261.png	1	f	2018-11-16 05:59:58.801856	\N
-483	1	admin	2865	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/280.png	1	f	2018-11-16 05:59:58.911214	\N
-492	1	admin	2852	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/268.png	1	f	2018-11-16 05:59:59.02306	\N
-502	1	admin	2837	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/253.png	1	f	2018-11-16 05:59:59.135288	\N
-510	1	admin	2824	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/240.png	1	f	2018-11-16 05:59:59.245252	\N
-518	1	admin	2813	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/229.png	1	f	2018-11-16 05:59:59.358083	\N
-527	1	admin	2802	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/218.png	1	f	2018-11-16 05:59:59.479773	\N
-537	1	admin	2786	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/203.png	1	f	2018-11-16 05:59:59.589899	\N
-547	1	admin	3310	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/801.png	1	f	2018-11-16 05:59:59.704972	\N
-557	1	admin	3164	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/791.png	1	f	2018-11-16 05:59:59.818151	\N
-567	1	admin	3324	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/781.png	1	f	2018-11-16 05:59:59.937505	\N
-577	1	admin	3159	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/771.png	1	f	2018-11-16 06:00:00.050084	\N
-587	1	admin	3338	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/761.png	1	f	2018-11-16 06:00:00.163348	\N
-597	1	admin	3345	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/751.png	1	f	2018-11-16 06:00:00.274952	\N
-606	1	admin	3149	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/741.png	1	f	2018-11-16 06:00:00.39918	\N
-616	1	admin	3359	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/732.png	1	f	2018-11-16 06:00:00.521551	\N
-627	1	admin	3367	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/722.png	1	f	2018-11-16 06:00:00.6423	\N
-58	1	admin	2638	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/054.png	1	f	2018-11-16 05:59:53.725308	\N
-68	1	admin	2648	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/064.png	1	f	2018-11-16 05:59:53.841901	\N
-78	1	admin	2660	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/074.png	1	f	2018-11-16 05:59:53.969707	\N
-88	1	admin	2668	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/084.png	1	f	2018-11-16 05:59:54.101559	\N
-98	1	admin	2678	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/094.png	1	f	2018-11-16 05:59:54.274472	\N
-108	1	admin	2687	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/104.png	1	f	2018-11-16 05:59:54.461528	\N
-120	1	admin	2698	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/114.png	1	f	2018-11-16 05:59:54.574874	\N
-130	1	admin	2710	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/126.png	1	f	2018-11-16 05:59:54.691013	\N
-140	1	admin	2720	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/136.png	1	f	2018-11-16 05:59:54.808893	\N
-150	1	admin	2731	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/147.png	1	f	2018-11-16 05:59:54.921509	\N
-160	1	admin	2743	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/157.png	1	f	2018-11-16 05:59:55.036839	\N
-171	1	admin	2750	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/166.png	1	f	2018-11-16 05:59:55.155078	\N
-180	1	admin	2758	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/176.png	1	f	2018-11-16 05:59:55.26723	\N
-189	1	admin	2769	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/185.png	1	f	2018-11-16 05:59:55.385641	\N
-198	1	admin	2778	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/194.png	1	f	2018-11-16 05:59:55.518654	\N
-207	1	admin	2801	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/217.png	1	f	2018-11-16 05:59:55.633424	\N
-216	1	admin	2832	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/248.png	1	f	2018-11-16 05:59:55.751548	\N
-226	1	admin	2869	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/285.png	1	f	2018-11-16 05:59:55.865377	\N
-235	1	admin	2910	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/326.png	1	f	2018-11-16 05:59:55.981216	\N
-245	1	admin	3295	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/363.png	1	f	2018-11-16 05:59:56.095532	\N
-257	1	admin	3247	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/411.png	1	f	2018-11-16 05:59:56.212033	\N
-266	1	admin	3209	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/448.png	1	f	2018-11-16 05:59:56.325579	\N
-277	1	admin	3176	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/482.png	1	f	2018-11-16 05:59:56.442649	\N
-287	1	admin	2972	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/523.png	1	f	2018-11-16 05:59:56.581705	\N
-297	1	admin	3007	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/560.png	1	f	2018-11-16 05:59:56.696859	\N
-307	1	admin	3044	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/597.png	1	f	2018-11-16 05:59:56.827311	\N
-316	1	admin	3075	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/629.png	1	f	2018-11-16 05:59:56.943503	\N
-326	1	admin	3112	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/663.png	1	f	2018-11-16 05:59:57.05933	\N
-336	1	admin	3182	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/476.png	1	f	2018-11-16 05:59:57.176086	\N
-348	1	admin	3200	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/458.png	1	f	2018-11-16 05:59:57.309603	\N
-359	1	admin	3216	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/444.png	1	f	2018-11-16 05:59:57.424841	\N
-369	1	admin	3229	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/429.png	1	f	2018-11-16 05:59:57.538029	\N
-379	1	admin	3242	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/416.png	1	f	2018-11-16 05:59:57.653073	\N
-389	1	admin	3256	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/402.png	1	f	2018-11-16 05:59:57.779555	\N
-399	1	admin	3269	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/389.png	1	f	2018-11-16 05:59:57.895168	\N
-410	1	admin	3282	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/376.png	1	f	2018-11-16 05:59:58.011275	\N
-421	1	admin	3297	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/361.png	1	f	2018-11-16 05:59:58.151358	\N
-430	1	admin	2934	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/348.png	1	f	2018-11-16 05:59:58.273318	\N
-439	1	admin	2920	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/336.png	1	f	2018-11-16 05:59:58.386334	\N
-448	1	admin	2908	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/324.png	1	f	2018-11-16 05:59:58.50563	\N
-458	1	admin	2895	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/311.png	1	f	2018-11-16 05:59:58.622293	\N
-494	1	admin	2849	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/265.png	1	f	2018-11-16 05:59:59.056899	\N
-504	1	admin	2834	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/250.png	1	f	2018-11-16 05:59:59.17194	\N
-513	1	admin	2822	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/237.png	1	f	2018-11-16 05:59:59.285222	\N
-521	1	admin	2809	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/224.png	1	f	2018-11-16 05:59:59.397104	\N
-529	1	admin	2798	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/214.png	1	f	2018-11-16 05:59:59.511697	\N
-538	1	admin	2784	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/200.png	1	f	2018-11-16 05:59:59.623678	\N
-549	1	admin	3309	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/799.png	1	f	2018-11-16 05:59:59.736591	\N
-561	1	admin	3163	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/787.png	1	f	2018-11-16 05:59:59.861315	\N
-571	1	admin	3326	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/777.png	1	f	2018-11-16 05:59:59.977933	\N
-581	1	admin	3158	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/767.png	1	f	2018-11-16 06:00:00.103336	\N
-591	1	admin	3344	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/757.png	1	f	2018-11-16 06:00:00.215921	\N
-601	1	admin	3349	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/747.png	1	f	2018-11-16 06:00:00.330584	\N
-611	1	admin	3151	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/737.png	1	f	2018-11-16 06:00:00.445809	\N
-621	1	admin	3364	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/727.png	1	f	2018-11-16 06:00:00.569921	\N
-631	1	admin	3372	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/716.png	1	f	2018-11-16 06:00:00.681943	\N
-640	1	admin	3142	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/706.png	1	f	2018-11-16 06:00:00.795808	\N
-653	1	admin	3387	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/696.png	1	f	2018-11-16 06:00:00.92275	\N
-59	1	admin	2639	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/055.png	1	f	2018-11-16 05:59:53.770641	\N
-69	1	admin	2649	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/065.png	1	f	2018-11-16 05:59:53.888074	\N
-80	1	admin	2658	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/075.png	1	f	2018-11-16 05:59:54.009288	\N
-92	1	admin	2670	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/087.png	1	f	2018-11-16 05:59:54.207952	\N
-103	1	admin	2683	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/098.png	1	f	2018-11-16 05:59:54.333433	\N
-115	1	admin	2693	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/109.png	1	f	2018-11-16 05:59:54.493858	\N
-125	1	admin	2706	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/122.png	1	f	2018-11-16 05:59:54.614432	\N
-136	1	admin	2716	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/132.png	1	f	2018-11-16 05:59:54.749662	\N
-146	1	admin	2726	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/142.png	1	f	2018-11-16 05:59:54.870777	\N
-155	1	admin	2737	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/152.png	1	f	2018-11-16 05:59:54.990612	\N
-167	1	admin	2744	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/161.png	1	f	2018-11-16 05:59:55.127243	\N
-176	1	admin	2756	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/172.png	1	f	2018-11-16 05:59:55.246406	\N
-185	1	admin	2764	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/181.png	1	f	2018-11-16 05:59:55.364683	\N
-195	1	admin	2775	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/191.png	1	f	2018-11-16 05:59:55.485196	\N
-206	1	admin	2790	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/206.png	1	f	2018-11-16 05:59:55.607345	\N
-215	1	admin	2831	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/245.png	1	f	2018-11-16 05:59:55.72629	\N
-225	1	admin	2864	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/281.png	1	f	2018-11-16 05:59:55.846921	\N
-236	1	admin	2907	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/322.png	1	f	2018-11-16 05:59:55.986017	\N
-248	1	admin	3291	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/367.png	1	f	2018-11-16 05:59:56.106084	\N
-258	1	admin	3243	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/415.png	1	f	2018-11-16 05:59:56.229382	\N
-268	1	admin	3205	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/452.png	1	f	2018-11-16 05:59:56.349919	\N
-278	1	admin	2950	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/504.png	1	f	2018-11-16 05:59:56.468545	\N
-288	1	admin	2975	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/527.png	1	f	2018-11-16 05:59:56.591505	\N
-298	1	admin	3011	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/563.png	1	f	2018-11-16 05:59:56.711065	\N
-308	1	admin	3049	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/601.png	1	f	2018-11-16 05:59:56.832044	\N
-319	1	admin	3072	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/632.png	1	f	2018-11-16 05:59:56.954211	\N
-329	1	admin	3128	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/679.png	1	f	2018-11-16 05:59:57.072015	\N
-339	1	admin	3187	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/472.png	1	f	2018-11-16 05:59:57.191023	\N
-350	1	admin	3201	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/457.png	1	f	2018-11-16 05:59:57.325695	\N
-360	1	admin	3215	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/442.png	1	f	2018-11-16 05:59:57.449004	\N
-370	1	admin	3230	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/428.png	1	f	2018-11-16 05:59:57.565858	\N
-380	1	admin	3246	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/414.png	1	f	2018-11-16 05:59:57.687	\N
-391	1	admin	3259	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/399.png	1	f	2018-11-16 05:59:57.810659	\N
-402	1	admin	3271	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/386.png	1	f	2018-11-16 05:59:57.929402	\N
-413	1	admin	3287	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/372.png	1	f	2018-11-16 05:59:58.047917	\N
-423	1	admin	3302	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/357.png	1	f	2018-11-16 05:59:58.165216	\N
-432	1	admin	2929	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/345.png	1	f	2018-11-16 05:59:58.283671	\N
-441	1	admin	2917	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/333.png	1	f	2018-11-16 05:59:58.402567	\N
-450	1	admin	2905	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/321.png	1	f	2018-11-16 05:59:58.516447	\N
-460	1	admin	2892	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/308.png	1	f	2018-11-16 05:59:58.651825	\N
-469	1	admin	2880	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/296.png	1	f	2018-11-16 05:59:58.771485	\N
-480	1	admin	2868	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/284.png	1	f	2018-11-16 05:59:58.898492	\N
-491	1	admin	2855	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/271.png	1	f	2018-11-16 05:59:59.014991	\N
-501	1	admin	2840	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/254.png	1	f	2018-11-16 05:59:59.132293	\N
-511	1	admin	2825	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/241.png	1	f	2018-11-16 05:59:59.245753	\N
-520	1	admin	2811	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/227.png	1	f	2018-11-16 05:59:59.364984	\N
-530	1	admin	2799	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/215.png	1	f	2018-11-16 05:59:59.515654	\N
-542	1	admin	3306	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/807.png	1	f	2018-11-16 05:59:59.644302	\N
-552	1	admin	3314	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/796.png	1	f	2018-11-16 05:59:59.764216	\N
-562	1	admin	3322	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/786.png	1	f	2018-11-16 05:59:59.88279	\N
-573	1	admin	3328	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/776.png	1	f	2018-11-16 06:00:00.014561	\N
-583	1	admin	3336	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/765.png	1	f	2018-11-16 06:00:00.134492	\N
-594	1	admin	3342	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/755.png	1	f	2018-11-16 06:00:00.270345	\N
-605	1	admin	3352	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/743.png	1	f	2018-11-16 06:00:00.392039	\N
-615	1	admin	3152	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/733.png	1	f	2018-11-16 06:00:00.517499	\N
-625	1	admin	3368	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/723.png	1	f	2018-11-16 06:00:00.639479	\N
-637	1	admin	3374	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/712.png	1	f	2018-11-16 06:00:00.786188	\N
-648	1	admin	3384	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/701.png	1	f	2018-11-16 06:00:00.904758	\N
-60	1	admin	2643	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/059.png	1	f	2018-11-16 05:59:53.793275	\N
-71	1	admin	2650	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/067.png	1	f	2018-11-16 05:59:53.899073	\N
-81	1	admin	2661	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/077.png	1	f	2018-11-16 05:59:54.009848	\N
-89	1	admin	2669	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/086.png	1	f	2018-11-16 05:59:54.198463	\N
-100	1	admin	2680	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/096.png	1	f	2018-11-16 05:59:54.314877	\N
-109	1	admin	2690	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/106.png	1	f	2018-11-16 05:59:54.467319	\N
-119	1	admin	2700	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/116.png	1	f	2018-11-16 05:59:54.574373	\N
-128	1	admin	2709	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/125.png	1	f	2018-11-16 05:59:54.679448	\N
-138	1	admin	2719	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/135.png	1	f	2018-11-16 05:59:54.790249	\N
-147	1	admin	2727	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/144.png	1	f	2018-11-16 05:59:54.897091	\N
-158	1	admin	2738	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/154.png	1	f	2018-11-16 05:59:55.003557	\N
-165	1	admin	2748	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/163.png	1	f	2018-11-16 05:59:55.11796	\N
-175	1	admin	2755	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/171.png	1	f	2018-11-16 05:59:55.236856	\N
-183	1	admin	2765	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/180.png	1	f	2018-11-16 05:59:55.341076	\N
-193	1	admin	2773	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/189.png	1	f	2018-11-16 05:59:55.446569	\N
-201	1	admin	2781	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/198.png	1	f	2018-11-16 05:59:55.556985	\N
-210	1	admin	2812	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/228.png	1	f	2018-11-16 05:59:55.663902	\N
-219	1	admin	2842	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/258.png	1	f	2018-11-16 05:59:55.779691	\N
-227	1	admin	2876	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/293.png	1	f	2018-11-16 05:59:55.884048	\N
-238	1	admin	2919	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/335.png	1	f	2018-11-16 05:59:55.991861	\N
-246	1	admin	3283	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/375.png	1	f	2018-11-16 05:59:56.097547	\N
-254	1	admin	3252	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/407.png	1	f	2018-11-16 05:59:56.207245	\N
-265	1	admin	3218	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/441.png	1	f	2018-11-16 05:59:56.312528	\N
-272	1	admin	3183	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/475.png	1	f	2018-11-16 05:59:56.418353	\N
-282	1	admin	3168	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/489.png	1	f	2018-11-16 05:59:56.529991	\N
-292	1	admin	2990	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/542.png	1	f	2018-11-16 05:59:56.63576	\N
-302	1	admin	3022	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/574.png	1	f	2018-11-16 05:59:56.745957	\N
-312	1	admin	3065	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/616.png	1	f	2018-11-16 05:59:56.84947	\N
-318	1	admin	3090	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/643.png	1	f	2018-11-16 05:59:56.953047	\N
-327	1	admin	3119	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/671.png	1	f	2018-11-16 05:59:57.05983	\N
-335	1	admin	3181	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/477.png	1	f	2018-11-16 05:59:57.171275	\N
-345	1	admin	3197	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/462.png	1	f	2018-11-16 05:59:57.275913	\N
-354	1	admin	3210	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/449.png	1	f	2018-11-16 05:59:57.382054	\N
-364	1	admin	3222	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/436.png	1	f	2018-11-16 05:59:57.50081	\N
-374	1	admin	3234	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/422.png	1	f	2018-11-16 05:59:57.618042	\N
-383	1	admin	3249	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/409.png	1	f	2018-11-16 05:59:57.726721	\N
-393	1	admin	3261	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/397.png	1	f	2018-11-16 05:59:57.832788	\N
-403	1	admin	3275	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/383.png	1	f	2018-11-16 05:59:57.937535	\N
-412	1	admin	3288	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/370.png	1	f	2018-11-16 05:59:58.040563	\N
-420	1	admin	3298	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/360.png	1	f	2018-11-16 05:59:58.146596	\N
-429	1	admin	2931	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/349.png	1	f	2018-11-16 05:59:58.268518	\N
-438	1	admin	2921	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/337.png	1	f	2018-11-16 05:59:58.370944	\N
-447	1	admin	2909	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/325.png	1	f	2018-11-16 05:59:58.477947	\N
-456	1	admin	2896	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/312.png	1	f	2018-11-16 05:59:58.582348	\N
-465	1	admin	2884	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/300.png	1	f	2018-11-16 05:59:58.68468	\N
-472	1	admin	2875	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/291.png	1	f	2018-11-16 05:59:58.787709	\N
-481	1	admin	2867	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/283.png	1	f	2018-11-16 05:59:58.902124	\N
-489	1	admin	2856	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/272.png	1	f	2018-11-16 05:59:59.005483	\N
-497	1	admin	2839	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/257.png	1	f	2018-11-16 05:59:59.110994	\N
-531	1	admin	2793	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/211.png	1	f	2018-11-16 05:59:59.520192	\N
-540	1	admin	2783	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/199.png	1	f	2018-11-16 05:59:59.632054	\N
-550	1	admin	3166	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/798.png	1	f	2018-11-16 05:59:59.737032	\N
-558	1	admin	3318	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/789.png	1	f	2018-11-16 05:59:59.848223	\N
-568	1	admin	3161	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/779.png	1	f	2018-11-16 05:59:59.954973	\N
-578	1	admin	3333	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/769.png	1	f	2018-11-16 06:00:00.058559	\N
-589	1	admin	3341	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/759.png	1	f	2018-11-16 06:00:00.176821	\N
-598	1	admin	3153	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/749.png	1	f	2018-11-16 06:00:00.285663	\N
-608	1	admin	3356	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/740.png	1	f	2018-11-16 06:00:00.407851	\N
-61	1	admin	2641	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/058.png	1	f	2018-11-16 05:59:53.793871	\N
-70	1	admin	2651	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/066.png	1	f	2018-11-16 05:59:53.898589	\N
-79	1	admin	2659	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/076.png	1	f	2018-11-16 05:59:54.000388	\N
-90	1	admin	2671	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/085.png	1	f	2018-11-16 05:59:54.198999	\N
-99	1	admin	2679	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/095.png	1	f	2018-11-16 05:59:54.305516	\N
-110	1	admin	2689	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/105.png	1	f	2018-11-16 05:59:54.467913	\N
-118	1	admin	2699	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/115.png	1	f	2018-11-16 05:59:54.573792	\N
-129	1	admin	2708	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/124.png	1	f	2018-11-16 05:59:54.679942	\N
-139	1	admin	2717	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/134.png	1	f	2018-11-16 05:59:54.790728	\N
-148	1	admin	2728	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/143.png	1	f	2018-11-16 05:59:54.897599	\N
-157	1	admin	2736	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/153.png	1	f	2018-11-16 05:59:55.000772	\N
-166	1	admin	2746	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/162.png	1	f	2018-11-16 05:59:55.118457	\N
-173	1	admin	2754	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/170.png	1	f	2018-11-16 05:59:55.222608	\N
-182	1	admin	2762	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/178.png	1	f	2018-11-16 05:59:55.325798	\N
-191	1	admin	2772	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/188.png	1	f	2018-11-16 05:59:55.431148	\N
-200	1	admin	2779	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/196.png	1	f	2018-11-16 05:59:55.551001	\N
-209	1	admin	2806	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/225.png	1	f	2018-11-16 05:59:55.661046	\N
-217	1	admin	2838	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/255.png	1	f	2018-11-16 05:59:55.768818	\N
-228	1	admin	2873	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/289.png	1	f	2018-11-16 05:59:55.88459	\N
-237	1	admin	2913	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/330.png	1	f	2018-11-16 05:59:55.991286	\N
-247	1	admin	3286	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/371.png	1	f	2018-11-16 05:59:56.098157	\N
-256	1	admin	3254	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/404.png	1	f	2018-11-16 05:59:56.207968	\N
-264	1	admin	3223	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/438.png	1	f	2018-11-16 05:59:56.312188	\N
-273	1	admin	3186	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/471.png	1	f	2018-11-16 05:59:56.421084	\N
-283	1	admin	2956	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/508.png	1	f	2018-11-16 05:59:56.533036	\N
-293	1	admin	2993	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/545.png	1	f	2018-11-16 05:59:56.638288	\N
-301	1	admin	3026	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/578.png	1	f	2018-11-16 05:59:56.745402	\N
-311	1	admin	3059	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/612.png	1	f	2018-11-16 05:59:56.849115	\N
-317	1	admin	3088	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/639.png	1	f	2018-11-16 05:59:56.952491	\N
-325	1	admin	3116	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/667.png	1	f	2018-11-16 05:59:57.05455	\N
-334	1	admin	3180	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/479.png	1	f	2018-11-16 05:59:57.164494	\N
-344	1	admin	3193	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/465.png	1	f	2018-11-16 05:59:57.269756	\N
-353	1	admin	3208	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/450.png	1	f	2018-11-16 05:59:57.380079	\N
-362	1	admin	3220	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/437.png	1	f	2018-11-16 05:59:57.486709	\N
-371	1	admin	3237	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/425.png	1	f	2018-11-16 05:59:57.587379	\N
-381	1	admin	3244	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/413.png	1	f	2018-11-16 05:59:57.690456	\N
-390	1	admin	3257	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/401.png	1	f	2018-11-16 05:59:57.80119	\N
-400	1	admin	3272	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/387.png	1	f	2018-11-16 05:59:57.904524	\N
-409	1	admin	3285	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/374.png	1	f	2018-11-16 05:59:58.008178	\N
-418	1	admin	3296	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/362.png	1	f	2018-11-16 05:59:58.120086	\N
-428	1	admin	2932	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/350.png	1	f	2018-11-16 05:59:58.238451	\N
-436	1	admin	2922	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/338.png	1	f	2018-11-16 05:59:58.348586	\N
-445	1	admin	2912	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/328.png	1	f	2018-11-16 05:59:58.45908	\N
-454	1	admin	2899	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/315.png	1	f	2018-11-16 05:59:58.564753	\N
-462	1	admin	2888	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/304.png	1	f	2018-11-16 05:59:58.672792	\N
-471	1	admin	2879	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/294.png	1	f	2018-11-16 05:59:58.776948	\N
-479	1	admin	2870	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/286.png	1	f	2018-11-16 05:59:58.889038	\N
-486	1	admin	2857	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/273.png	1	f	2018-11-16 05:59:58.991313	\N
-496	1	admin	2846	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/263.png	1	f	2018-11-16 05:59:59.096997	\N
-506	1	admin	2830	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/247.png	1	f	2018-11-16 05:59:59.202163	\N
-515	1	admin	2818	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/234.png	1	f	2018-11-16 05:59:59.326301	\N
-523	1	admin	2805	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/222.png	1	f	2018-11-16 05:59:59.429905	\N
-533	1	admin	2792	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/210.png	1	f	2018-11-16 05:59:59.535342	\N
-541	1	admin	3305	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/805.png	1	f	2018-11-16 05:59:59.641598	\N
-551	1	admin	3312	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/797.png	1	f	2018-11-16 05:59:59.737459	\N
-559	1	admin	3317	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/790.png	1	f	2018-11-16 05:59:59.848723	\N
-569	1	admin	3325	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/780.png	1	f	2018-11-16 05:59:59.95564	\N
-579	1	admin	3332	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/770.png	1	f	2018-11-16 06:00:00.059057	\N
-62	1	admin	2640	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/056.png	1	f	2018-11-16 05:59:53.797766	\N
-73	1	admin	2652	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/068.png	1	f	2018-11-16 05:59:53.917929	\N
-85	1	admin	2663	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/079.png	1	f	2018-11-16 05:59:54.040931	\N
-96	1	admin	2675	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/091.png	1	f	2018-11-16 05:59:54.240916	\N
-107	1	admin	2688	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/103.png	1	f	2018-11-16 05:59:54.400553	\N
-117	1	admin	2697	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/113.png	1	f	2018-11-16 05:59:54.521983	\N
-127	1	admin	2707	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/123.png	1	f	2018-11-16 05:59:54.657195	\N
-137	1	admin	2718	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/133.png	1	f	2018-11-16 05:59:54.788527	\N
-149	1	admin	2729	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/145.png	1	f	2018-11-16 05:59:54.909115	\N
-159	1	admin	2739	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/155.png	1	f	2018-11-16 05:59:55.033264	\N
-172	1	admin	2749	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/165.png	1	f	2018-11-16 05:59:55.157824	\N
-181	1	admin	2759	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/177.png	1	f	2018-11-16 05:59:55.283631	\N
-190	1	admin	2770	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/186.png	1	f	2018-11-16 05:59:55.401276	\N
-199	1	admin	2780	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/195.png	1	f	2018-11-16 05:59:55.525036	\N
-208	1	admin	2807	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/221.png	1	f	2018-11-16 05:59:55.652529	\N
-218	1	admin	2836	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/252.png	1	f	2018-11-16 05:59:55.779896	\N
-229	1	admin	2881	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/297.png	1	f	2018-11-16 05:59:55.900059	\N
-239	1	admin	2923	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/339.png	1	f	2018-11-16 05:59:56.025908	\N
-249	1	admin	3279	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/380.png	1	f	2018-11-16 05:59:56.147491	\N
-260	1	admin	3239	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/419.png	1	f	2018-11-16 05:59:56.27259	\N
-270	1	admin	3198	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/460.png	1	f	2018-11-16 05:59:56.392617	\N
-281	1	admin	2945	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/497.png	1	f	2018-11-16 05:59:56.514525	\N
-291	1	admin	2986	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/538.png	1	f	2018-11-16 05:59:56.63354	\N
-303	1	admin	3031	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/582.png	1	f	2018-11-16 05:59:56.756576	\N
-313	1	admin	3068	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/619.png	1	f	2018-11-16 05:59:56.894561	\N
-322	1	admin	3097	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/650.png	1	f	2018-11-16 05:59:57.015278	\N
-332	1	admin	3136	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/688.png	1	f	2018-11-16 05:59:57.134566	\N
-342	1	admin	3191	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/467.png	1	f	2018-11-16 05:59:57.257136	\N
-355	1	admin	3207	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/451.png	1	f	2018-11-16 05:59:57.39063	\N
-365	1	admin	3224	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/434.png	1	f	2018-11-16 05:59:57.512019	\N
-375	1	admin	3238	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/421.png	1	f	2018-11-16 05:59:57.634343	\N
-385	1	admin	3250	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/408.png	1	f	2018-11-16 05:59:57.757713	\N
-398	1	admin	3265	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/393.png	1	f	2018-11-16 05:59:57.882317	\N
-408	1	admin	3281	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/377.png	1	f	2018-11-16 05:59:58.002432	\N
-419	1	admin	3294	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/364.png	1	f	2018-11-16 05:59:58.123012	\N
-453	1	admin	2901	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/317.png	1	f	2018-11-16 05:59:58.564096	\N
-464	1	admin	2886	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/303.png	1	f	2018-11-16 05:59:58.684843	\N
-475	1	admin	2874	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/290.png	1	f	2018-11-16 05:59:58.807625	\N
-484	1	admin	2863	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/279.png	1	f	2018-11-16 05:59:58.919488	\N
-493	1	admin	2851	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/267.png	1	f	2018-11-16 05:59:59.039075	\N
-503	1	admin	2835	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/251.png	1	f	2018-11-16 05:59:59.157735	\N
-512	1	admin	2821	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/238.png	1	f	2018-11-16 05:59:59.279543	\N
-522	1	admin	2810	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/226.png	1	f	2018-11-16 05:59:59.402791	\N
-532	1	admin	2794	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/212.png	1	f	2018-11-16 05:59:59.526301	\N
-543	1	admin	3167	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/806.png	1	f	2018-11-16 05:59:59.650627	\N
-553	1	admin	3313	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/795.png	1	f	2018-11-16 05:59:59.771906	\N
-563	1	admin	3320	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/785.png	1	f	2018-11-16 05:59:59.896863	\N
-574	1	admin	3160	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/775.png	1	f	2018-11-16 06:00:00.016905	\N
-584	1	admin	3157	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/764.png	1	f	2018-11-16 06:00:00.13611	\N
-596	1	admin	3154	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/753.png	1	f	2018-11-16 06:00:00.27195	\N
-607	1	admin	3354	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/742.png	1	f	2018-11-16 06:00:00.402492	\N
-617	1	admin	3360	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/731.png	1	f	2018-11-16 06:00:00.529861	\N
-628	1	admin	3369	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/720.png	1	f	2018-11-16 06:00:00.652424	\N
-638	1	admin	3144	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/710.png	1	f	2018-11-16 06:00:00.787802	\N
-649	1	admin	3383	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/700.png	1	f	2018-11-16 06:00:00.906372	\N
-661	1	admin	3135	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/687.png	1	f	2018-11-16 06:00:01.028296	\N
-671	1	admin	2959	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/512.png	1	f	2018-11-16 06:00:01.160012	\N
-682	1	admin	2974	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/526.png	1	f	2018-11-16 06:00:01.280687	\N
-63	1	admin	2642	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/057.png	1	f	2018-11-16 05:59:53.798612	\N
-72	1	admin	2653	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/069.png	1	f	2018-11-16 05:59:53.911721	\N
-82	1	admin	2662	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/078.png	1	f	2018-11-16 05:59:54.024762	\N
-91	1	admin	2672	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/088.png	1	f	2018-11-16 05:59:54.207377	\N
-101	1	admin	2682	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/097.png	1	f	2018-11-16 05:59:54.325339	\N
-114	1	admin	2692	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/108.png	1	f	2018-11-16 05:59:54.489295	\N
-124	1	admin	2705	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/120.png	1	f	2018-11-16 05:59:54.60995	\N
-134	1	admin	2714	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/130.png	1	f	2018-11-16 05:59:54.729566	\N
-144	1	admin	2722	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/140.png	1	f	2018-11-16 05:59:54.842346	\N
-154	1	admin	2735	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/150.png	1	f	2018-11-16 05:59:54.965876	\N
-164	1	admin	2745	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/160.png	1	f	2018-11-16 05:59:55.109719	\N
-174	1	admin	2753	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/169.png	1	f	2018-11-16 05:59:55.227544	\N
-184	1	admin	2763	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/179.png	1	f	2018-11-16 05:59:55.34356	\N
-194	1	admin	2774	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/190.png	1	f	2018-11-16 05:59:55.460952	\N
-203	1	admin	2787	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/202.png	1	f	2018-11-16 05:59:55.591842	\N
-212	1	admin	2819	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/235.png	1	f	2018-11-16 05:59:55.708402	\N
-223	1	admin	2854	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/270.png	1	f	2018-11-16 05:59:55.822823	\N
-234	1	admin	2902	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/318.png	1	f	2018-11-16 05:59:55.937159	\N
-244	1	admin	3299	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/359.png	1	f	2018-11-16 05:59:56.091544	\N
-255	1	admin	3258	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/400.png	1	f	2018-11-16 05:59:56.208349	\N
-267	1	admin	3214	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/445.png	1	f	2018-11-16 05:59:56.32845	\N
-276	1	admin	3173	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/485.png	1	f	2018-11-16 05:59:56.440114	\N
-286	1	admin	2968	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/519.png	1	f	2018-11-16 05:59:56.556511	\N
-296	1	admin	3004	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/556.png	1	f	2018-11-16 05:59:56.673147	\N
-306	1	admin	3041	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/593.png	1	f	2018-11-16 05:59:56.788382	\N
-315	1	admin	3078	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/626.png	1	f	2018-11-16 05:59:56.905858	\N
-324	1	admin	3107	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/659.png	1	f	2018-11-16 05:59:57.022117	\N
-331	1	admin	3177	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/480.png	1	f	2018-11-16 05:59:57.134015	\N
-341	1	admin	3189	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/469.png	1	f	2018-11-16 05:59:57.249456	\N
-351	1	admin	3204	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/454.png	1	f	2018-11-16 05:59:57.365059	\N
-361	1	admin	3217	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/440.png	1	f	2018-11-16 05:59:57.479644	\N
-372	1	admin	3232	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/426.png	1	f	2018-11-16 05:59:57.592324	\N
-382	1	admin	3245	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/412.png	1	f	2018-11-16 05:59:57.708092	\N
-392	1	admin	3260	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/398.png	1	f	2018-11-16 05:59:57.813663	\N
-401	1	admin	3273	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/385.png	1	f	2018-11-16 05:59:57.92458	\N
-411	1	admin	3284	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/373.png	1	f	2018-11-16 05:59:58.039986	\N
-422	1	admin	3300	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/358.png	1	f	2018-11-16 05:59:58.159698	\N
-431	1	admin	2933	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/346.png	1	f	2018-11-16 05:59:58.273796	\N
-440	1	admin	2918	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/334.png	1	f	2018-11-16 05:59:58.386895	\N
-449	1	admin	2906	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/323.png	1	f	2018-11-16 05:59:58.506196	\N
-459	1	admin	2893	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/309.png	1	f	2018-11-16 05:59:58.63254	\N
-468	1	admin	2882	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/298.png	1	f	2018-11-16 05:59:58.766945	\N
-477	1	admin	2872	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/288.png	1	f	2018-11-16 05:59:58.882746	\N
-488	1	admin	2859	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/275.png	1	f	2018-11-16 05:59:58.995579	\N
-499	1	admin	2843	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/259.png	1	f	2018-11-16 05:59:59.115871	\N
-509	1	admin	2828	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/244.png	1	f	2018-11-16 05:59:59.240037	\N
-519	1	admin	2814	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/230.png	1	f	2018-11-16 05:59:59.360102	\N
-528	1	admin	2800	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/216.png	1	f	2018-11-16 05:59:59.51115	\N
-539	1	admin	2785	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/201.png	1	f	2018-11-16 05:59:59.626556	\N
-548	1	admin	3311	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/800.png	1	f	2018-11-16 05:59:59.735041	\N
-560	1	admin	3319	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/788.png	1	f	2018-11-16 05:59:59.853182	\N
-570	1	admin	3327	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/778.png	1	f	2018-11-16 05:59:59.970903	\N
-580	1	admin	3334	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/768.png	1	f	2018-11-16 06:00:00.083481	\N
-590	1	admin	3340	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/758.png	1	f	2018-11-16 06:00:00.196664	\N
-600	1	admin	3348	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/748.png	1	f	2018-11-16 06:00:00.310872	\N
-610	1	admin	3355	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/738.png	1	f	2018-11-16 06:00:00.424051	\N
-620	1	admin	3361	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/728.png	1	f	2018-11-16 06:00:00.560055	\N
-630	1	admin	3145	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/718.png	1	f	2018-11-16 06:00:00.675604	\N
-67	1	admin	2647	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/063.png	1	f	2018-11-16 05:59:53.834736	\N
-77	1	admin	2655	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/073.png	1	f	2018-11-16 05:59:53.955283	\N
-87	1	admin	2667	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/083.png	1	f	2018-11-16 05:59:54.078388	\N
-97	1	admin	2677	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/093.png	1	f	2018-11-16 05:59:54.243814	\N
-106	1	admin	2685	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/102.png	1	f	2018-11-16 05:59:54.364958	\N
-116	1	admin	2696	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/112.png	1	f	2018-11-16 05:59:54.498438	\N
-126	1	admin	2704	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/121.png	1	f	2018-11-16 05:59:54.619052	\N
-135	1	admin	2715	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/131.png	1	f	2018-11-16 05:59:54.738645	\N
-145	1	admin	2725	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/141.png	1	f	2018-11-16 05:59:54.855438	\N
-156	1	admin	2733	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/151.png	1	f	2018-11-16 05:59:54.995104	\N
-192	1	admin	2771	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/187.png	1	f	2018-11-16 05:59:55.440358	\N
-202	1	admin	2782	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/197.png	1	f	2018-11-16 05:59:55.565045	\N
-211	1	admin	2816	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/232.png	1	f	2018-11-16 05:59:55.691096	\N
-220	1	admin	2848	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/262.png	1	f	2018-11-16 05:59:55.806983	\N
-230	1	admin	2885	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/301.png	1	f	2018-11-16 05:59:55.925069	\N
-242	1	admin	2927	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/343.png	1	f	2018-11-16 05:59:56.055413	\N
-252	1	admin	3270	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/388.png	1	f	2018-11-16 05:59:56.190893	\N
-263	1	admin	3227	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/431.png	1	f	2018-11-16 05:59:56.311138	\N
-275	1	admin	3190	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/468.png	1	f	2018-11-16 05:59:56.429118	\N
-285	1	admin	2964	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/515.png	1	f	2018-11-16 05:59:56.54712	\N
-295	1	admin	3000	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/552.png	1	f	2018-11-16 05:59:56.664629	\N
-305	1	admin	3039	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/589.png	1	f	2018-11-16 05:59:56.781427	\N
-314	1	admin	3071	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/622.png	1	f	2018-11-16 05:59:56.902204	\N
-323	1	admin	3102	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/655.png	1	f	2018-11-16 05:59:57.021575	\N
-333	1	admin	3178	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/481.png	1	f	2018-11-16 05:59:57.143074	\N
-343	1	admin	3192	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/466.png	1	f	2018-11-16 05:59:57.260006	\N
-352	1	admin	3206	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/453.png	1	f	2018-11-16 05:59:57.379493	\N
-363	1	admin	3219	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/439.png	1	f	2018-11-16 05:59:57.496793	\N
-373	1	admin	3233	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/424.png	1	f	2018-11-16 05:59:57.616191	\N
-384	1	admin	3248	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/410.png	1	f	2018-11-16 05:59:57.734843	\N
-394	1	admin	3262	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/396.png	1	f	2018-11-16 05:59:57.857287	\N
-405	1	admin	3276	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/382.png	1	f	2018-11-16 05:59:57.985962	\N
-416	1	admin	3289	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/369.png	1	f	2018-11-16 05:59:58.101169	\N
-427	1	admin	2937	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/353.png	1	f	2018-11-16 05:59:58.237957	\N
-437	1	admin	2926	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/340.png	1	f	2018-11-16 05:59:58.354977	\N
-446	1	admin	2911	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/327.png	1	f	2018-11-16 05:59:58.473513	\N
-457	1	admin	2897	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/313.png	1	f	2018-11-16 05:59:58.59088	\N
-467	1	admin	2883	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/299.png	1	f	2018-11-16 05:59:58.707883	\N
-476	1	admin	2788	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/204.png	1	f	2018-11-16 05:59:58.828078	\N
-485	1	admin	2862	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/278.png	1	f	2018-11-16 05:59:58.947255	\N
-495	1	admin	2847	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/264.png	1	f	2018-11-16 05:59:59.066152	\N
-505	1	admin	2833	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/249.png	1	f	2018-11-16 05:59:59.196576	\N
-514	1	admin	2820	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/236.png	1	f	2018-11-16 05:59:59.317324	\N
-524	1	admin	2808	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/223.png	1	f	2018-11-16 05:59:59.435472	\N
-534	1	admin	2797	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/208.png	1	f	2018-11-16 05:59:59.565653	\N
-546	1	admin	3307	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/804.png	1	f	2018-11-16 05:59:59.685333	\N
-556	1	admin	3315	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/793.png	1	f	2018-11-16 05:59:59.80803	\N
-566	1	admin	3323	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/782.png	1	f	2018-11-16 05:59:59.921955	\N
-576	1	admin	3330	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/772.png	1	f	2018-11-16 06:00:00.047293	\N
-588	1	admin	3339	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/762.png	1	f	2018-11-16 06:00:00.169213	\N
-599	1	admin	3347	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/750.png	1	f	2018-11-16 06:00:00.290368	\N
-609	1	admin	3353	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/739.png	1	f	2018-11-16 06:00:00.421944	\N
-619	1	admin	3148	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/729.png	1	f	2018-11-16 06:00:00.546157	\N
-629	1	admin	3370	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/719.png	1	f	2018-11-16 06:00:00.674672	\N
-642	1	admin	3377	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/709.png	1	f	2018-11-16 06:00:00.796841	\N
-652	1	admin	3386	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/697.png	1	f	2018-11-16 06:00:00.919824	\N
-663	1	admin	3132	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/685.png	1	f	2018-11-16 06:00:01.040354	\N
-672	1	admin	2961	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/513.png	1	f	2018-11-16 06:00:01.162886	\N
-586	1	admin	3156	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/760.png	1	f	2018-11-16 06:00:00.160553	\N
-595	1	admin	3346	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/752.png	1	f	2018-11-16 06:00:00.271118	\N
-603	1	admin	3350	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/744.png	1	f	2018-11-16 06:00:00.381623	\N
-613	1	admin	3358	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/735.png	1	f	2018-11-16 06:00:00.487678	\N
-623	1	admin	3147	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/725.png	1	f	2018-11-16 06:00:00.594396	\N
-633	1	admin	3375	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/715.png	1	f	2018-11-16 06:00:00.699285	\N
-643	1	admin	3380	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/705.png	1	f	2018-11-16 06:00:00.802534	\N
-651	1	admin	3139	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/695.png	1	f	2018-11-16 06:00:00.918017	\N
-660	1	admin	3134	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/686.png	1	f	2018-11-16 06:00:01.026325	\N
-668	1	admin	3123	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/676.png	1	f	2018-11-16 06:00:01.138898	\N
-676	1	admin	2970	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/521.png	1	f	2018-11-16 06:00:01.241283	\N
-686	1	admin	2980	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/532.png	1	f	2018-11-16 06:00:01.347603	\N
-696	1	admin	2994	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/546.png	1	f	2018-11-16 06:00:01.45411	\N
-706	1	admin	3009	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/559.png	1	f	2018-11-16 06:00:01.571736	\N
-716	1	admin	3021	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/573.png	1	f	2018-11-16 06:00:01.676561	\N
-726	1	admin	3033	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/587.png	1	f	2018-11-16 06:00:01.784392	\N
-735	1	admin	3048	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/600.png	1	f	2018-11-16 06:00:01.892825	\N
-744	1	admin	3060	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/611.png	1	f	2018-11-16 06:00:02.014917	\N
-754	1	admin	3080	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/625.png	1	f	2018-11-16 06:00:02.141213	\N
-763	1	admin	3085	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/640.png	1	f	2018-11-16 06:00:02.250339	\N
-771	1	admin	3111	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/664.png	1	f	2018-11-16 06:00:02.37591	\N
-781	1	admin	3101	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/653.png	1	f	2018-11-16 06:00:02.492669	\N
-791	1	admin	3175	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/483.png	1	f	2018-11-16 06:00:02.598808	\N
-801	1	admin	2944	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/496.png	1	f	2018-11-16 06:00:02.703295	\N
-811	1	admin	2958	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/510.png	1	f	2018-11-16 06:00:02.820597	\N
-602	1	admin	3351	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/746.png	1	f	2018-11-16 06:00:00.345174	\N
-612	1	admin	3357	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/736.png	1	f	2018-11-16 06:00:00.457234	\N
-622	1	admin	3365	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/726.png	1	f	2018-11-16 06:00:00.57044	\N
-632	1	admin	3371	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/717.png	1	f	2018-11-16 06:00:00.682459	\N
-641	1	admin	3379	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/707.png	1	f	2018-11-16 06:00:00.796407	\N
-650	1	admin	3385	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/698.png	1	f	2018-11-16 06:00:00.910758	\N
-657	1	admin	3140	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/689.png	1	f	2018-11-16 06:00:01.017852	\N
-667	1	admin	3126	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/678.png	1	f	2018-11-16 06:00:01.13451	\N
-678	1	admin	2967	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/520.png	1	f	2018-11-16 06:00:01.246197	\N
-687	1	admin	2981	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/533.png	1	f	2018-11-16 06:00:01.354969	\N
-697	1	admin	2995	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/547.png	1	f	2018-11-16 06:00:01.465361	\N
-707	1	admin	3008	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/561.png	1	f	2018-11-16 06:00:01.576696	\N
-718	1	admin	3023	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/575.png	1	f	2018-11-16 06:00:01.695837	\N
-728	1	admin	3036	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/588.png	1	f	2018-11-16 06:00:01.807852	\N
-737	1	admin	3050	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/602.png	1	f	2018-11-16 06:00:01.922713	\N
-747	1	admin	3063	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/615.png	1	f	2018-11-16 06:00:02.036866	\N
-758	1	admin	3074	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/630.png	1	f	2018-11-16 06:00:02.166339	\N
-766	1	admin	3091	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/642.png	1	f	2018-11-16 06:00:02.284048	\N
-776	1	admin	3108	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/660.png	1	f	2018-11-16 06:00:02.391608	\N
-784	1	admin	3096	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/648.png	1	f	2018-11-16 06:00:02.50245	\N
-793	1	admin	3174	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/484.png	1	f	2018-11-16 06:00:02.615259	\N
-802	1	admin	2946	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/498.png	1	f	2018-11-16 06:00:02.725555	\N
-618	1	admin	3363	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/730.png	1	f	2018-11-16 06:00:00.532062	\N
-626	1	admin	3146	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/721.png	1	f	2018-11-16 06:00:00.639969	\N
-635	1	admin	3373	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/713.png	1	f	2018-11-16 06:00:00.763017	\N
-645	1	admin	3381	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/703.png	1	f	2018-11-16 06:00:00.877797	\N
-655	1	admin	3389	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/693.png	1	f	2018-11-16 06:00:00.987374	\N
-665	1	admin	3129	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/681.png	1	f	2018-11-16 06:00:01.09518	\N
-674	1	admin	2965	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/517.png	1	f	2018-11-16 06:00:01.197332	\N
-684	1	admin	2979	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/529.png	1	f	2018-11-16 06:00:01.310099	\N
-694	1	admin	2991	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/543.png	1	f	2018-11-16 06:00:01.418636	\N
-702	1	admin	3006	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/557.png	1	f	2018-11-16 06:00:01.521743	\N
-710	1	admin	3018	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/568.png	1	f	2018-11-16 06:00:01.63067	\N
-719	1	admin	3027	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/579.png	1	f	2018-11-16 06:00:01.736498	\N
-729	1	admin	3040	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/591.png	1	f	2018-11-16 06:00:01.842183	\N
-739	1	admin	3051	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/604.png	1	f	2018-11-16 06:00:01.949365	\N
-749	1	admin	3066	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/618.png	1	f	2018-11-16 06:00:02.056796	\N
-757	1	admin	3082	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/633.png	1	f	2018-11-16 06:00:02.166032	\N
-767	1	admin	3120	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/672.png	1	f	2018-11-16 06:00:02.290641	\N
-777	1	admin	3106	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/658.png	1	f	2018-11-16 06:00:02.395752	\N
-787	1	admin	3093	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/645.png	1	f	2018-11-16 06:00:02.526892	\N
-795	1	admin	2939	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/491.png	1	f	2018-11-16 06:00:02.631179	\N
-805	1	admin	2949	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/502.png	1	f	2018-11-16 06:00:02.744836	\N
-634	1	admin	3143	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/714.png	1	f	2018-11-16 06:00:00.752166	\N
-644	1	admin	3382	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/704.png	1	f	2018-11-16 06:00:00.868241	\N
-654	1	admin	3388	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/694.png	1	f	2018-11-16 06:00:00.978595	\N
-664	1	admin	3130	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/682.png	1	f	2018-11-16 06:00:01.090805	\N
-675	1	admin	2963	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/516.png	1	f	2018-11-16 06:00:01.199325	\N
-685	1	admin	2978	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/531.png	1	f	2018-11-16 06:00:01.312103	\N
-695	1	admin	2992	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/544.png	1	f	2018-11-16 06:00:01.420665	\N
-703	1	admin	3005	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/558.png	1	f	2018-11-16 06:00:01.529958	\N
-712	1	admin	3017	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/569.png	1	f	2018-11-16 06:00:01.644181	\N
-722	1	admin	3029	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/583.png	1	f	2018-11-16 06:00:01.759352	\N
-732	1	admin	3043	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/595.png	1	f	2018-11-16 06:00:01.86954	\N
-740	1	admin	3057	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/609.png	1	f	2018-11-16 06:00:01.982847	\N
-750	1	admin	3067	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/620.png	1	f	2018-11-16 06:00:02.096119	\N
-760	1	admin	3081	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/634.png	1	f	2018-11-16 06:00:02.231859	\N
-770	1	admin	3115	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/668.png	1	f	2018-11-16 06:00:02.343385	\N
-780	1	admin	3103	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/654.png	1	f	2018-11-16 06:00:02.471565	\N
-790	1	admin	3122	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/674.png	1	f	2018-11-16 06:00:02.581547	\N
-800	1	admin	2943	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/495.png	1	f	2018-11-16 06:00:02.693068	\N
-810	1	admin	2957	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/509.png	1	f	2018-11-16 06:00:02.813643	\N
-636	1	admin	3376	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/711.png	1	f	2018-11-16 06:00:00.779588	\N
-646	1	admin	3141	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/702.png	1	f	2018-11-16 06:00:00.892733	\N
-656	1	admin	3390	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/692.png	1	f	2018-11-16 06:00:01.005124	\N
-666	1	admin	3127	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/680.png	1	f	2018-11-16 06:00:01.130313	\N
-677	1	admin	2966	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/518.png	1	f	2018-11-16 06:00:01.243879	\N
-688	1	admin	2983	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/535.png	1	f	2018-11-16 06:00:01.359004	\N
-698	1	admin	2996	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/549.png	1	f	2018-11-16 06:00:01.471335	\N
-708	1	admin	3010	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/562.png	1	f	2018-11-16 06:00:01.583506	\N
-717	1	admin	3025	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/576.png	1	f	2018-11-16 06:00:01.694379	\N
-727	1	admin	3037	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/590.png	1	f	2018-11-16 06:00:01.80583	\N
-738	1	admin	3052	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/603.png	1	f	2018-11-16 06:00:01.92968	\N
-748	1	admin	3064	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/617.png	1	f	2018-11-16 06:00:02.041234	\N
-756	1	admin	3073	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/631.png	1	f	2018-11-16 06:00:02.164337	\N
-768	1	admin	3118	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/670.png	1	f	2018-11-16 06:00:02.302247	\N
-778	1	admin	3104	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/657.png	1	f	2018-11-16 06:00:02.415071	\N
-788	1	admin	3092	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/644.png	1	f	2018-11-16 06:00:02.529689	\N
-796	1	admin	2940	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/492.png	1	f	2018-11-16 06:00:02.63406	\N
-806	1	admin	2953	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/505.png	1	f	2018-11-16 06:00:02.747668	\N
-639	1	admin	3378	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/708.png	1	f	2018-11-16 06:00:00.790207	\N
-647	1	admin	3137	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/699.png	1	f	2018-11-16 06:00:00.900241	\N
-658	1	admin	3138	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/691.png	1	f	2018-11-16 06:00:01.018535	\N
-669	1	admin	3125	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/677.png	1	f	2018-11-16 06:00:01.143845	\N
-679	1	admin	2969	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/522.png	1	f	2018-11-16 06:00:01.266091	\N
-689	1	admin	2984	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/536.png	1	f	2018-11-16 06:00:01.379347	\N
-699	1	admin	2998	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/550.png	1	f	2018-11-16 06:00:01.498819	\N
-709	1	admin	3013	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/564.png	1	f	2018-11-16 06:00:01.625194	\N
-720	1	admin	3024	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/577.png	1	f	2018-11-16 06:00:01.741487	\N
-730	1	admin	3038	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/592.png	1	f	2018-11-16 06:00:01.857556	\N
-742	1	admin	3054	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/606.png	1	f	2018-11-16 06:00:01.986232	\N
-752	1	admin	3070	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/623.png	1	f	2018-11-16 06:00:02.11801	\N
-762	1	admin	3087	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/637.png	1	f	2018-11-16 06:00:02.244688	\N
-773	1	admin	3113	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/665.png	1	f	2018-11-16 06:00:02.38138	\N
-783	1	admin	3099	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/651.png	1	f	2018-11-16 06:00:02.498109	\N
-794	1	admin	3171	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/487.png	1	f	2018-11-16 06:00:02.623369	\N
-804	1	admin	2952	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/501.png	1	f	2018-11-16 06:00:02.736472	\N
-659	1	admin	3391	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/690.png	1	f	2018-11-16 06:00:01.02232	\N
-670	1	admin	3195	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/463.png	1	f	2018-11-16 06:00:01.14858	\N
-681	1	admin	2971	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/524.png	1	f	2018-11-16 06:00:01.279048	\N
-691	1	admin	2989	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/540.png	1	f	2018-11-16 06:00:01.397317	\N
-704	1	admin	3003	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/554.png	1	f	2018-11-16 06:00:01.53069	\N
-714	1	admin	3016	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/570.png	1	f	2018-11-16 06:00:01.651661	\N
-724	1	admin	3032	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/584.png	1	f	2018-11-16 06:00:01.772846	\N
-734	1	admin	3046	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/598.png	1	f	2018-11-16 06:00:01.892018	\N
-745	1	admin	3061	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/613.png	1	f	2018-11-16 06:00:02.022718	\N
-755	1	admin	3077	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/627.png	1	f	2018-11-16 06:00:02.150712	\N
-765	1	admin	3089	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/641.png	1	f	2018-11-16 06:00:02.26724	\N
-774	1	admin	3109	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/661.png	1	f	2018-11-16 06:00:02.387498	\N
-786	1	admin	3095	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/647.png	1	f	2018-11-16 06:00:02.512118	\N
-798	1	admin	2938	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/490.png	1	f	2018-11-16 06:00:02.637579	\N
-808	1	admin	2954	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/506.png	1	f	2018-11-16 06:00:02.76524	\N
-662	1	admin	3131	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/683.png	1	f	2018-11-16 06:00:01.037431	\N
-673	1	admin	2962	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/514.png	1	f	2018-11-16 06:00:01.16642	\N
-680	1	admin	2976	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/528.png	1	f	2018-11-16 06:00:01.274327	\N
-690	1	admin	2985	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/537.png	1	f	2018-11-16 06:00:01.385	\N
-700	1	admin	2999	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/551.png	1	f	2018-11-16 06:00:01.51069	\N
-711	1	admin	3012	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/565.png	1	f	2018-11-16 06:00:01.631076	\N
-721	1	admin	3028	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/580.png	1	f	2018-11-16 06:00:01.752867	\N
-731	1	admin	3042	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/594.png	1	f	2018-11-16 06:00:01.867178	\N
-741	1	admin	3055	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/607.png	1	f	2018-11-16 06:00:01.985571	\N
-751	1	admin	3069	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/621.png	1	f	2018-11-16 06:00:02.098877	\N
-761	1	admin	3083	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/635.png	1	f	2018-11-16 06:00:02.24392	\N
-772	1	admin	3114	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/666.png	1	f	2018-11-16 06:00:02.380664	\N
-782	1	admin	3100	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/652.png	1	f	2018-11-16 06:00:02.497395	\N
-792	1	admin	3172	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/486.png	1	f	2018-11-16 06:00:02.61453	\N
-803	1	admin	2947	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/499.png	1	f	2018-11-16 06:00:02.725456	\N
-683	1	admin	2973	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/525.png	1	f	2018-11-16 06:00:01.283584	\N
-693	1	admin	2987	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/539.png	1	f	2018-11-16 06:00:01.401821	\N
-701	1	admin	3001	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/553.png	1	f	2018-11-16 06:00:01.519976	\N
-713	1	admin	3014	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/566.png	1	f	2018-11-16 06:00:01.644863	\N
-723	1	admin	3030	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/581.png	1	f	2018-11-16 06:00:01.771385	\N
-733	1	admin	3045	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/596.png	1	f	2018-11-16 06:00:01.890708	\N
-743	1	admin	3058	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/610.png	1	f	2018-11-16 06:00:02.014055	\N
-753	1	admin	3079	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/624.png	1	f	2018-11-16 06:00:02.133602	\N
-764	1	admin	3086	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/638.png	1	f	2018-11-16 06:00:02.253169	\N
-775	1	admin	3110	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/662.png	1	f	2018-11-16 06:00:02.389965	\N
-785	1	admin	3098	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/649.png	1	f	2018-11-16 06:00:02.51156	\N
-797	1	admin	3170	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/488.png	1	f	2018-11-16 06:00:02.635513	\N
-807	1	admin	2951	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/503.png	1	f	2018-11-16 06:00:02.75888	\N
-692	1	admin	2988	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/541.png	1	f	2018-11-16 06:00:01.399586	\N
-705	1	admin	3002	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/555.png	1	f	2018-11-16 06:00:01.534	\N
-715	1	admin	3019	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/572.png	1	f	2018-11-16 06:00:01.653292	\N
-725	1	admin	3034	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/586.png	1	f	2018-11-16 06:00:01.778234	\N
-736	1	admin	3047	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/599.png	1	f	2018-11-16 06:00:01.903119	\N
-746	1	admin	3062	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/614.png	1	f	2018-11-16 06:00:02.024344	\N
-759	1	admin	3076	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/628.png	1	f	2018-11-16 06:00:02.172546	\N
-769	1	admin	3117	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/669.png	1	f	2018-11-16 06:00:02.310537	\N
-779	1	admin	3105	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/656.png	1	f	2018-11-16 06:00:02.437674	\N
-789	1	admin	3121	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/673.png	1	f	2018-11-16 06:00:02.563979	\N
-799	1	admin	2942	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/494.png	1	f	2018-11-16 06:00:02.685623	\N
-809	1	admin	2955	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/507.png	1	f	2018-11-16 06:00:02.807401	\N
+COPY public."RepositoryResources" (id, "idUser", username, "idRepository", file, type, uploaded, "createdAt", "updatedAt", name, description) FROM stdin;
+5	1	admin	2590	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/001.png	1	f	2018-11-16 05:59:53.087909	\N	\N	\N
+6	1	admin	2586	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/002.png	1	f	2018-11-16 05:59:53.089146	\N	\N	\N
+7	1	admin	2593	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/004.png	1	f	2018-11-16 05:59:53.094097	\N	\N	\N
+8	1	admin	2585	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/007.png	1	f	2018-11-16 05:59:53.10021	\N	\N	\N
+9	1	admin	2588	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/005.png	1	f	2018-11-16 05:59:53.104344	\N	\N	\N
+10	1	admin	2592	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/003.png	1	f	2018-11-16 05:59:53.106015	\N	\N	\N
+11	1	admin	2594	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/010.png	1	f	2018-11-16 05:59:53.110065	\N	\N	\N
+12	1	admin	2591	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/009.png	1	f	2018-11-16 05:59:53.112059	\N	\N	\N
+13	1	admin	2589	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/008.png	1	f	2018-11-16 05:59:53.113043	\N	\N	\N
+14	1	admin	2587	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/006.png	1	f	2018-11-16 05:59:53.117954	\N	\N	\N
+15	1	admin	2598	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/015.png	1	f	2018-11-16 05:59:53.247777	\N	\N	\N
+16	1	admin	2599	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/014.png	1	f	2018-11-16 05:59:53.248476	\N	\N	\N
+17	1	admin	2601	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/018.png	1	f	2018-11-16 05:59:53.250296	\N	\N	\N
+18	1	admin	2596	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/012.png	1	f	2018-11-16 05:59:53.250841	\N	\N	\N
+19	1	admin	2595	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/011.png	1	f	2018-11-16 05:59:53.251523	\N	\N	\N
+20	1	admin	2597	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/013.png	1	f	2018-11-16 05:59:53.253929	\N	\N	\N
+21	1	admin	2600	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/016.png	1	f	2018-11-16 05:59:53.257268	\N	\N	\N
+22	1	admin	2602	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/017.png	1	f	2018-11-16 05:59:53.259436	\N	\N	\N
+23	1	admin	2604	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/019.png	1	f	2018-11-16 05:59:53.265269	\N	\N	\N
+24	1	admin	2603	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/020.png	1	f	2018-11-16 05:59:53.270539	\N	\N	\N
+25	1	admin	2605	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/021.png	1	f	2018-11-16 05:59:53.359323	\N	\N	\N
+26	1	admin	2606	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/022.png	1	f	2018-11-16 05:59:53.360125	\N	\N	\N
+27	1	admin	2607	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/023.png	1	f	2018-11-16 05:59:53.365754	\N	\N	\N
+28	1	admin	2608	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/024.png	1	f	2018-11-16 05:59:53.369073	\N	\N	\N
+29	1	admin	2609	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/025.png	1	f	2018-11-16 05:59:53.3705	\N	\N	\N
+30	1	admin	2610	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/026.png	1	f	2018-11-16 05:59:53.372407	\N	\N	\N
+31	1	admin	2611	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/027.png	1	f	2018-11-16 05:59:53.38181	\N	\N	\N
+32	1	admin	2612	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/028.png	1	f	2018-11-16 05:59:53.393257	\N	\N	\N
+33	1	admin	2613	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/029.png	1	f	2018-11-16 05:59:53.39434	\N	\N	\N
+34	1	admin	2614	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/030.png	1	f	2018-11-16 05:59:53.415594	\N	\N	\N
+35	1	admin	2615	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/031.png	1	f	2018-11-16 05:59:53.463341	\N	\N	\N
+36	1	admin	2616	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/032.png	1	f	2018-11-16 05:59:53.464812	\N	\N	\N
+37	1	admin	2618	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/034.png	1	f	2018-11-16 05:59:53.479553	\N	\N	\N
+38	1	admin	2620	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/035.png	1	f	2018-11-16 05:59:53.48036	\N	\N	\N
+39	1	admin	2617	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/033.png	1	f	2018-11-16 05:59:53.482414	\N	\N	\N
+40	1	admin	2621	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/036.png	1	f	2018-11-16 05:59:53.483598	\N	\N	\N
+41	1	admin	2622	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/037.png	1	f	2018-11-16 05:59:53.499459	\N	\N	\N
+42	1	admin	2624	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/038.png	1	f	2018-11-16 05:59:53.530309	\N	\N	\N
+43	1	admin	2619	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/039.png	1	f	2018-11-16 05:59:53.533092	\N	\N	\N
+44	1	admin	2623	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/040.png	1	f	2018-11-16 05:59:53.565958	\N	\N	\N
+45	1	admin	2626	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/041.png	1	f	2018-11-16 05:59:53.571046	\N	\N	\N
+46	1	admin	2627	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/043.png	1	f	2018-11-16 05:59:53.593299	\N	\N	\N
+47	1	admin	2625	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/042.png	1	f	2018-11-16 05:59:53.594033	\N	\N	\N
+48	1	admin	2628	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/044.png	1	f	2018-11-16 05:59:53.59759	\N	\N	\N
+49	1	admin	2629	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/045.png	1	f	2018-11-16 05:59:53.599462	\N	\N	\N
+50	1	admin	2630	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/046.png	1	f	2018-11-16 05:59:53.649545	\N	\N	\N
+51	1	admin	2631	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/047.png	1	f	2018-11-16 05:59:53.652178	\N	\N	\N
+52	1	admin	2632	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/048.png	1	f	2018-11-16 05:59:53.664607	\N	\N	\N
+53	1	admin	2634	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/050.png	1	f	2018-11-16 05:59:53.677243	\N	\N	\N
+54	1	admin	2635	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/049.png	1	f	2018-11-16 05:59:53.677965	\N	\N	\N
+55	1	admin	2633	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/051.png	1	f	2018-11-16 05:59:53.701904	\N	\N	\N
+65	1	admin	2645	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/060.png	1	f	2018-11-16 05:59:53.815654	\N	\N	\N
+74	1	admin	2656	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/070.png	1	f	2018-11-16 05:59:53.923664	\N	\N	\N
+83	1	admin	2664	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/080.png	1	f	2018-11-16 05:59:54.034817	\N	\N	\N
+94	1	admin	2674	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/089.png	1	f	2018-11-16 05:59:54.21718	\N	\N	\N
+102	1	admin	2681	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/099.png	1	f	2018-11-16 05:59:54.328852	\N	\N	\N
+111	1	admin	2691	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/107.png	1	f	2018-11-16 05:59:54.472296	\N	\N	\N
+121	1	admin	2702	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/117.png	1	f	2018-11-16 05:59:54.586392	\N	\N	\N
+131	1	admin	2711	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/127.png	1	f	2018-11-16 05:59:54.700741	\N	\N	\N
+141	1	admin	2721	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/137.png	1	f	2018-11-16 05:59:54.811198	\N	\N	\N
+151	1	admin	2730	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/146.png	1	f	2018-11-16 05:59:54.922115	\N	\N	\N
+161	1	admin	2740	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/156.png	1	f	2018-11-16 05:59:55.037279	\N	\N	\N
+168	1	admin	2747	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/164.png	1	f	2018-11-16 05:59:55.145495	\N	\N	\N
+179	1	admin	2757	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/173.png	1	f	2018-11-16 05:59:55.266334	\N	\N	\N
+188	1	admin	2766	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/182.png	1	f	2018-11-16 05:59:55.375761	\N	\N	\N
+197	1	admin	2776	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/192.png	1	f	2018-11-16 05:59:55.491413	\N	\N	\N
+205	1	admin	2795	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/209.png	1	f	2018-11-16 05:59:55.602794	\N	\N	\N
+214	1	admin	2823	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/239.png	1	f	2018-11-16 05:59:55.713556	\N	\N	\N
+224	1	admin	2858	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/274.png	1	f	2018-11-16 05:59:55.82332	\N	\N	\N
+233	1	admin	2894	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/310.png	1	f	2018-11-16 05:59:55.936753	\N	\N	\N
+241	1	admin	2935	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/351.png	1	f	2018-11-16 05:59:56.055022	\N	\N	\N
+250	1	admin	3274	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/384.png	1	f	2018-11-16 05:59:56.166144	\N	\N	\N
+259	1	admin	3235	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/423.png	1	f	2018-11-16 05:59:56.267123	\N	\N	\N
+269	1	admin	3203	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/455.png	1	f	2018-11-16 05:59:56.380923	\N	\N	\N
+279	1	admin	2948	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/500.png	1	f	2018-11-16 05:59:56.488858	\N	\N	\N
+289	1	admin	2977	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/530.png	1	f	2018-11-16 05:59:56.598879	\N	\N	\N
+299	1	admin	3015	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/567.png	1	f	2018-11-16 05:59:56.717837	\N	\N	\N
+309	1	admin	3053	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/605.png	1	f	2018-11-16 05:59:56.847145	\N	\N	\N
+320	1	admin	3084	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/636.png	1	f	2018-11-16 05:59:56.957413	\N	\N	\N
+328	1	admin	3124	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/675.png	1	f	2018-11-16 05:59:57.06746	\N	\N	\N
+338	1	admin	3184	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/474.png	1	f	2018-11-16 05:59:57.185461	\N	\N	\N
+346	1	admin	3196	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/461.png	1	f	2018-11-16 05:59:57.294806	\N	\N	\N
+356	1	admin	3211	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/447.png	1	f	2018-11-16 05:59:57.414582	\N	\N	\N
+366	1	admin	3225	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/433.png	1	f	2018-11-16 05:59:57.525095	\N	\N	\N
+376	1	admin	3236	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/420.png	1	f	2018-11-16 05:59:57.641024	\N	\N	\N
+387	1	admin	3251	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/406.png	1	f	2018-11-16 05:59:57.762875	\N	\N	\N
+396	1	admin	3264	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/394.png	1	f	2018-11-16 05:59:57.87615	\N	\N	\N
+406	1	admin	3277	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/381.png	1	f	2018-11-16 05:59:57.986551	\N	\N	\N
+415	1	admin	3290	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/368.png	1	f	2018-11-16 05:59:58.096455	\N	\N	\N
+424	1	admin	3301	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/356.png	1	f	2018-11-16 05:59:58.214073	\N	\N	\N
+433	1	admin	2928	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/344.png	1	f	2018-11-16 05:59:58.321309	\N	\N	\N
+443	1	admin	2916	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/332.png	1	f	2018-11-16 05:59:58.444557	\N	\N	\N
+452	1	admin	2904	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/320.png	1	f	2018-11-16 05:59:58.552023	\N	\N	\N
+461	1	admin	2891	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/307.png	1	f	2018-11-16 05:59:58.663328	\N	\N	\N
+470	1	admin	2878	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/295.png	1	f	2018-11-16 05:59:58.775403	\N	\N	\N
+478	1	admin	2871	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/287.png	1	f	2018-11-16 05:59:58.883247	\N	\N	\N
+487	1	admin	2861	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/276.png	1	f	2018-11-16 05:59:58.995173	\N	\N	\N
+498	1	admin	2844	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/260.png	1	f	2018-11-16 05:59:59.112335	\N	\N	\N
+508	1	admin	2829	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/246.png	1	f	2018-11-16 05:59:59.239389	\N	\N	\N
+517	1	admin	2817	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/233.png	1	f	2018-11-16 05:59:59.350802	\N	\N	\N
+526	1	admin	2804	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/220.png	1	f	2018-11-16 05:59:59.46098	\N	\N	\N
+536	1	admin	2791	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/207.png	1	f	2018-11-16 05:59:59.570304	\N	\N	\N
+544	1	admin	3308	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/803.png	1	f	2018-11-16 05:59:59.68046	\N	\N	\N
+554	1	admin	3165	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/794.png	1	f	2018-11-16 05:59:59.791896	\N	\N	\N
+564	1	admin	3321	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/784.png	1	f	2018-11-16 05:59:59.901945	\N	\N	\N
+572	1	admin	3329	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/774.png	1	f	2018-11-16 06:00:00.010766	\N	\N	\N
+582	1	admin	3335	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/766.png	1	f	2018-11-16 06:00:00.118898	\N	\N	\N
+592	1	admin	3155	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/756.png	1	f	2018-11-16 06:00:00.226045	\N	\N	\N
+56	1	admin	2636	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/052.png	1	f	2018-11-16 05:59:53.707713	\N	\N	\N
+64	1	admin	2644	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/061.png	1	f	2018-11-16 05:59:53.813723	\N	\N	\N
+75	1	admin	2654	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/071.png	1	f	2018-11-16 05:59:53.924575	\N	\N	\N
+84	1	admin	2666	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/081.png	1	f	2018-11-16 05:59:54.037977	\N	\N	\N
+93	1	admin	2673	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/090.png	1	f	2018-11-16 05:59:54.214244	\N	\N	\N
+104	1	admin	2684	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/100.png	1	f	2018-11-16 05:59:54.348906	\N	\N	\N
+112	1	admin	2694	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/110.png	1	f	2018-11-16 05:59:54.486423	\N	\N	\N
+122	1	admin	2701	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/118.png	1	f	2018-11-16 05:59:54.595601	\N	\N	\N
+132	1	admin	2712	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/128.png	1	f	2018-11-16 05:59:54.706351	\N	\N	\N
+142	1	admin	2723	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/138.png	1	f	2018-11-16 05:59:54.813167	\N	\N	\N
+152	1	admin	2732	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/148.png	1	f	2018-11-16 05:59:54.927556	\N	\N	\N
+162	1	admin	2741	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/158.png	1	f	2018-11-16 05:59:55.039022	\N	\N	\N
+169	1	admin	2751	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/167.png	1	f	2018-11-16 05:59:55.152387	\N	\N	\N
+177	1	admin	2761	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/174.png	1	f	2018-11-16 05:59:55.2634	\N	\N	\N
+186	1	admin	2767	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/183.png	1	f	2018-11-16 05:59:55.372859	\N	\N	\N
+196	1	admin	2777	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/193.png	1	f	2018-11-16 05:59:55.488536	\N	\N	\N
+204	1	admin	2796	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/213.png	1	f	2018-11-16 05:59:55.599878	\N	\N	\N
+213	1	admin	2826	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/242.png	1	f	2018-11-16 05:59:55.710615	\N	\N	\N
+222	1	admin	2860	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/277.png	1	f	2018-11-16 05:59:55.81995	\N	\N	\N
+232	1	admin	2898	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/314.png	1	f	2018-11-16 05:59:55.933861	\N	\N	\N
+243	1	admin	3303	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/355.png	1	f	2018-11-16 05:59:56.088667	\N	\N	\N
+253	1	admin	3263	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/395.png	1	f	2018-11-16 05:59:56.199334	\N	\N	\N
+262	1	admin	3221	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/435.png	1	f	2018-11-16 05:59:56.310585	\N	\N	\N
+274	1	admin	3179	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/478.png	1	f	2018-11-16 05:59:56.423102	\N	\N	\N
+284	1	admin	2960	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/511.png	1	f	2018-11-16 05:59:56.535034	\N	\N	\N
+294	1	admin	2997	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/548.png	1	f	2018-11-16 05:59:56.644201	\N	\N	\N
+304	1	admin	3035	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/585.png	1	f	2018-11-16 05:59:56.757234	\N	\N	\N
+337	1	admin	3185	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/473.png	1	f	2018-11-16 05:59:57.183568	\N	\N	\N
+347	1	admin	3199	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/459.png	1	f	2018-11-16 05:59:57.306878	\N	\N	\N
+357	1	admin	3212	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/446.png	1	f	2018-11-16 05:59:57.41841	\N	\N	\N
+367	1	admin	3226	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/432.png	1	f	2018-11-16 05:59:57.530824	\N	\N	\N
+377	1	admin	3241	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/418.png	1	f	2018-11-16 05:59:57.642134	\N	\N	\N
+386	1	admin	3253	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/405.png	1	f	2018-11-16 05:59:57.759951	\N	\N	\N
+395	1	admin	3266	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/392.png	1	f	2018-11-16 05:59:57.873251	\N	\N	\N
+404	1	admin	3278	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/379.png	1	f	2018-11-16 05:59:57.983221	\N	\N	\N
+414	1	admin	3292	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/366.png	1	f	2018-11-16 05:59:58.093549	\N	\N	\N
+425	1	admin	3304	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/354.png	1	f	2018-11-16 05:59:58.218196	\N	\N	\N
+434	1	admin	2924	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/342.png	1	f	2018-11-16 05:59:58.326822	\N	\N	\N
+442	1	admin	2915	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/331.png	1	f	2018-11-16 05:59:58.441667	\N	\N	\N
+451	1	admin	2903	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/319.png	1	f	2018-11-16 05:59:58.549113	\N	\N	\N
+463	1	admin	2890	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/306.png	1	f	2018-11-16 05:59:58.674719	\N	\N	\N
+473	1	admin	2877	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/292.png	1	f	2018-11-16 05:59:58.788202	\N	\N	\N
+482	1	admin	2866	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/282.png	1	f	2018-11-16 05:59:58.904212	\N	\N	\N
+490	1	admin	2853	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/269.png	1	f	2018-11-16 05:59:59.013948	\N	\N	\N
+500	1	admin	2841	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/256.png	1	f	2018-11-16 05:59:59.124607	\N	\N	\N
+507	1	admin	2827	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/243.png	1	f	2018-11-16 05:59:59.238204	\N	\N	\N
+516	1	admin	2815	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/231.png	1	f	2018-11-16 05:59:59.349639	\N	\N	\N
+525	1	admin	2803	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/219.png	1	f	2018-11-16 05:59:59.45806	\N	\N	\N
+535	1	admin	2789	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/205.png	1	f	2018-11-16 05:59:59.567913	\N	\N	\N
+545	1	admin	3169	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/802.png	1	f	2018-11-16 05:59:59.682968	\N	\N	\N
+555	1	admin	3316	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/792.png	1	f	2018-11-16 05:59:59.79602	\N	\N	\N
+565	1	admin	3162	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/783.png	1	f	2018-11-16 05:59:59.912615	\N	\N	\N
+575	1	admin	3331	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/773.png	1	f	2018-11-16 06:00:00.023933	\N	\N	\N
+585	1	admin	3337	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/763.png	1	f	2018-11-16 06:00:00.136471	\N	\N	\N
+593	1	admin	3343	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/754.png	1	f	2018-11-16 06:00:00.262905	\N	\N	\N
+604	1	admin	3150	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/745.png	1	f	2018-11-16 06:00:00.383551	\N	\N	\N
+614	1	admin	3362	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/734.png	1	f	2018-11-16 06:00:00.499534	\N	\N	\N
+624	1	admin	3366	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/724.png	1	f	2018-11-16 06:00:00.62732	\N	\N	\N
+57	1	admin	2637	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/053.png	1	f	2018-11-16 05:59:53.709355	\N	\N	\N
+66	1	admin	2646	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/062.png	1	f	2018-11-16 05:59:53.823501	\N	\N	\N
+76	1	admin	2657	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/072.png	1	f	2018-11-16 05:59:53.936142	\N	\N	\N
+86	1	admin	2665	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/082.png	1	f	2018-11-16 05:59:54.052347	\N	\N	\N
+95	1	admin	2676	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/092.png	1	f	2018-11-16 05:59:54.232668	\N	\N	\N
+105	1	admin	2686	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/101.png	1	f	2018-11-16 05:59:54.34971	\N	\N	\N
+113	1	admin	2695	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/111.png	1	f	2018-11-16 05:59:54.487247	\N	\N	\N
+123	1	admin	2703	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/119.png	1	f	2018-11-16 05:59:54.596441	\N	\N	\N
+133	1	admin	2713	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/129.png	1	f	2018-11-16 05:59:54.707202	\N	\N	\N
+143	1	admin	2724	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/139.png	1	f	2018-11-16 05:59:54.819445	\N	\N	\N
+153	1	admin	2734	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/149.png	1	f	2018-11-16 05:59:54.931782	\N	\N	\N
+163	1	admin	2742	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/159.png	1	f	2018-11-16 05:59:55.0399	\N	\N	\N
+170	1	admin	2752	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/168.png	1	f	2018-11-16 05:59:55.153221	\N	\N	\N
+178	1	admin	2760	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/175.png	1	f	2018-11-16 05:59:55.264212	\N	\N	\N
+187	1	admin	2768	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/184.png	1	f	2018-11-16 05:59:55.373702	\N	\N	\N
+221	1	admin	2850	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/266.png	1	f	2018-11-16 05:59:55.810525	\N	\N	\N
+231	1	admin	2889	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/305.png	1	f	2018-11-16 05:59:55.926004	\N	\N	\N
+240	1	admin	2930	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/347.png	1	f	2018-11-16 05:59:56.052974	\N	\N	\N
+251	1	admin	3267	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/391.png	1	f	2018-11-16 05:59:56.179744	\N	\N	\N
+261	1	admin	3231	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/427.png	1	f	2018-11-16 05:59:56.289516	\N	\N	\N
+271	1	admin	3194	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/464.png	1	f	2018-11-16 05:59:56.405722	\N	\N	\N
+280	1	admin	2941	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/493.png	1	f	2018-11-16 05:59:56.513746	\N	\N	\N
+290	1	admin	2982	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/534.png	1	f	2018-11-16 05:59:56.625286	\N	\N	\N
+300	1	admin	3020	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/571.png	1	f	2018-11-16 05:59:56.737998	\N	\N	\N
+310	1	admin	3056	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/608.png	1	f	2018-11-16 05:59:56.848705	\N	\N	\N
+321	1	admin	3094	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/646.png	1	f	2018-11-16 05:59:56.964103	\N	\N	\N
+330	1	admin	3133	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/684.png	1	f	2018-11-16 05:59:57.083257	\N	\N	\N
+340	1	admin	3188	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/470.png	1	f	2018-11-16 05:59:57.192625	\N	\N	\N
+349	1	admin	3202	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/456.png	1	f	2018-11-16 05:59:57.319047	\N	\N	\N
+358	1	admin	3213	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/443.png	1	f	2018-11-16 05:59:57.422946	\N	\N	\N
+368	1	admin	3228	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/430.png	1	f	2018-11-16 05:59:57.536187	\N	\N	\N
+378	1	admin	3240	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/417.png	1	f	2018-11-16 05:59:57.646362	\N	\N	\N
+388	1	admin	3255	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/403.png	1	f	2018-11-16 05:59:57.7674	\N	\N	\N
+397	1	admin	3268	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/390.png	1	f	2018-11-16 05:59:57.881184	\N	\N	\N
+407	1	admin	3280	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/378.png	1	f	2018-11-16 05:59:57.994186	\N	\N	\N
+417	1	admin	3293	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/365.png	1	f	2018-11-16 05:59:58.104574	\N	\N	\N
+426	1	admin	2936	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/352.png	1	f	2018-11-16 05:59:58.226815	\N	\N	\N
+435	1	admin	2925	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/341.png	1	f	2018-11-16 05:59:58.339906	\N	\N	\N
+444	1	admin	2914	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/329.png	1	f	2018-11-16 05:59:58.450533	\N	\N	\N
+455	1	admin	2900	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/316.png	1	f	2018-11-16 05:59:58.566808	\N	\N	\N
+466	1	admin	2887	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/302.png	1	f	2018-11-16 05:59:58.687489	\N	\N	\N
+474	1	admin	2845	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/261.png	1	f	2018-11-16 05:59:58.801856	\N	\N	\N
+483	1	admin	2865	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/280.png	1	f	2018-11-16 05:59:58.911214	\N	\N	\N
+492	1	admin	2852	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/268.png	1	f	2018-11-16 05:59:59.02306	\N	\N	\N
+502	1	admin	2837	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/253.png	1	f	2018-11-16 05:59:59.135288	\N	\N	\N
+510	1	admin	2824	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/240.png	1	f	2018-11-16 05:59:59.245252	\N	\N	\N
+518	1	admin	2813	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/229.png	1	f	2018-11-16 05:59:59.358083	\N	\N	\N
+527	1	admin	2802	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/218.png	1	f	2018-11-16 05:59:59.479773	\N	\N	\N
+537	1	admin	2786	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/203.png	1	f	2018-11-16 05:59:59.589899	\N	\N	\N
+547	1	admin	3310	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/801.png	1	f	2018-11-16 05:59:59.704972	\N	\N	\N
+557	1	admin	3164	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/791.png	1	f	2018-11-16 05:59:59.818151	\N	\N	\N
+567	1	admin	3324	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/781.png	1	f	2018-11-16 05:59:59.937505	\N	\N	\N
+577	1	admin	3159	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/771.png	1	f	2018-11-16 06:00:00.050084	\N	\N	\N
+587	1	admin	3338	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/761.png	1	f	2018-11-16 06:00:00.163348	\N	\N	\N
+597	1	admin	3345	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/751.png	1	f	2018-11-16 06:00:00.274952	\N	\N	\N
+606	1	admin	3149	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/741.png	1	f	2018-11-16 06:00:00.39918	\N	\N	\N
+616	1	admin	3359	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/732.png	1	f	2018-11-16 06:00:00.521551	\N	\N	\N
+627	1	admin	3367	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/722.png	1	f	2018-11-16 06:00:00.6423	\N	\N	\N
+58	1	admin	2638	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/054.png	1	f	2018-11-16 05:59:53.725308	\N	\N	\N
+68	1	admin	2648	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/064.png	1	f	2018-11-16 05:59:53.841901	\N	\N	\N
+78	1	admin	2660	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/074.png	1	f	2018-11-16 05:59:53.969707	\N	\N	\N
+88	1	admin	2668	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/084.png	1	f	2018-11-16 05:59:54.101559	\N	\N	\N
+98	1	admin	2678	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/094.png	1	f	2018-11-16 05:59:54.274472	\N	\N	\N
+108	1	admin	2687	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/104.png	1	f	2018-11-16 05:59:54.461528	\N	\N	\N
+120	1	admin	2698	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/114.png	1	f	2018-11-16 05:59:54.574874	\N	\N	\N
+130	1	admin	2710	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/126.png	1	f	2018-11-16 05:59:54.691013	\N	\N	\N
+140	1	admin	2720	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/136.png	1	f	2018-11-16 05:59:54.808893	\N	\N	\N
+150	1	admin	2731	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/147.png	1	f	2018-11-16 05:59:54.921509	\N	\N	\N
+160	1	admin	2743	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/157.png	1	f	2018-11-16 05:59:55.036839	\N	\N	\N
+171	1	admin	2750	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/166.png	1	f	2018-11-16 05:59:55.155078	\N	\N	\N
+180	1	admin	2758	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/176.png	1	f	2018-11-16 05:59:55.26723	\N	\N	\N
+189	1	admin	2769	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/185.png	1	f	2018-11-16 05:59:55.385641	\N	\N	\N
+198	1	admin	2778	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/194.png	1	f	2018-11-16 05:59:55.518654	\N	\N	\N
+207	1	admin	2801	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/217.png	1	f	2018-11-16 05:59:55.633424	\N	\N	\N
+216	1	admin	2832	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/248.png	1	f	2018-11-16 05:59:55.751548	\N	\N	\N
+226	1	admin	2869	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/285.png	1	f	2018-11-16 05:59:55.865377	\N	\N	\N
+235	1	admin	2910	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/326.png	1	f	2018-11-16 05:59:55.981216	\N	\N	\N
+245	1	admin	3295	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/363.png	1	f	2018-11-16 05:59:56.095532	\N	\N	\N
+257	1	admin	3247	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/411.png	1	f	2018-11-16 05:59:56.212033	\N	\N	\N
+266	1	admin	3209	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/448.png	1	f	2018-11-16 05:59:56.325579	\N	\N	\N
+277	1	admin	3176	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/482.png	1	f	2018-11-16 05:59:56.442649	\N	\N	\N
+287	1	admin	2972	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/523.png	1	f	2018-11-16 05:59:56.581705	\N	\N	\N
+297	1	admin	3007	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/560.png	1	f	2018-11-16 05:59:56.696859	\N	\N	\N
+307	1	admin	3044	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/597.png	1	f	2018-11-16 05:59:56.827311	\N	\N	\N
+316	1	admin	3075	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/629.png	1	f	2018-11-16 05:59:56.943503	\N	\N	\N
+326	1	admin	3112	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/663.png	1	f	2018-11-16 05:59:57.05933	\N	\N	\N
+336	1	admin	3182	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/476.png	1	f	2018-11-16 05:59:57.176086	\N	\N	\N
+348	1	admin	3200	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/458.png	1	f	2018-11-16 05:59:57.309603	\N	\N	\N
+359	1	admin	3216	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/444.png	1	f	2018-11-16 05:59:57.424841	\N	\N	\N
+369	1	admin	3229	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/429.png	1	f	2018-11-16 05:59:57.538029	\N	\N	\N
+379	1	admin	3242	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/416.png	1	f	2018-11-16 05:59:57.653073	\N	\N	\N
+389	1	admin	3256	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/402.png	1	f	2018-11-16 05:59:57.779555	\N	\N	\N
+399	1	admin	3269	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/389.png	1	f	2018-11-16 05:59:57.895168	\N	\N	\N
+410	1	admin	3282	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/376.png	1	f	2018-11-16 05:59:58.011275	\N	\N	\N
+421	1	admin	3297	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/361.png	1	f	2018-11-16 05:59:58.151358	\N	\N	\N
+430	1	admin	2934	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/348.png	1	f	2018-11-16 05:59:58.273318	\N	\N	\N
+439	1	admin	2920	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/336.png	1	f	2018-11-16 05:59:58.386334	\N	\N	\N
+448	1	admin	2908	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/324.png	1	f	2018-11-16 05:59:58.50563	\N	\N	\N
+458	1	admin	2895	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/311.png	1	f	2018-11-16 05:59:58.622293	\N	\N	\N
+494	1	admin	2849	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/265.png	1	f	2018-11-16 05:59:59.056899	\N	\N	\N
+504	1	admin	2834	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/250.png	1	f	2018-11-16 05:59:59.17194	\N	\N	\N
+513	1	admin	2822	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/237.png	1	f	2018-11-16 05:59:59.285222	\N	\N	\N
+521	1	admin	2809	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/224.png	1	f	2018-11-16 05:59:59.397104	\N	\N	\N
+529	1	admin	2798	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/214.png	1	f	2018-11-16 05:59:59.511697	\N	\N	\N
+538	1	admin	2784	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/200.png	1	f	2018-11-16 05:59:59.623678	\N	\N	\N
+549	1	admin	3309	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/799.png	1	f	2018-11-16 05:59:59.736591	\N	\N	\N
+561	1	admin	3163	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/787.png	1	f	2018-11-16 05:59:59.861315	\N	\N	\N
+571	1	admin	3326	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/777.png	1	f	2018-11-16 05:59:59.977933	\N	\N	\N
+581	1	admin	3158	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/767.png	1	f	2018-11-16 06:00:00.103336	\N	\N	\N
+601	1	admin	3349	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/747.png	1	f	2018-11-16 06:00:00.330584	\N	\N	\N
+611	1	admin	3151	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/737.png	1	f	2018-11-16 06:00:00.445809	\N	\N	\N
+621	1	admin	3364	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/727.png	1	f	2018-11-16 06:00:00.569921	\N	\N	\N
+631	1	admin	3372	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/716.png	1	f	2018-11-16 06:00:00.681943	\N	\N	\N
+640	1	admin	3142	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/706.png	1	f	2018-11-16 06:00:00.795808	\N	\N	\N
+653	1	admin	3387	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/696.png	1	f	2018-11-16 06:00:00.92275	\N	\N	\N
+59	1	admin	2639	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/055.png	1	f	2018-11-16 05:59:53.770641	\N	\N	\N
+69	1	admin	2649	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/065.png	1	f	2018-11-16 05:59:53.888074	\N	\N	\N
+80	1	admin	2658	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/075.png	1	f	2018-11-16 05:59:54.009288	\N	\N	\N
+92	1	admin	2670	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/087.png	1	f	2018-11-16 05:59:54.207952	\N	\N	\N
+103	1	admin	2683	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/098.png	1	f	2018-11-16 05:59:54.333433	\N	\N	\N
+115	1	admin	2693	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/109.png	1	f	2018-11-16 05:59:54.493858	\N	\N	\N
+125	1	admin	2706	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/122.png	1	f	2018-11-16 05:59:54.614432	\N	\N	\N
+136	1	admin	2716	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/132.png	1	f	2018-11-16 05:59:54.749662	\N	\N	\N
+146	1	admin	2726	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/142.png	1	f	2018-11-16 05:59:54.870777	\N	\N	\N
+155	1	admin	2737	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/152.png	1	f	2018-11-16 05:59:54.990612	\N	\N	\N
+167	1	admin	2744	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/161.png	1	f	2018-11-16 05:59:55.127243	\N	\N	\N
+176	1	admin	2756	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/172.png	1	f	2018-11-16 05:59:55.246406	\N	\N	\N
+185	1	admin	2764	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/181.png	1	f	2018-11-16 05:59:55.364683	\N	\N	\N
+195	1	admin	2775	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/191.png	1	f	2018-11-16 05:59:55.485196	\N	\N	\N
+206	1	admin	2790	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/206.png	1	f	2018-11-16 05:59:55.607345	\N	\N	\N
+215	1	admin	2831	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/245.png	1	f	2018-11-16 05:59:55.72629	\N	\N	\N
+225	1	admin	2864	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/281.png	1	f	2018-11-16 05:59:55.846921	\N	\N	\N
+236	1	admin	2907	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/322.png	1	f	2018-11-16 05:59:55.986017	\N	\N	\N
+248	1	admin	3291	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/367.png	1	f	2018-11-16 05:59:56.106084	\N	\N	\N
+258	1	admin	3243	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/415.png	1	f	2018-11-16 05:59:56.229382	\N	\N	\N
+268	1	admin	3205	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/452.png	1	f	2018-11-16 05:59:56.349919	\N	\N	\N
+278	1	admin	2950	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/504.png	1	f	2018-11-16 05:59:56.468545	\N	\N	\N
+288	1	admin	2975	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/527.png	1	f	2018-11-16 05:59:56.591505	\N	\N	\N
+298	1	admin	3011	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/563.png	1	f	2018-11-16 05:59:56.711065	\N	\N	\N
+308	1	admin	3049	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/601.png	1	f	2018-11-16 05:59:56.832044	\N	\N	\N
+319	1	admin	3072	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/632.png	1	f	2018-11-16 05:59:56.954211	\N	\N	\N
+329	1	admin	3128	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/679.png	1	f	2018-11-16 05:59:57.072015	\N	\N	\N
+339	1	admin	3187	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/472.png	1	f	2018-11-16 05:59:57.191023	\N	\N	\N
+350	1	admin	3201	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/457.png	1	f	2018-11-16 05:59:57.325695	\N	\N	\N
+360	1	admin	3215	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/442.png	1	f	2018-11-16 05:59:57.449004	\N	\N	\N
+370	1	admin	3230	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/428.png	1	f	2018-11-16 05:59:57.565858	\N	\N	\N
+380	1	admin	3246	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/414.png	1	f	2018-11-16 05:59:57.687	\N	\N	\N
+391	1	admin	3259	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/399.png	1	f	2018-11-16 05:59:57.810659	\N	\N	\N
+402	1	admin	3271	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/386.png	1	f	2018-11-16 05:59:57.929402	\N	\N	\N
+413	1	admin	3287	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/372.png	1	f	2018-11-16 05:59:58.047917	\N	\N	\N
+423	1	admin	3302	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/357.png	1	f	2018-11-16 05:59:58.165216	\N	\N	\N
+432	1	admin	2929	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/345.png	1	f	2018-11-16 05:59:58.283671	\N	\N	\N
+441	1	admin	2917	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/333.png	1	f	2018-11-16 05:59:58.402567	\N	\N	\N
+450	1	admin	2905	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/321.png	1	f	2018-11-16 05:59:58.516447	\N	\N	\N
+460	1	admin	2892	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/308.png	1	f	2018-11-16 05:59:58.651825	\N	\N	\N
+469	1	admin	2880	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/296.png	1	f	2018-11-16 05:59:58.771485	\N	\N	\N
+480	1	admin	2868	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/284.png	1	f	2018-11-16 05:59:58.898492	\N	\N	\N
+491	1	admin	2855	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/271.png	1	f	2018-11-16 05:59:59.014991	\N	\N	\N
+501	1	admin	2840	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/254.png	1	f	2018-11-16 05:59:59.132293	\N	\N	\N
+511	1	admin	2825	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/241.png	1	f	2018-11-16 05:59:59.245753	\N	\N	\N
+520	1	admin	2811	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/227.png	1	f	2018-11-16 05:59:59.364984	\N	\N	\N
+530	1	admin	2799	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/215.png	1	f	2018-11-16 05:59:59.515654	\N	\N	\N
+542	1	admin	3306	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/807.png	1	f	2018-11-16 05:59:59.644302	\N	\N	\N
+552	1	admin	3314	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/796.png	1	f	2018-11-16 05:59:59.764216	\N	\N	\N
+562	1	admin	3322	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/786.png	1	f	2018-11-16 05:59:59.88279	\N	\N	\N
+573	1	admin	3328	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/776.png	1	f	2018-11-16 06:00:00.014561	\N	\N	\N
+583	1	admin	3336	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/765.png	1	f	2018-11-16 06:00:00.134492	\N	\N	\N
+594	1	admin	3342	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/755.png	1	f	2018-11-16 06:00:00.270345	\N	\N	\N
+605	1	admin	3352	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/743.png	1	f	2018-11-16 06:00:00.392039	\N	\N	\N
+615	1	admin	3152	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/733.png	1	f	2018-11-16 06:00:00.517499	\N	\N	\N
+625	1	admin	3368	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/723.png	1	f	2018-11-16 06:00:00.639479	\N	\N	\N
+637	1	admin	3374	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/712.png	1	f	2018-11-16 06:00:00.786188	\N	\N	\N
+648	1	admin	3384	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/701.png	1	f	2018-11-16 06:00:00.904758	\N	\N	\N
+60	1	admin	2643	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/059.png	1	f	2018-11-16 05:59:53.793275	\N	\N	\N
+71	1	admin	2650	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/067.png	1	f	2018-11-16 05:59:53.899073	\N	\N	\N
+81	1	admin	2661	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/077.png	1	f	2018-11-16 05:59:54.009848	\N	\N	\N
+89	1	admin	2669	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/086.png	1	f	2018-11-16 05:59:54.198463	\N	\N	\N
+100	1	admin	2680	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/096.png	1	f	2018-11-16 05:59:54.314877	\N	\N	\N
+109	1	admin	2690	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/106.png	1	f	2018-11-16 05:59:54.467319	\N	\N	\N
+119	1	admin	2700	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/116.png	1	f	2018-11-16 05:59:54.574373	\N	\N	\N
+128	1	admin	2709	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/125.png	1	f	2018-11-16 05:59:54.679448	\N	\N	\N
+138	1	admin	2719	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/135.png	1	f	2018-11-16 05:59:54.790249	\N	\N	\N
+147	1	admin	2727	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/144.png	1	f	2018-11-16 05:59:54.897091	\N	\N	\N
+158	1	admin	2738	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/154.png	1	f	2018-11-16 05:59:55.003557	\N	\N	\N
+165	1	admin	2748	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/163.png	1	f	2018-11-16 05:59:55.11796	\N	\N	\N
+175	1	admin	2755	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/171.png	1	f	2018-11-16 05:59:55.236856	\N	\N	\N
+183	1	admin	2765	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/180.png	1	f	2018-11-16 05:59:55.341076	\N	\N	\N
+193	1	admin	2773	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/189.png	1	f	2018-11-16 05:59:55.446569	\N	\N	\N
+201	1	admin	2781	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/198.png	1	f	2018-11-16 05:59:55.556985	\N	\N	\N
+210	1	admin	2812	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/228.png	1	f	2018-11-16 05:59:55.663902	\N	\N	\N
+219	1	admin	2842	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/258.png	1	f	2018-11-16 05:59:55.779691	\N	\N	\N
+227	1	admin	2876	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/293.png	1	f	2018-11-16 05:59:55.884048	\N	\N	\N
+238	1	admin	2919	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/335.png	1	f	2018-11-16 05:59:55.991861	\N	\N	\N
+246	1	admin	3283	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/375.png	1	f	2018-11-16 05:59:56.097547	\N	\N	\N
+254	1	admin	3252	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/407.png	1	f	2018-11-16 05:59:56.207245	\N	\N	\N
+265	1	admin	3218	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/441.png	1	f	2018-11-16 05:59:56.312528	\N	\N	\N
+272	1	admin	3183	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/475.png	1	f	2018-11-16 05:59:56.418353	\N	\N	\N
+282	1	admin	3168	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/489.png	1	f	2018-11-16 05:59:56.529991	\N	\N	\N
+292	1	admin	2990	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/542.png	1	f	2018-11-16 05:59:56.63576	\N	\N	\N
+302	1	admin	3022	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/574.png	1	f	2018-11-16 05:59:56.745957	\N	\N	\N
+312	1	admin	3065	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/616.png	1	f	2018-11-16 05:59:56.84947	\N	\N	\N
+318	1	admin	3090	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/643.png	1	f	2018-11-16 05:59:56.953047	\N	\N	\N
+327	1	admin	3119	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/671.png	1	f	2018-11-16 05:59:57.05983	\N	\N	\N
+335	1	admin	3181	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/477.png	1	f	2018-11-16 05:59:57.171275	\N	\N	\N
+345	1	admin	3197	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/462.png	1	f	2018-11-16 05:59:57.275913	\N	\N	\N
+354	1	admin	3210	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/449.png	1	f	2018-11-16 05:59:57.382054	\N	\N	\N
+364	1	admin	3222	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/436.png	1	f	2018-11-16 05:59:57.50081	\N	\N	\N
+374	1	admin	3234	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/422.png	1	f	2018-11-16 05:59:57.618042	\N	\N	\N
+383	1	admin	3249	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/409.png	1	f	2018-11-16 05:59:57.726721	\N	\N	\N
+393	1	admin	3261	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/397.png	1	f	2018-11-16 05:59:57.832788	\N	\N	\N
+403	1	admin	3275	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/383.png	1	f	2018-11-16 05:59:57.937535	\N	\N	\N
+412	1	admin	3288	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/370.png	1	f	2018-11-16 05:59:58.040563	\N	\N	\N
+420	1	admin	3298	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/360.png	1	f	2018-11-16 05:59:58.146596	\N	\N	\N
+429	1	admin	2931	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/349.png	1	f	2018-11-16 05:59:58.268518	\N	\N	\N
+438	1	admin	2921	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/337.png	1	f	2018-11-16 05:59:58.370944	\N	\N	\N
+447	1	admin	2909	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/325.png	1	f	2018-11-16 05:59:58.477947	\N	\N	\N
+456	1	admin	2896	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/312.png	1	f	2018-11-16 05:59:58.582348	\N	\N	\N
+465	1	admin	2884	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/300.png	1	f	2018-11-16 05:59:58.68468	\N	\N	\N
+472	1	admin	2875	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/291.png	1	f	2018-11-16 05:59:58.787709	\N	\N	\N
+481	1	admin	2867	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/283.png	1	f	2018-11-16 05:59:58.902124	\N	\N	\N
+489	1	admin	2856	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/272.png	1	f	2018-11-16 05:59:59.005483	\N	\N	\N
+497	1	admin	2839	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/257.png	1	f	2018-11-16 05:59:59.110994	\N	\N	\N
+531	1	admin	2793	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/211.png	1	f	2018-11-16 05:59:59.520192	\N	\N	\N
+540	1	admin	2783	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/199.png	1	f	2018-11-16 05:59:59.632054	\N	\N	\N
+550	1	admin	3166	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/798.png	1	f	2018-11-16 05:59:59.737032	\N	\N	\N
+558	1	admin	3318	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/789.png	1	f	2018-11-16 05:59:59.848223	\N	\N	\N
+568	1	admin	3161	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/779.png	1	f	2018-11-16 05:59:59.954973	\N	\N	\N
+578	1	admin	3333	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/769.png	1	f	2018-11-16 06:00:00.058559	\N	\N	\N
+589	1	admin	3341	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/759.png	1	f	2018-11-16 06:00:00.176821	\N	\N	\N
+598	1	admin	3153	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/749.png	1	f	2018-11-16 06:00:00.285663	\N	\N	\N
+608	1	admin	3356	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/740.png	1	f	2018-11-16 06:00:00.407851	\N	\N	\N
+61	1	admin	2641	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/058.png	1	f	2018-11-16 05:59:53.793871	\N	\N	\N
+70	1	admin	2651	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/066.png	1	f	2018-11-16 05:59:53.898589	\N	\N	\N
+79	1	admin	2659	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/076.png	1	f	2018-11-16 05:59:54.000388	\N	\N	\N
+90	1	admin	2671	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/085.png	1	f	2018-11-16 05:59:54.198999	\N	\N	\N
+99	1	admin	2679	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/095.png	1	f	2018-11-16 05:59:54.305516	\N	\N	\N
+110	1	admin	2689	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/105.png	1	f	2018-11-16 05:59:54.467913	\N	\N	\N
+118	1	admin	2699	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/115.png	1	f	2018-11-16 05:59:54.573792	\N	\N	\N
+129	1	admin	2708	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/124.png	1	f	2018-11-16 05:59:54.679942	\N	\N	\N
+139	1	admin	2717	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/134.png	1	f	2018-11-16 05:59:54.790728	\N	\N	\N
+148	1	admin	2728	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/143.png	1	f	2018-11-16 05:59:54.897599	\N	\N	\N
+157	1	admin	2736	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/153.png	1	f	2018-11-16 05:59:55.000772	\N	\N	\N
+166	1	admin	2746	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/162.png	1	f	2018-11-16 05:59:55.118457	\N	\N	\N
+173	1	admin	2754	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/170.png	1	f	2018-11-16 05:59:55.222608	\N	\N	\N
+182	1	admin	2762	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/178.png	1	f	2018-11-16 05:59:55.325798	\N	\N	\N
+191	1	admin	2772	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/188.png	1	f	2018-11-16 05:59:55.431148	\N	\N	\N
+200	1	admin	2779	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/196.png	1	f	2018-11-16 05:59:55.551001	\N	\N	\N
+209	1	admin	2806	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/225.png	1	f	2018-11-16 05:59:55.661046	\N	\N	\N
+217	1	admin	2838	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/255.png	1	f	2018-11-16 05:59:55.768818	\N	\N	\N
+228	1	admin	2873	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/289.png	1	f	2018-11-16 05:59:55.88459	\N	\N	\N
+237	1	admin	2913	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/330.png	1	f	2018-11-16 05:59:55.991286	\N	\N	\N
+247	1	admin	3286	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/371.png	1	f	2018-11-16 05:59:56.098157	\N	\N	\N
+256	1	admin	3254	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/404.png	1	f	2018-11-16 05:59:56.207968	\N	\N	\N
+264	1	admin	3223	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/438.png	1	f	2018-11-16 05:59:56.312188	\N	\N	\N
+273	1	admin	3186	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/471.png	1	f	2018-11-16 05:59:56.421084	\N	\N	\N
+283	1	admin	2956	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/508.png	1	f	2018-11-16 05:59:56.533036	\N	\N	\N
+293	1	admin	2993	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/545.png	1	f	2018-11-16 05:59:56.638288	\N	\N	\N
+301	1	admin	3026	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/578.png	1	f	2018-11-16 05:59:56.745402	\N	\N	\N
+311	1	admin	3059	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/612.png	1	f	2018-11-16 05:59:56.849115	\N	\N	\N
+317	1	admin	3088	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/639.png	1	f	2018-11-16 05:59:56.952491	\N	\N	\N
+325	1	admin	3116	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/667.png	1	f	2018-11-16 05:59:57.05455	\N	\N	\N
+334	1	admin	3180	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/479.png	1	f	2018-11-16 05:59:57.164494	\N	\N	\N
+344	1	admin	3193	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/465.png	1	f	2018-11-16 05:59:57.269756	\N	\N	\N
+353	1	admin	3208	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/450.png	1	f	2018-11-16 05:59:57.380079	\N	\N	\N
+362	1	admin	3220	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/437.png	1	f	2018-11-16 05:59:57.486709	\N	\N	\N
+371	1	admin	3237	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/425.png	1	f	2018-11-16 05:59:57.587379	\N	\N	\N
+381	1	admin	3244	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/413.png	1	f	2018-11-16 05:59:57.690456	\N	\N	\N
+390	1	admin	3257	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/401.png	1	f	2018-11-16 05:59:57.80119	\N	\N	\N
+400	1	admin	3272	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/387.png	1	f	2018-11-16 05:59:57.904524	\N	\N	\N
+409	1	admin	3285	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/374.png	1	f	2018-11-16 05:59:58.008178	\N	\N	\N
+418	1	admin	3296	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/362.png	1	f	2018-11-16 05:59:58.120086	\N	\N	\N
+428	1	admin	2932	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/350.png	1	f	2018-11-16 05:59:58.238451	\N	\N	\N
+436	1	admin	2922	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/338.png	1	f	2018-11-16 05:59:58.348586	\N	\N	\N
+445	1	admin	2912	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/328.png	1	f	2018-11-16 05:59:58.45908	\N	\N	\N
+454	1	admin	2899	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/315.png	1	f	2018-11-16 05:59:58.564753	\N	\N	\N
+462	1	admin	2888	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/304.png	1	f	2018-11-16 05:59:58.672792	\N	\N	\N
+471	1	admin	2879	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/294.png	1	f	2018-11-16 05:59:58.776948	\N	\N	\N
+479	1	admin	2870	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/286.png	1	f	2018-11-16 05:59:58.889038	\N	\N	\N
+486	1	admin	2857	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/273.png	1	f	2018-11-16 05:59:58.991313	\N	\N	\N
+496	1	admin	2846	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/263.png	1	f	2018-11-16 05:59:59.096997	\N	\N	\N
+506	1	admin	2830	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/247.png	1	f	2018-11-16 05:59:59.202163	\N	\N	\N
+515	1	admin	2818	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/234.png	1	f	2018-11-16 05:59:59.326301	\N	\N	\N
+523	1	admin	2805	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/222.png	1	f	2018-11-16 05:59:59.429905	\N	\N	\N
+533	1	admin	2792	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/210.png	1	f	2018-11-16 05:59:59.535342	\N	\N	\N
+541	1	admin	3305	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/805.png	1	f	2018-11-16 05:59:59.641598	\N	\N	\N
+551	1	admin	3312	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/797.png	1	f	2018-11-16 05:59:59.737459	\N	\N	\N
+559	1	admin	3317	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/790.png	1	f	2018-11-16 05:59:59.848723	\N	\N	\N
+569	1	admin	3325	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/780.png	1	f	2018-11-16 05:59:59.95564	\N	\N	\N
+579	1	admin	3332	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/770.png	1	f	2018-11-16 06:00:00.059057	\N	\N	\N
+62	1	admin	2640	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/056.png	1	f	2018-11-16 05:59:53.797766	\N	\N	\N
+73	1	admin	2652	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/068.png	1	f	2018-11-16 05:59:53.917929	\N	\N	\N
+85	1	admin	2663	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/079.png	1	f	2018-11-16 05:59:54.040931	\N	\N	\N
+96	1	admin	2675	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/091.png	1	f	2018-11-16 05:59:54.240916	\N	\N	\N
+107	1	admin	2688	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/103.png	1	f	2018-11-16 05:59:54.400553	\N	\N	\N
+117	1	admin	2697	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/113.png	1	f	2018-11-16 05:59:54.521983	\N	\N	\N
+127	1	admin	2707	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/123.png	1	f	2018-11-16 05:59:54.657195	\N	\N	\N
+137	1	admin	2718	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/133.png	1	f	2018-11-16 05:59:54.788527	\N	\N	\N
+149	1	admin	2729	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/145.png	1	f	2018-11-16 05:59:54.909115	\N	\N	\N
+159	1	admin	2739	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/155.png	1	f	2018-11-16 05:59:55.033264	\N	\N	\N
+172	1	admin	2749	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/165.png	1	f	2018-11-16 05:59:55.157824	\N	\N	\N
+181	1	admin	2759	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/177.png	1	f	2018-11-16 05:59:55.283631	\N	\N	\N
+190	1	admin	2770	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/186.png	1	f	2018-11-16 05:59:55.401276	\N	\N	\N
+199	1	admin	2780	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/195.png	1	f	2018-11-16 05:59:55.525036	\N	\N	\N
+208	1	admin	2807	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/221.png	1	f	2018-11-16 05:59:55.652529	\N	\N	\N
+218	1	admin	2836	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/252.png	1	f	2018-11-16 05:59:55.779896	\N	\N	\N
+229	1	admin	2881	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/297.png	1	f	2018-11-16 05:59:55.900059	\N	\N	\N
+239	1	admin	2923	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/339.png	1	f	2018-11-16 05:59:56.025908	\N	\N	\N
+249	1	admin	3279	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/380.png	1	f	2018-11-16 05:59:56.147491	\N	\N	\N
+260	1	admin	3239	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/419.png	1	f	2018-11-16 05:59:56.27259	\N	\N	\N
+270	1	admin	3198	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/460.png	1	f	2018-11-16 05:59:56.392617	\N	\N	\N
+281	1	admin	2945	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/497.png	1	f	2018-11-16 05:59:56.514525	\N	\N	\N
+291	1	admin	2986	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/538.png	1	f	2018-11-16 05:59:56.63354	\N	\N	\N
+303	1	admin	3031	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/582.png	1	f	2018-11-16 05:59:56.756576	\N	\N	\N
+313	1	admin	3068	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/619.png	1	f	2018-11-16 05:59:56.894561	\N	\N	\N
+322	1	admin	3097	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/650.png	1	f	2018-11-16 05:59:57.015278	\N	\N	\N
+332	1	admin	3136	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/688.png	1	f	2018-11-16 05:59:57.134566	\N	\N	\N
+342	1	admin	3191	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/467.png	1	f	2018-11-16 05:59:57.257136	\N	\N	\N
+355	1	admin	3207	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/451.png	1	f	2018-11-16 05:59:57.39063	\N	\N	\N
+365	1	admin	3224	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/434.png	1	f	2018-11-16 05:59:57.512019	\N	\N	\N
+375	1	admin	3238	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/421.png	1	f	2018-11-16 05:59:57.634343	\N	\N	\N
+385	1	admin	3250	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/408.png	1	f	2018-11-16 05:59:57.757713	\N	\N	\N
+398	1	admin	3265	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/393.png	1	f	2018-11-16 05:59:57.882317	\N	\N	\N
+408	1	admin	3281	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/377.png	1	f	2018-11-16 05:59:58.002432	\N	\N	\N
+419	1	admin	3294	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/364.png	1	f	2018-11-16 05:59:58.123012	\N	\N	\N
+453	1	admin	2901	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/317.png	1	f	2018-11-16 05:59:58.564096	\N	\N	\N
+464	1	admin	2886	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/303.png	1	f	2018-11-16 05:59:58.684843	\N	\N	\N
+475	1	admin	2874	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/290.png	1	f	2018-11-16 05:59:58.807625	\N	\N	\N
+484	1	admin	2863	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/279.png	1	f	2018-11-16 05:59:58.919488	\N	\N	\N
+493	1	admin	2851	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/267.png	1	f	2018-11-16 05:59:59.039075	\N	\N	\N
+503	1	admin	2835	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/251.png	1	f	2018-11-16 05:59:59.157735	\N	\N	\N
+512	1	admin	2821	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/238.png	1	f	2018-11-16 05:59:59.279543	\N	\N	\N
+522	1	admin	2810	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/226.png	1	f	2018-11-16 05:59:59.402791	\N	\N	\N
+532	1	admin	2794	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/212.png	1	f	2018-11-16 05:59:59.526301	\N	\N	\N
+543	1	admin	3167	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/806.png	1	f	2018-11-16 05:59:59.650627	\N	\N	\N
+553	1	admin	3313	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/795.png	1	f	2018-11-16 05:59:59.771906	\N	\N	\N
+563	1	admin	3320	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/785.png	1	f	2018-11-16 05:59:59.896863	\N	\N	\N
+574	1	admin	3160	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/775.png	1	f	2018-11-16 06:00:00.016905	\N	\N	\N
+584	1	admin	3157	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/764.png	1	f	2018-11-16 06:00:00.13611	\N	\N	\N
+596	1	admin	3154	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/753.png	1	f	2018-11-16 06:00:00.27195	\N	\N	\N
+607	1	admin	3354	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/742.png	1	f	2018-11-16 06:00:00.402492	\N	\N	\N
+617	1	admin	3360	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/731.png	1	f	2018-11-16 06:00:00.529861	\N	\N	\N
+628	1	admin	3369	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/720.png	1	f	2018-11-16 06:00:00.652424	\N	\N	\N
+638	1	admin	3144	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/710.png	1	f	2018-11-16 06:00:00.787802	\N	\N	\N
+649	1	admin	3383	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/700.png	1	f	2018-11-16 06:00:00.906372	\N	\N	\N
+661	1	admin	3135	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/687.png	1	f	2018-11-16 06:00:01.028296	\N	\N	\N
+671	1	admin	2959	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/512.png	1	f	2018-11-16 06:00:01.160012	\N	\N	\N
+682	1	admin	2974	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/526.png	1	f	2018-11-16 06:00:01.280687	\N	\N	\N
+63	1	admin	2642	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/057.png	1	f	2018-11-16 05:59:53.798612	\N	\N	\N
+72	1	admin	2653	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/069.png	1	f	2018-11-16 05:59:53.911721	\N	\N	\N
+82	1	admin	2662	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/078.png	1	f	2018-11-16 05:59:54.024762	\N	\N	\N
+91	1	admin	2672	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/088.png	1	f	2018-11-16 05:59:54.207377	\N	\N	\N
+101	1	admin	2682	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/097.png	1	f	2018-11-16 05:59:54.325339	\N	\N	\N
+114	1	admin	2692	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/108.png	1	f	2018-11-16 05:59:54.489295	\N	\N	\N
+124	1	admin	2705	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/120.png	1	f	2018-11-16 05:59:54.60995	\N	\N	\N
+134	1	admin	2714	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/130.png	1	f	2018-11-16 05:59:54.729566	\N	\N	\N
+144	1	admin	2722	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/140.png	1	f	2018-11-16 05:59:54.842346	\N	\N	\N
+154	1	admin	2735	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/150.png	1	f	2018-11-16 05:59:54.965876	\N	\N	\N
+164	1	admin	2745	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/160.png	1	f	2018-11-16 05:59:55.109719	\N	\N	\N
+174	1	admin	2753	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/169.png	1	f	2018-11-16 05:59:55.227544	\N	\N	\N
+184	1	admin	2763	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/179.png	1	f	2018-11-16 05:59:55.34356	\N	\N	\N
+194	1	admin	2774	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/190.png	1	f	2018-11-16 05:59:55.460952	\N	\N	\N
+203	1	admin	2787	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/202.png	1	f	2018-11-16 05:59:55.591842	\N	\N	\N
+212	1	admin	2819	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/235.png	1	f	2018-11-16 05:59:55.708402	\N	\N	\N
+223	1	admin	2854	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/270.png	1	f	2018-11-16 05:59:55.822823	\N	\N	\N
+234	1	admin	2902	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/318.png	1	f	2018-11-16 05:59:55.937159	\N	\N	\N
+244	1	admin	3299	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/359.png	1	f	2018-11-16 05:59:56.091544	\N	\N	\N
+255	1	admin	3258	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/400.png	1	f	2018-11-16 05:59:56.208349	\N	\N	\N
+267	1	admin	3214	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/445.png	1	f	2018-11-16 05:59:56.32845	\N	\N	\N
+276	1	admin	3173	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/485.png	1	f	2018-11-16 05:59:56.440114	\N	\N	\N
+286	1	admin	2968	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/519.png	1	f	2018-11-16 05:59:56.556511	\N	\N	\N
+296	1	admin	3004	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/556.png	1	f	2018-11-16 05:59:56.673147	\N	\N	\N
+306	1	admin	3041	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/593.png	1	f	2018-11-16 05:59:56.788382	\N	\N	\N
+315	1	admin	3078	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/626.png	1	f	2018-11-16 05:59:56.905858	\N	\N	\N
+324	1	admin	3107	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/659.png	1	f	2018-11-16 05:59:57.022117	\N	\N	\N
+331	1	admin	3177	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/480.png	1	f	2018-11-16 05:59:57.134015	\N	\N	\N
+341	1	admin	3189	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/469.png	1	f	2018-11-16 05:59:57.249456	\N	\N	\N
+351	1	admin	3204	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/454.png	1	f	2018-11-16 05:59:57.365059	\N	\N	\N
+361	1	admin	3217	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/440.png	1	f	2018-11-16 05:59:57.479644	\N	\N	\N
+372	1	admin	3232	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/426.png	1	f	2018-11-16 05:59:57.592324	\N	\N	\N
+382	1	admin	3245	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/412.png	1	f	2018-11-16 05:59:57.708092	\N	\N	\N
+392	1	admin	3260	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/398.png	1	f	2018-11-16 05:59:57.813663	\N	\N	\N
+401	1	admin	3273	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/385.png	1	f	2018-11-16 05:59:57.92458	\N	\N	\N
+411	1	admin	3284	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/373.png	1	f	2018-11-16 05:59:58.039986	\N	\N	\N
+422	1	admin	3300	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/358.png	1	f	2018-11-16 05:59:58.159698	\N	\N	\N
+431	1	admin	2933	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/346.png	1	f	2018-11-16 05:59:58.273796	\N	\N	\N
+440	1	admin	2918	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/334.png	1	f	2018-11-16 05:59:58.386895	\N	\N	\N
+449	1	admin	2906	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/323.png	1	f	2018-11-16 05:59:58.506196	\N	\N	\N
+459	1	admin	2893	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/309.png	1	f	2018-11-16 05:59:58.63254	\N	\N	\N
+468	1	admin	2882	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/298.png	1	f	2018-11-16 05:59:58.766945	\N	\N	\N
+477	1	admin	2872	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/288.png	1	f	2018-11-16 05:59:58.882746	\N	\N	\N
+488	1	admin	2859	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/275.png	1	f	2018-11-16 05:59:58.995579	\N	\N	\N
+499	1	admin	2843	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/259.png	1	f	2018-11-16 05:59:59.115871	\N	\N	\N
+509	1	admin	2828	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/244.png	1	f	2018-11-16 05:59:59.240037	\N	\N	\N
+519	1	admin	2814	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/230.png	1	f	2018-11-16 05:59:59.360102	\N	\N	\N
+528	1	admin	2800	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/216.png	1	f	2018-11-16 05:59:59.51115	\N	\N	\N
+539	1	admin	2785	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/201.png	1	f	2018-11-16 05:59:59.626556	\N	\N	\N
+548	1	admin	3311	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/800.png	1	f	2018-11-16 05:59:59.735041	\N	\N	\N
+560	1	admin	3319	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/788.png	1	f	2018-11-16 05:59:59.853182	\N	\N	\N
+570	1	admin	3327	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/778.png	1	f	2018-11-16 05:59:59.970903	\N	\N	\N
+580	1	admin	3334	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/768.png	1	f	2018-11-16 06:00:00.083481	\N	\N	\N
+590	1	admin	3340	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/758.png	1	f	2018-11-16 06:00:00.196664	\N	\N	\N
+600	1	admin	3348	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/748.png	1	f	2018-11-16 06:00:00.310872	\N	\N	\N
+610	1	admin	3355	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/738.png	1	f	2018-11-16 06:00:00.424051	\N	\N	\N
+620	1	admin	3361	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/728.png	1	f	2018-11-16 06:00:00.560055	\N	\N	\N
+630	1	admin	3145	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/718.png	1	f	2018-11-16 06:00:00.675604	\N	\N	\N
+67	1	admin	2647	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/063.png	1	f	2018-11-16 05:59:53.834736	\N	\N	\N
+77	1	admin	2655	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/073.png	1	f	2018-11-16 05:59:53.955283	\N	\N	\N
+87	1	admin	2667	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/083.png	1	f	2018-11-16 05:59:54.078388	\N	\N	\N
+97	1	admin	2677	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/093.png	1	f	2018-11-16 05:59:54.243814	\N	\N	\N
+106	1	admin	2685	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/102.png	1	f	2018-11-16 05:59:54.364958	\N	\N	\N
+116	1	admin	2696	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/112.png	1	f	2018-11-16 05:59:54.498438	\N	\N	\N
+126	1	admin	2704	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/121.png	1	f	2018-11-16 05:59:54.619052	\N	\N	\N
+135	1	admin	2715	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/131.png	1	f	2018-11-16 05:59:54.738645	\N	\N	\N
+145	1	admin	2725	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/141.png	1	f	2018-11-16 05:59:54.855438	\N	\N	\N
+156	1	admin	2733	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/151.png	1	f	2018-11-16 05:59:54.995104	\N	\N	\N
+192	1	admin	2771	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/187.png	1	f	2018-11-16 05:59:55.440358	\N	\N	\N
+202	1	admin	2782	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/197.png	1	f	2018-11-16 05:59:55.565045	\N	\N	\N
+211	1	admin	2816	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/232.png	1	f	2018-11-16 05:59:55.691096	\N	\N	\N
+220	1	admin	2848	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/262.png	1	f	2018-11-16 05:59:55.806983	\N	\N	\N
+230	1	admin	2885	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/301.png	1	f	2018-11-16 05:59:55.925069	\N	\N	\N
+242	1	admin	2927	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/343.png	1	f	2018-11-16 05:59:56.055413	\N	\N	\N
+252	1	admin	3270	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/388.png	1	f	2018-11-16 05:59:56.190893	\N	\N	\N
+263	1	admin	3227	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/431.png	1	f	2018-11-16 05:59:56.311138	\N	\N	\N
+275	1	admin	3190	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/468.png	1	f	2018-11-16 05:59:56.429118	\N	\N	\N
+285	1	admin	2964	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/515.png	1	f	2018-11-16 05:59:56.54712	\N	\N	\N
+295	1	admin	3000	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/552.png	1	f	2018-11-16 05:59:56.664629	\N	\N	\N
+305	1	admin	3039	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/589.png	1	f	2018-11-16 05:59:56.781427	\N	\N	\N
+314	1	admin	3071	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/622.png	1	f	2018-11-16 05:59:56.902204	\N	\N	\N
+323	1	admin	3102	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/655.png	1	f	2018-11-16 05:59:57.021575	\N	\N	\N
+333	1	admin	3178	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/481.png	1	f	2018-11-16 05:59:57.143074	\N	\N	\N
+343	1	admin	3192	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/466.png	1	f	2018-11-16 05:59:57.260006	\N	\N	\N
+352	1	admin	3206	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/453.png	1	f	2018-11-16 05:59:57.379493	\N	\N	\N
+363	1	admin	3219	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/439.png	1	f	2018-11-16 05:59:57.496793	\N	\N	\N
+373	1	admin	3233	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/424.png	1	f	2018-11-16 05:59:57.616191	\N	\N	\N
+384	1	admin	3248	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/410.png	1	f	2018-11-16 05:59:57.734843	\N	\N	\N
+394	1	admin	3262	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/396.png	1	f	2018-11-16 05:59:57.857287	\N	\N	\N
+405	1	admin	3276	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/382.png	1	f	2018-11-16 05:59:57.985962	\N	\N	\N
+416	1	admin	3289	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/369.png	1	f	2018-11-16 05:59:58.101169	\N	\N	\N
+427	1	admin	2937	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/353.png	1	f	2018-11-16 05:59:58.237957	\N	\N	\N
+437	1	admin	2926	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/340.png	1	f	2018-11-16 05:59:58.354977	\N	\N	\N
+446	1	admin	2911	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/327.png	1	f	2018-11-16 05:59:58.473513	\N	\N	\N
+457	1	admin	2897	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/313.png	1	f	2018-11-16 05:59:58.59088	\N	\N	\N
+467	1	admin	2883	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/299.png	1	f	2018-11-16 05:59:58.707883	\N	\N	\N
+476	1	admin	2788	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/204.png	1	f	2018-11-16 05:59:58.828078	\N	\N	\N
+485	1	admin	2862	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/278.png	1	f	2018-11-16 05:59:58.947255	\N	\N	\N
+495	1	admin	2847	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/264.png	1	f	2018-11-16 05:59:59.066152	\N	\N	\N
+505	1	admin	2833	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/249.png	1	f	2018-11-16 05:59:59.196576	\N	\N	\N
+514	1	admin	2820	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/236.png	1	f	2018-11-16 05:59:59.317324	\N	\N	\N
+524	1	admin	2808	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/223.png	1	f	2018-11-16 05:59:59.435472	\N	\N	\N
+534	1	admin	2797	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/208.png	1	f	2018-11-16 05:59:59.565653	\N	\N	\N
+546	1	admin	3307	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/804.png	1	f	2018-11-16 05:59:59.685333	\N	\N	\N
+556	1	admin	3315	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/793.png	1	f	2018-11-16 05:59:59.80803	\N	\N	\N
+566	1	admin	3323	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/782.png	1	f	2018-11-16 05:59:59.921955	\N	\N	\N
+576	1	admin	3330	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/772.png	1	f	2018-11-16 06:00:00.047293	\N	\N	\N
+588	1	admin	3339	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/762.png	1	f	2018-11-16 06:00:00.169213	\N	\N	\N
+599	1	admin	3347	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/750.png	1	f	2018-11-16 06:00:00.290368	\N	\N	\N
+609	1	admin	3353	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/739.png	1	f	2018-11-16 06:00:00.421944	\N	\N	\N
+619	1	admin	3148	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/729.png	1	f	2018-11-16 06:00:00.546157	\N	\N	\N
+629	1	admin	3370	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/719.png	1	f	2018-11-16 06:00:00.674672	\N	\N	\N
+642	1	admin	3377	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/709.png	1	f	2018-11-16 06:00:00.796841	\N	\N	\N
+652	1	admin	3386	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/697.png	1	f	2018-11-16 06:00:00.919824	\N	\N	\N
+663	1	admin	3132	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/685.png	1	f	2018-11-16 06:00:01.040354	\N	\N	\N
+672	1	admin	2961	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/513.png	1	f	2018-11-16 06:00:01.162886	\N	\N	\N
+586	1	admin	3156	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/760.png	1	f	2018-11-16 06:00:00.160553	\N	\N	\N
+595	1	admin	3346	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/752.png	1	f	2018-11-16 06:00:00.271118	\N	\N	\N
+603	1	admin	3350	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/744.png	1	f	2018-11-16 06:00:00.381623	\N	\N	\N
+613	1	admin	3358	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/735.png	1	f	2018-11-16 06:00:00.487678	\N	\N	\N
+623	1	admin	3147	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/725.png	1	f	2018-11-16 06:00:00.594396	\N	\N	\N
+633	1	admin	3375	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/715.png	1	f	2018-11-16 06:00:00.699285	\N	\N	\N
+643	1	admin	3380	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/705.png	1	f	2018-11-16 06:00:00.802534	\N	\N	\N
+651	1	admin	3139	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/695.png	1	f	2018-11-16 06:00:00.918017	\N	\N	\N
+660	1	admin	3134	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/686.png	1	f	2018-11-16 06:00:01.026325	\N	\N	\N
+668	1	admin	3123	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/676.png	1	f	2018-11-16 06:00:01.138898	\N	\N	\N
+676	1	admin	2970	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/521.png	1	f	2018-11-16 06:00:01.241283	\N	\N	\N
+686	1	admin	2980	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/532.png	1	f	2018-11-16 06:00:01.347603	\N	\N	\N
+696	1	admin	2994	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/546.png	1	f	2018-11-16 06:00:01.45411	\N	\N	\N
+706	1	admin	3009	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/559.png	1	f	2018-11-16 06:00:01.571736	\N	\N	\N
+716	1	admin	3021	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/573.png	1	f	2018-11-16 06:00:01.676561	\N	\N	\N
+726	1	admin	3033	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/587.png	1	f	2018-11-16 06:00:01.784392	\N	\N	\N
+735	1	admin	3048	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/600.png	1	f	2018-11-16 06:00:01.892825	\N	\N	\N
+744	1	admin	3060	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/611.png	1	f	2018-11-16 06:00:02.014917	\N	\N	\N
+754	1	admin	3080	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/625.png	1	f	2018-11-16 06:00:02.141213	\N	\N	\N
+763	1	admin	3085	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/640.png	1	f	2018-11-16 06:00:02.250339	\N	\N	\N
+771	1	admin	3111	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/664.png	1	f	2018-11-16 06:00:02.37591	\N	\N	\N
+781	1	admin	3101	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/653.png	1	f	2018-11-16 06:00:02.492669	\N	\N	\N
+791	1	admin	3175	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/483.png	1	f	2018-11-16 06:00:02.598808	\N	\N	\N
+801	1	admin	2944	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/496.png	1	f	2018-11-16 06:00:02.703295	\N	\N	\N
+811	1	admin	2958	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/510.png	1	f	2018-11-16 06:00:02.820597	\N	\N	\N
+602	1	admin	3351	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/746.png	1	f	2018-11-16 06:00:00.345174	\N	\N	\N
+612	1	admin	3357	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/736.png	1	f	2018-11-16 06:00:00.457234	\N	\N	\N
+622	1	admin	3365	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/726.png	1	f	2018-11-16 06:00:00.57044	\N	\N	\N
+632	1	admin	3371	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/717.png	1	f	2018-11-16 06:00:00.682459	\N	\N	\N
+641	1	admin	3379	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/707.png	1	f	2018-11-16 06:00:00.796407	\N	\N	\N
+650	1	admin	3385	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/698.png	1	f	2018-11-16 06:00:00.910758	\N	\N	\N
+657	1	admin	3140	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/689.png	1	f	2018-11-16 06:00:01.017852	\N	\N	\N
+667	1	admin	3126	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/678.png	1	f	2018-11-16 06:00:01.13451	\N	\N	\N
+678	1	admin	2967	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/520.png	1	f	2018-11-16 06:00:01.246197	\N	\N	\N
+687	1	admin	2981	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/533.png	1	f	2018-11-16 06:00:01.354969	\N	\N	\N
+697	1	admin	2995	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/547.png	1	f	2018-11-16 06:00:01.465361	\N	\N	\N
+707	1	admin	3008	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/561.png	1	f	2018-11-16 06:00:01.576696	\N	\N	\N
+718	1	admin	3023	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/575.png	1	f	2018-11-16 06:00:01.695837	\N	\N	\N
+728	1	admin	3036	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/588.png	1	f	2018-11-16 06:00:01.807852	\N	\N	\N
+737	1	admin	3050	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/602.png	1	f	2018-11-16 06:00:01.922713	\N	\N	\N
+747	1	admin	3063	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/615.png	1	f	2018-11-16 06:00:02.036866	\N	\N	\N
+758	1	admin	3074	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/630.png	1	f	2018-11-16 06:00:02.166339	\N	\N	\N
+766	1	admin	3091	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/642.png	1	f	2018-11-16 06:00:02.284048	\N	\N	\N
+776	1	admin	3108	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/660.png	1	f	2018-11-16 06:00:02.391608	\N	\N	\N
+784	1	admin	3096	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/648.png	1	f	2018-11-16 06:00:02.50245	\N	\N	\N
+793	1	admin	3174	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/484.png	1	f	2018-11-16 06:00:02.615259	\N	\N	\N
+802	1	admin	2946	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/498.png	1	f	2018-11-16 06:00:02.725555	\N	\N	\N
+618	1	admin	3363	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/730.png	1	f	2018-11-16 06:00:00.532062	\N	\N	\N
+626	1	admin	3146	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/721.png	1	f	2018-11-16 06:00:00.639969	\N	\N	\N
+635	1	admin	3373	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/713.png	1	f	2018-11-16 06:00:00.763017	\N	\N	\N
+645	1	admin	3381	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/703.png	1	f	2018-11-16 06:00:00.877797	\N	\N	\N
+655	1	admin	3389	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/693.png	1	f	2018-11-16 06:00:00.987374	\N	\N	\N
+665	1	admin	3129	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/681.png	1	f	2018-11-16 06:00:01.09518	\N	\N	\N
+674	1	admin	2965	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/517.png	1	f	2018-11-16 06:00:01.197332	\N	\N	\N
+684	1	admin	2979	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/529.png	1	f	2018-11-16 06:00:01.310099	\N	\N	\N
+694	1	admin	2991	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/543.png	1	f	2018-11-16 06:00:01.418636	\N	\N	\N
+702	1	admin	3006	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/557.png	1	f	2018-11-16 06:00:01.521743	\N	\N	\N
+710	1	admin	3018	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/568.png	1	f	2018-11-16 06:00:01.63067	\N	\N	\N
+719	1	admin	3027	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/579.png	1	f	2018-11-16 06:00:01.736498	\N	\N	\N
+729	1	admin	3040	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/591.png	1	f	2018-11-16 06:00:01.842183	\N	\N	\N
+739	1	admin	3051	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/604.png	1	f	2018-11-16 06:00:01.949365	\N	\N	\N
+749	1	admin	3066	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/618.png	1	f	2018-11-16 06:00:02.056796	\N	\N	\N
+757	1	admin	3082	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/633.png	1	f	2018-11-16 06:00:02.166032	\N	\N	\N
+767	1	admin	3120	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/672.png	1	f	2018-11-16 06:00:02.290641	\N	\N	\N
+777	1	admin	3106	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/658.png	1	f	2018-11-16 06:00:02.395752	\N	\N	\N
+787	1	admin	3093	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/645.png	1	f	2018-11-16 06:00:02.526892	\N	\N	\N
+795	1	admin	2939	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/491.png	1	f	2018-11-16 06:00:02.631179	\N	\N	\N
+805	1	admin	2949	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/502.png	1	f	2018-11-16 06:00:02.744836	\N	\N	\N
+634	1	admin	3143	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/714.png	1	f	2018-11-16 06:00:00.752166	\N	\N	\N
+644	1	admin	3382	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/704.png	1	f	2018-11-16 06:00:00.868241	\N	\N	\N
+654	1	admin	3388	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/694.png	1	f	2018-11-16 06:00:00.978595	\N	\N	\N
+664	1	admin	3130	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/682.png	1	f	2018-11-16 06:00:01.090805	\N	\N	\N
+675	1	admin	2963	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/516.png	1	f	2018-11-16 06:00:01.199325	\N	\N	\N
+685	1	admin	2978	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/531.png	1	f	2018-11-16 06:00:01.312103	\N	\N	\N
+695	1	admin	2992	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/544.png	1	f	2018-11-16 06:00:01.420665	\N	\N	\N
+703	1	admin	3005	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/558.png	1	f	2018-11-16 06:00:01.529958	\N	\N	\N
+712	1	admin	3017	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/569.png	1	f	2018-11-16 06:00:01.644181	\N	\N	\N
+722	1	admin	3029	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/583.png	1	f	2018-11-16 06:00:01.759352	\N	\N	\N
+732	1	admin	3043	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/595.png	1	f	2018-11-16 06:00:01.86954	\N	\N	\N
+740	1	admin	3057	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/609.png	1	f	2018-11-16 06:00:01.982847	\N	\N	\N
+750	1	admin	3067	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/620.png	1	f	2018-11-16 06:00:02.096119	\N	\N	\N
+760	1	admin	3081	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/634.png	1	f	2018-11-16 06:00:02.231859	\N	\N	\N
+770	1	admin	3115	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/668.png	1	f	2018-11-16 06:00:02.343385	\N	\N	\N
+780	1	admin	3103	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/654.png	1	f	2018-11-16 06:00:02.471565	\N	\N	\N
+790	1	admin	3122	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/674.png	1	f	2018-11-16 06:00:02.581547	\N	\N	\N
+800	1	admin	2943	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/495.png	1	f	2018-11-16 06:00:02.693068	\N	\N	\N
+810	1	admin	2957	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/509.png	1	f	2018-11-16 06:00:02.813643	\N	\N	\N
+636	1	admin	3376	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/711.png	1	f	2018-11-16 06:00:00.779588	\N	\N	\N
+646	1	admin	3141	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/702.png	1	f	2018-11-16 06:00:00.892733	\N	\N	\N
+656	1	admin	3390	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/692.png	1	f	2018-11-16 06:00:01.005124	\N	\N	\N
+666	1	admin	3127	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/680.png	1	f	2018-11-16 06:00:01.130313	\N	\N	\N
+677	1	admin	2966	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/518.png	1	f	2018-11-16 06:00:01.243879	\N	\N	\N
+688	1	admin	2983	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/535.png	1	f	2018-11-16 06:00:01.359004	\N	\N	\N
+698	1	admin	2996	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/549.png	1	f	2018-11-16 06:00:01.471335	\N	\N	\N
+708	1	admin	3010	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/562.png	1	f	2018-11-16 06:00:01.583506	\N	\N	\N
+717	1	admin	3025	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/576.png	1	f	2018-11-16 06:00:01.694379	\N	\N	\N
+727	1	admin	3037	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/590.png	1	f	2018-11-16 06:00:01.80583	\N	\N	\N
+738	1	admin	3052	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/603.png	1	f	2018-11-16 06:00:01.92968	\N	\N	\N
+748	1	admin	3064	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/617.png	1	f	2018-11-16 06:00:02.041234	\N	\N	\N
+756	1	admin	3073	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/631.png	1	f	2018-11-16 06:00:02.164337	\N	\N	\N
+768	1	admin	3118	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/670.png	1	f	2018-11-16 06:00:02.302247	\N	\N	\N
+778	1	admin	3104	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/657.png	1	f	2018-11-16 06:00:02.415071	\N	\N	\N
+788	1	admin	3092	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/644.png	1	f	2018-11-16 06:00:02.529689	\N	\N	\N
+796	1	admin	2940	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/492.png	1	f	2018-11-16 06:00:02.63406	\N	\N	\N
+806	1	admin	2953	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/505.png	1	f	2018-11-16 06:00:02.747668	\N	\N	\N
+639	1	admin	3378	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/708.png	1	f	2018-11-16 06:00:00.790207	\N	\N	\N
+647	1	admin	3137	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/699.png	1	f	2018-11-16 06:00:00.900241	\N	\N	\N
+658	1	admin	3138	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/691.png	1	f	2018-11-16 06:00:01.018535	\N	\N	\N
+669	1	admin	3125	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/677.png	1	f	2018-11-16 06:00:01.143845	\N	\N	\N
+679	1	admin	2969	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/522.png	1	f	2018-11-16 06:00:01.266091	\N	\N	\N
+689	1	admin	2984	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/536.png	1	f	2018-11-16 06:00:01.379347	\N	\N	\N
+699	1	admin	2998	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/550.png	1	f	2018-11-16 06:00:01.498819	\N	\N	\N
+709	1	admin	3013	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/564.png	1	f	2018-11-16 06:00:01.625194	\N	\N	\N
+720	1	admin	3024	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/577.png	1	f	2018-11-16 06:00:01.741487	\N	\N	\N
+730	1	admin	3038	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/592.png	1	f	2018-11-16 06:00:01.857556	\N	\N	\N
+742	1	admin	3054	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/606.png	1	f	2018-11-16 06:00:01.986232	\N	\N	\N
+752	1	admin	3070	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/623.png	1	f	2018-11-16 06:00:02.11801	\N	\N	\N
+762	1	admin	3087	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/637.png	1	f	2018-11-16 06:00:02.244688	\N	\N	\N
+773	1	admin	3113	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/665.png	1	f	2018-11-16 06:00:02.38138	\N	\N	\N
+783	1	admin	3099	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/651.png	1	f	2018-11-16 06:00:02.498109	\N	\N	\N
+794	1	admin	3171	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/487.png	1	f	2018-11-16 06:00:02.623369	\N	\N	\N
+804	1	admin	2952	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/501.png	1	f	2018-11-16 06:00:02.736472	\N	\N	\N
+670	1	admin	3195	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/463.png	1	f	2018-11-16 06:00:01.14858	\N	\N	\N
+681	1	admin	2971	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/524.png	1	f	2018-11-16 06:00:01.279048	\N	\N	\N
+691	1	admin	2989	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/540.png	1	f	2018-11-16 06:00:01.397317	\N	\N	\N
+704	1	admin	3003	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/554.png	1	f	2018-11-16 06:00:01.53069	\N	\N	\N
+714	1	admin	3016	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/570.png	1	f	2018-11-16 06:00:01.651661	\N	\N	\N
+724	1	admin	3032	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/584.png	1	f	2018-11-16 06:00:01.772846	\N	\N	\N
+734	1	admin	3046	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/598.png	1	f	2018-11-16 06:00:01.892018	\N	\N	\N
+745	1	admin	3061	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/613.png	1	f	2018-11-16 06:00:02.022718	\N	\N	\N
+755	1	admin	3077	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/627.png	1	f	2018-11-16 06:00:02.150712	\N	\N	\N
+765	1	admin	3089	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/641.png	1	f	2018-11-16 06:00:02.26724	\N	\N	\N
+774	1	admin	3109	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/661.png	1	f	2018-11-16 06:00:02.387498	\N	\N	\N
+786	1	admin	3095	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/647.png	1	f	2018-11-16 06:00:02.512118	\N	\N	\N
+798	1	admin	2938	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/490.png	1	f	2018-11-16 06:00:02.637579	\N	\N	\N
+808	1	admin	2954	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/506.png	1	f	2018-11-16 06:00:02.76524	\N	\N	\N
+662	1	admin	3131	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/683.png	1	f	2018-11-16 06:00:01.037431	\N	\N	\N
+673	1	admin	2962	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/514.png	1	f	2018-11-16 06:00:01.16642	\N	\N	\N
+680	1	admin	2976	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/528.png	1	f	2018-11-16 06:00:01.274327	\N	\N	\N
+690	1	admin	2985	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/537.png	1	f	2018-11-16 06:00:01.385	\N	\N	\N
+700	1	admin	2999	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/551.png	1	f	2018-11-16 06:00:01.51069	\N	\N	\N
+711	1	admin	3012	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/565.png	1	f	2018-11-16 06:00:01.631076	\N	\N	\N
+721	1	admin	3028	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/580.png	1	f	2018-11-16 06:00:01.752867	\N	\N	\N
+731	1	admin	3042	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/594.png	1	f	2018-11-16 06:00:01.867178	\N	\N	\N
+741	1	admin	3055	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/607.png	1	f	2018-11-16 06:00:01.985571	\N	\N	\N
+751	1	admin	3069	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/621.png	1	f	2018-11-16 06:00:02.098877	\N	\N	\N
+761	1	admin	3083	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/635.png	1	f	2018-11-16 06:00:02.24392	\N	\N	\N
+772	1	admin	3114	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/666.png	1	f	2018-11-16 06:00:02.380664	\N	\N	\N
+782	1	admin	3100	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/652.png	1	f	2018-11-16 06:00:02.497395	\N	\N	\N
+792	1	admin	3172	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/486.png	1	f	2018-11-16 06:00:02.61453	\N	\N	\N
+803	1	admin	2947	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/499.png	1	f	2018-11-16 06:00:02.725456	\N	\N	\N
+683	1	admin	2973	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/525.png	1	f	2018-11-16 06:00:01.283584	\N	\N	\N
+693	1	admin	2987	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/539.png	1	f	2018-11-16 06:00:01.401821	\N	\N	\N
+701	1	admin	3001	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/553.png	1	f	2018-11-16 06:00:01.519976	\N	\N	\N
+713	1	admin	3014	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/566.png	1	f	2018-11-16 06:00:01.644863	\N	\N	\N
+723	1	admin	3030	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/581.png	1	f	2018-11-16 06:00:01.771385	\N	\N	\N
+733	1	admin	3045	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/596.png	1	f	2018-11-16 06:00:01.890708	\N	\N	\N
+743	1	admin	3058	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/610.png	1	f	2018-11-16 06:00:02.014055	\N	\N	\N
+753	1	admin	3079	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/624.png	1	f	2018-11-16 06:00:02.133602	\N	\N	\N
+764	1	admin	3086	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/638.png	1	f	2018-11-16 06:00:02.253169	\N	\N	\N
+775	1	admin	3110	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/662.png	1	f	2018-11-16 06:00:02.389965	\N	\N	\N
+785	1	admin	3098	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/649.png	1	f	2018-11-16 06:00:02.51156	\N	\N	\N
+797	1	admin	3170	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/488.png	1	f	2018-11-16 06:00:02.635513	\N	\N	\N
+807	1	admin	2951	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/503.png	1	f	2018-11-16 06:00:02.75888	\N	\N	\N
+692	1	admin	2988	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/541.png	1	f	2018-11-16 06:00:01.399586	\N	\N	\N
+705	1	admin	3002	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/555.png	1	f	2018-11-16 06:00:01.534	\N	\N	\N
+715	1	admin	3019	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/572.png	1	f	2018-11-16 06:00:01.653292	\N	\N	\N
+725	1	admin	3034	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/586.png	1	f	2018-11-16 06:00:01.778234	\N	\N	\N
+736	1	admin	3047	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/599.png	1	f	2018-11-16 06:00:01.903119	\N	\N	\N
+746	1	admin	3062	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/614.png	1	f	2018-11-16 06:00:02.024344	\N	\N	\N
+759	1	admin	3076	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/628.png	1	f	2018-11-16 06:00:02.172546	\N	\N	\N
+769	1	admin	3117	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/669.png	1	f	2018-11-16 06:00:02.310537	\N	\N	\N
+779	1	admin	3105	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/656.png	1	f	2018-11-16 06:00:02.437674	\N	\N	\N
+789	1	admin	3121	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/673.png	1	f	2018-11-16 06:00:02.563979	\N	\N	\N
+799	1	admin	2942	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/494.png	1	f	2018-11-16 06:00:02.685623	\N	\N	\N
+809	1	admin	2955	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/507.png	1	f	2018-11-16 06:00:02.807401	\N	\N	\N
+659	1	admin	3391	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/690.png	1	f	2018-11-16 06:00:01.02232	\N	Pokemon	Imagen de Pokemon
+812	1	admin	3391	/public/repositories/resources/Skrelp.pdf	2	f	2018-11-25 05:17:53.208723	\N	Pokemon	Info
+817	1	admin	3344	/public/repositories/resources/1543181566085.gif	1	t	2018-11-25 15:32:46.09806	\N	Nyan Cat	Nyan Cat Gif
+818	1	admin	3344	/public/repositories/resources/1543186271089.pdf	2	t	2018-11-25 16:51:11.111863	\N	pdf	Solo un pdf
+820	1	admin	3344	https://www.youtube.com/watch?v=4jBDnYE1WjI	3	f	2018-11-25 16:55:05.955346	\N	pdf2	pdf2
+821	1	admin	3344	https://www.youtube.com/watch?v=8YReJfHIyo0&list=PLi38ScxZn6T6s1c-8eRL-a95JZHmOSZTZ	4	f	2018-11-25 16:58:43.062013	\N	Playlist	Super Science Friends
+822	1	admin	3344	/public/repositories/resources/1543188283862.svg	2	t	2018-11-25 17:24:44.034881	\N	svg	Dabase de datos
 \.
 
 
@@ -5178,6 +5206,8 @@ COPY public."RepositoryTopics" (id, "idRepository", "idCatalog") FROM stdin;
 5288	3157	24
 5291	2585	17
 5292	2585	2
+5293	3396	1
+5294	3381	17
 \.
 
 
@@ -6399,6 +6429,7 @@ COPY public."RepositoryTypes" (id, "idRepository", "idCatalog") FROM stdin;
 2677	2993	19
 2687	3235	22
 2691	2585	8
+2692	3396	8
 \.
 
 
@@ -6407,8 +6438,8 @@ COPY public."RepositoryTypes" (id, "idRepository", "idCatalog") FROM stdin;
 --
 
 COPY public."Users" (id, email, username, password, "firstName", "lastName", type, "createdAt", "updatedAt", "profileImage") FROM stdin;
-1	admin@admin	admin	Nyan	Admin	Is Admin	1	\N	\N	http://www.nyan.cat/cats/original.gif
-2	xxsorielxx@gmail.com	Soriel	Nyan	Soriel	Vallejo	2	2018-11-20 14:18:05.000653	\N	https://cdn.changelog.com/uploads/icons/topics/4Q/icon_small.png?v=63684078143
+1	admin@admin	admin	Nyan	Admin	Is Admin	1	\N	\N	/public/profiles/admin.gif
+2	xxsorielxx@gmail.com	Soriel	Nyan	Soriel	Vallejo	2	2018-11-20 14:18:05.000653	\N	/public/profiles/admin.gif
 \.
 
 
@@ -6452,7 +6483,7 @@ SELECT pg_catalog.setval('public."Bundle_id_seq"', 1, false);
 -- Name: CatalogAuthors_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."CatalogAuthors_id_seq"', 1, true);
+SELECT pg_catalog.setval('public."CatalogAuthors_id_seq"', 2, true);
 
 
 --
@@ -6494,21 +6525,21 @@ SELECT pg_catalog.setval('public."MyList_id_seq"', 1, false);
 -- Name: Repositories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."Repositories_id_seq"', 3391, true);
+SELECT pg_catalog.setval('public."Repositories_id_seq"', 3399, true);
 
 
 --
 -- Name: RepositoryAuthors_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."RepositoryAuthors_id_seq"', 7, true);
+SELECT pg_catalog.setval('public."RepositoryAuthors_id_seq"', 9, true);
 
 
 --
 -- Name: RepositoryComment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."RepositoryComment_id_seq"', 14, true);
+SELECT pg_catalog.setval('public."RepositoryComment_id_seq"', 23, true);
 
 
 --
@@ -6522,7 +6553,7 @@ SELECT pg_catalog.setval('public."RepositoryEditorials_id_seq"', 2, true);
 -- Name: RepositoryResources_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."RepositoryResources_id_seq"', 811, true);
+SELECT pg_catalog.setval('public."RepositoryResources_id_seq"', 828, true);
 
 
 --
@@ -6536,14 +6567,14 @@ SELECT pg_catalog.setval('public."RepositoryScore_id_seq"', 1, false);
 -- Name: RepositoryTopics_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."RepositoryTopics_id_seq"', 5292, true);
+SELECT pg_catalog.setval('public."RepositoryTopics_id_seq"', 5294, true);
 
 
 --
 -- Name: RepositoryTypes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."RepositoryTypes_id_seq"', 2691, true);
+SELECT pg_catalog.setval('public."RepositoryTypes_id_seq"', 2692, true);
 
 
 --
@@ -6571,7 +6602,7 @@ SELECT pg_catalog.setval('public.catalogtopics_id_seq', 42, true);
 -- Name: catalogtypes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.catalogtypes_id_seq', 35, true);
+SELECT pg_catalog.setval('public.catalogtypes_id_seq', 42, true);
 
 
 --

@@ -4,6 +4,7 @@ const store = () => {
   return new Vuex.Store({
     state: () => ({
       isAuth: false,
+      isAdmin: false,
       token: process.browser ? sessionStorage.getItem('token') : null,
       user: {}
     }),
@@ -20,6 +21,7 @@ const store = () => {
         state.token = null
         state.user = {}
         state.isAuth = false
+        state.isAdmin = false
         if (process.browser) {
           window.sessionStorage.removeItem('token')
           window.sessionStorage.removeItem('user')
@@ -29,9 +31,11 @@ const store = () => {
         state.token = token
         state.user = user
         state.isAuth = true
+        state.isAdmin = user.type === 1
       },
       login: (state, { user, token }) => {
         state.isAuth = true
+        state.isAdmin = user.type === 1
         state.user = user
         state.token = token
         if (process.browser) {
@@ -40,6 +44,7 @@ const store = () => {
         }
       },
       logout: state => {
+        state.isAdmin = false
         state.isAuth = false
         state.user = {}
       }
