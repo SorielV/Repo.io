@@ -6,10 +6,24 @@
           .card-image
             figure.image.is-256x246
               img(:src="repository.image || '/public/loading.gif'")
+            //-.is-overlay
+              .hearty
           .card-stacked(v-if="tabSelected === 1")
             .card-content
               .media-content
-                p.title(v-text='repository.title')
+                .header.is-flex-desktop.is-inline-flex-mobile
+                  p.title(v-text='repository.title')
+                  fieldset.starability-basic(style="margin-left: auto;" @click="isModalScoreActive = true")
+                    input#rate1(type='radio', name='rating', value='1' v-model="score.avg")
+                    label(for='rate1', title='Terrible') 1 star
+                    input#rate2(type='radio', name='rating', value='2' v-model="score.avg")
+                    label(for='rate2', title='Not good') 2 stars
+                    input#rate3(type='radio', name='rating', value='3' v-model="score.avg")
+                    label(for='rate3', title='Average') 3 stars
+                    input#rate4(type='radio', name='rating', value='4' v-model="score.avg")
+                    label(for='rate4', title='Very good') 4 stars
+                    input#rate5(type='radio', name='rating', value='5' v-model="score.avg")
+                    label(for='rate5', title='Amazing') 5 stars
               .content
                 .tags
                   span.small.tag(v-for="(topic, index) in repository.topic" :key='index')
@@ -61,7 +75,7 @@
                       .container.is-fluid
                         pre {{ props.row }}
       .column.is-narrow
-        .is-flex-mobile
+        .is-flex
           div
             button.button(@click="tabSelected = 1")
               i.mdi.mdi-information-outline
@@ -74,6 +88,7 @@
           div
             button.button.is-link(@click="shareOnTwitter")
               i.mdi.mdi-twitter
+    //Modal Resources
     b-modal(:active.sync="isModalActive")
       .resource-content(v-if="isModalActive")
         .img(v-if="repository.resource[selected].type === 1")
@@ -92,6 +107,31 @@
           )
         .doc(v-else)
           iframe(:src="'https://docs.google.com/viewer?embedded=true&url=' + fileURL(repository.resource[selected].file)")
+    b-modal(:active.sync="isModalScoreActive")
+      form.box(v-on:submit.prevent="handleSubmitReview")
+        .is-flex
+          figure.image.is-48x48
+            img(:src="$store.state.user.profileImage || 'https://bulma.io/images/placeholders/128x128.png'")
+          fieldset.starability-basic(style="margin-left: auto;")
+            input#rate1(type='radio', name='rating', value='1' v-model="review.score")
+            label(for='rate1', title='Terrible') 1 star
+            input#rate2(type='radio', name='rating', value='2' v-model="review.score")
+            label(for='rate2', title='Not good') 2 stars
+            input#rate3(type='radio', name='rating', value='3' v-model="review.score")
+            label(for='rate3', title='Average') 3 stars
+            input#rate4(type='radio', name='rating', value='4' v-model="review.score")
+            label(for='rate4', title='Very good') 4 stars
+            input#rate5(type='radio', name='rating', value='5' v-model="review.score")
+            label(for='rate5', title='Amazing') 5 stars
+        .field(style="margin:0;")
+          b-input#comment(
+            maxlength="255"
+            type="textarea"
+            placeholder="Review"
+            :required='true'
+          )
+        .buttons.is-centered(style="margin-top: 0.5rem;")
+          button#handle.button.is-info Resenar
 </template>
 
 <script>
@@ -100,10 +140,19 @@ export default {
     repository: {
       type: Object,
       required: true
+    },
+    score: {
+      type: Object,
+      required: true
     }
   },
   data() {
     return {
+      review: {
+        score: '',
+        comment: ''
+      },
+      isModalScoreActive: false,
       isModalActive: false,
       tabSelected: 1,
       selected: 0,
@@ -116,6 +165,9 @@ export default {
     }
   },
   methods: {
+    handleSubmitReview() {
+      this.$emit('handleSubmitReview', this.review)
+    },
     shareOnTwitter() {
       alert('Coming Soon')
     },
@@ -175,6 +227,9 @@ iframe {
 .is-256x246 {
   height: 412px;
   width: 412px;
+}
+.is-256x246 img {
+  max-height: 100%;
 }
 .card.is-horizontal {
   display: flex;

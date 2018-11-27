@@ -1,6 +1,8 @@
 <template lang="pug">
   div.Site
     Header
+    button#scrollUp.button.is-black.is-outlined
+      i.mdi.mdi-chevron-up
     section.Site-content
       nuxt
     Footer
@@ -45,6 +47,27 @@ export default {
         })
       })
     }
+
+    document.getElementById('scrollUp').onclick = () => {
+      document.body.scrollTop = 0
+      document.documentElement.scrollTop = 0
+    }
+
+    window.onscroll = () => {
+      const scrollTop =
+        document.body.scrollTop || document.documentElement.scrollTop
+      const scrollUp = document.getElementById('scrollUp')
+      console.log(scrollUp.style)
+      scrollUp.style.display = scrollTop > 20 ? 'block' : 'none'
+
+      const winScroll =
+        document.body.scrollTop || document.documentElement.scrollTop
+
+      const height =
+        document.documentElement.scrollHeight -
+        document.documentElement.clientHeight
+      const scrolled = (winScroll / height) * 100
+    }
   },
   created() {
     this.$store.dispatch('loadAuth')
@@ -65,5 +88,14 @@ body {
 
 .Site-content {
   flex: 1;
+}
+#scrollUp {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  z-index: 99;
+  font-size: 18px;
+  cursor: pointer;
 }
 </style>

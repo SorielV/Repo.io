@@ -66,7 +66,12 @@
         .columns.is-multiline.is-centered(v-if="view === 'grid'")
           .column.is-3( v-for="(repo, index) in filtered" :key="index")
             transition-group(name="component-fade" tag="section")
-              CardRepository(:repository='repo' @handleViewRepo="handleViewRepo" :key="repo.id")
+              CardRepository(
+                :repository='repo'
+                @handleViewRepo="handleViewRepo"
+                @handleViewType="handleViewType"
+                :key="repo.id"
+              )
         .columns.is-multiline.is-centered(v-else)
           .column.is-12(v-for="(repo, index) in filtered" :key="index")
             transition-group(name="component-fade" tag="section")
@@ -82,7 +87,6 @@
     )
     hr
     pre {{ pagination }}
-    pre {{ catalog }}
 </template>
 
 <script>
@@ -432,8 +436,11 @@ export default {
         window.scrollTo(0, 0)
       }
     },
-    handleViewRepo(repo) {
-      this.$router.push('/repo/' + repo.id)
+    handleViewRepo({ id }) {
+      this.$router.push('/repo/' + id)
+    },
+    handleViewType({ id }) {
+      this.$router.push('/repo/types/' + id)
     }
   }
 }

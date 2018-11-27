@@ -10,10 +10,15 @@ module.exports = {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: pkg.description }
+      {
+        hid: 'description',
+        name: 'Repo-io',
+        content: 'Comparte y consulata repositorios'
+      }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'stylesheet', href: '/public/css/index.css' },
       { rel: 'manifest', href: '/manifest.json' }
     ],
     /*

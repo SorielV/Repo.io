@@ -1,51 +1,54 @@
-
 import database from './../../../config/database'
 import Schema from './../../../utils/Schema'
 
 const ScoreSchema = {
-  "table": "RepositoryScore",
-  "columns": {
-    "id": {
-      "type": Number,
-      "required": false,
-      "updatable": true
+  table: 'RepositoryScore',
+  columns: {
+    id: {
+      type: Number,
+      required: false,
+      updatable: true
     },
-    "idUser": {
-      "type": Number,
-      "required": false,
-      "updatable": true
+    idUser: {
+      type: Number,
+      required: false,
+      updatable: true
     },
-    "username": {
-      "type": String,
-      "required": false,
-      "updatable": true,
-      "length": 20
+    idRepository: {
+      type: Number,
+      required: true,
+      updatable: true
     },
-    "score": {
-      "type": Number,
-      "required": false,
-      "updatable": true
+    username: {
+      type: String,
+      required: false,
+      updatable: true,
+      length: 20
     },
-    "comment": {
-      "type": String,
-      "required": true,
-      "updatable": true,
-      "length": 255
+    score: {
+      type: Number,
+      required: true,
+      updatable: true
     },
-    "createdAt": {
-      "type": Date,
-      "required": true,
-      "updatable": true,
-      "default": "CURRENT_TIMESTAMP"
+    comment: {
+      type: String,
+      required: true,
+      updatable: true,
+      length: 255
     },
-    "updatedAt": {
-      "type": Date,
-      "required": true,
-      "updatable": true
+    createdAt: {
+      type: Date,
+      required: false,
+      updatable: true
+    },
+    updatedAt: {
+      type: Date,
+      required: false,
+      updatable: true
     }
   },
-  "options": {
-    "id": "id"
+  options: {
+    id: 'id'
   }
 }
 

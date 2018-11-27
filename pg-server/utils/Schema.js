@@ -207,7 +207,7 @@ module.exports = function Schema(
 
       console.log('isStrict: ' + strict)
 
-      if (changes - primaryKeys.length <= 0) {
+      if (changes /*- primaryKeys.length*/ <= 0) {
         if (strict) {
           throw new Error('Datos no validos informacion duplicada')
         } else {
@@ -470,7 +470,7 @@ module.exports = function Schema(
     static async findOne(options, raw = true) {
       options.limit = 1
       const [result = null] = await Model.find({ where: options })
-      return raw ? result : new Model(result, false)
+      return result ? (raw ? result : new Model(result, false)) : null
     }
 
     static query(query) {

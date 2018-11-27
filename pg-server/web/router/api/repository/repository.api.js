@@ -121,6 +121,27 @@ router.get(
 )
 
 router.get(
+  '/:idR/score/',
+  catchException(async (req, res, next) => {
+    const {
+      params: { idR: idRepository },
+      query: { full = false }
+    } = req
+
+    const api =
+      req.protocol + '://' + req.get('host') + req.originalUrl.split('?')[0]
+
+    const results = await Model['score'].getScores(idRepository, {
+      ...req.query,
+      api,
+      full
+    })
+
+    return res.json(results)
+  })
+)
+
+router.get(
   '/:idR/comment/:id',
   catchException(async (req, res, next) => {
     const {
@@ -168,9 +189,9 @@ router.get(
       params: { idR: idRepository }
     } = req
 
-    const { rows: results } = await Model[req.model].getAll(
+    const results = await Model[req.model].find(
       {
-        idRepository
+        where: { idRepository }
       },
       true
     )
@@ -207,6 +228,7 @@ router.use(
 
 router.post(
   '/:idR/resource/',
+  isAdminAuth,
   catchException(async (req, res, next) => {
     console.log(req.user)
     const { username, id: idUser, profileImage } = req.user
@@ -243,6 +265,73 @@ router.post(
 
     //const results = await obj.save()
     const result = await obj.save()
+
+    return res
+      .status(201)
+      .json({ data: result })
+      .end()
+  })
+)
+
+router.post(
+  '/:idR/score/',
+  catchException(async (req, res, next) => {
+    const { username, id: idUser, profileImage } = req.user
+    const {
+      params: { idR: idRepository }
+    } = req
+
+    console.log(req.body)
+
+    const {
+      body: { score, comment }
+    } = req
+
+    console.log({ score, comment })
+
+    if (!score && isNaN(score)) {
+      return res
+        .status(400)
+        .json({ message: 'Score faltante' })
+        .end()
+    }
+
+    delete req.body.id
+    let result = {}
+
+    const repoScore = await Model['score'].findOne(
+      {
+        idRepository,
+        username,
+        idUser
+      },
+      false
+    )
+
+    if (repoScore) {
+      const merge = {}
+      const isEqualScore = repoScore.data.score === Number(score)
+      const isSameCommnet = repoScore.data.comment === comment
+
+      if (isEqualScore & isSameCommnet) {
+        return res
+          .status(200)
+          .json({ data: repoScore.data })
+          .end()
+      }
+
+      if (!isEqualScore) merge['score'] = Number(score)
+      if (!isSameCommnet) merge['comment'] = comment
+      repoScore.merge(merge)
+      result = await repoScore.update()
+    } else {
+      result = await new Model['score']({
+        ...req.body,
+        idRepository,
+        username,
+        idUser
+      }).save()
+    }
 
     return res
       .status(201)
