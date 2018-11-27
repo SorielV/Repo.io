@@ -7,14 +7,16 @@
             form(
               v-on:submit.prevent="handleSubmit"
             )
-              h1.title Bienvenido
+              h1.title Registrese
               div(
                 style="display: block; text-align: -webkit-center; margin: 1rem"
               )
                 figure.image.is-128x128
-                  img(src="https://bulma.io/images/placeholders/128x128.png")
+                  img(src="http://cdn.onlinewebfonts.com/svg/img_210318.png")
+                  nuxt-link(to='/') selecciona
               .field
                 .control
+                <br>
                   input.input(
                     type="text"
                     placeholder="Usuario"
@@ -58,6 +60,12 @@
                     position="is-top-right"
                   )
               button.button.is-danger.is-outlined.is-rounded Registrarse
+              section.login-others
+              <br>
+                a(href='') 
+                  img(src="https://i0.wp.com/umap.org/wp-content/uploads/2017/06/Universidad-de-Colima.png?fit=1069%2C1065" width='50px')
+                a(href='')
+                  img(src="http://www.stickpng.com/assets/images/5a951939c4ffc33e8c148af2.png" width='50px')
               section.has-text-left
                 nuxt-link(to='/') Inicio
 </template>
@@ -84,7 +92,7 @@ export default {
   },
   methods: {
     handleSubmit() {
-      alert('Proximamente C:')
+      alert('Proximamente :D')
     }
   }
 }

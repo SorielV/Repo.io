@@ -9,7 +9,7 @@
           class="image">
           <img
             class="nyan-cat"
-            src="http://www.nyan.cat/cats/original.gif">
+            src="https://s0.wp.com/wp-content/themes/a8c/automattic-2011/page-templates/assets/2016-annual-report/images/cat5.gif">
         </figure>
       </div>
     </div>

@@ -1,36 +1,34 @@
 <template lang="pug">
   section.login
-    .something-semantic
-      .something-else-semantic
-        section.login-from
-          section.login-from-content
-            form(
-              v-on:submit.prevent="handleSubmit"
-            )
-              h1.title Bienvenido
-              div(
-                style="display: block; text-align: -webkit-center; margin: 1rem"
-              )
-                figure.image.is-128x128
-                  img(src="https://bulma.io/images/placeholders/128x128.png")
-              .field
-                .control
-                  input.input(
-                    type="text"
-                    placeholder="Usuario"
-                    v-model="user.username"
-                  )
-              .field
-                .control
-                  b-input(
-                    type="password"
-                    placeholder="Password"
-                    password-reveal
-                    v-model="user.password"
-                  )
-              button.button.is-danger.is-outlined.is-rounded Ingresar
-              section.has-text-left
-                nuxt-link(to='/') Inicio
+    section.hero.is-black.is-fullheight
+      .hero-body
+        .container.has-text-centered
+          .column.is-4.is-offset-4
+            h3.title.has-text-white Iniciar Sesión
+            p.subtitle.has-text-white Logeate en Repo-io para Acceder
+            .box
+              figure.avatar
+                img(src='https://placehold.it/128x128')
+              form
+                .field
+                  .control
+                    input.input.is-medium(type='email', placeholder='Your Email', autofocus='')
+                .field
+                  .control
+                    input.input.is-medium(type='password', placeholder='Your Password')
+                .field
+                  label.checkbox
+                    input(type='checkbox')
+                    | Recuerdame
+                button.button.is-block.is-warning.is-large.is-fullwidth Iniciar
+            p.has-text-grey
+              a(href='../') Registrate
+              |   · 
+              a(href='../') Olvidaste tu contraceña
+              |   · 
+              a(href='../') Ayuda?
+    script(async='', type='text/javascript', src='../js/bulma.js')
+              
 </template>
 
 <script>
@@ -85,7 +83,7 @@ body,
 }
 
 .login {
-  background-color: #4a4090;
+  background-color: white;
   background-image: -webkit-linear-gradient(top, #4a4090, #372e6c);
   background-image: linear-gradient(to bottom, #4a4090, #372e6c);
   width: 100%;
