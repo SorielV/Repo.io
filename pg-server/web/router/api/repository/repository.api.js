@@ -2,7 +2,7 @@ import { Router } from 'express'
 import Path from 'path'
 import fileUpload from 'express-fileupload'
 import Repository from './/repository.controller'
-import { saveFile } from './../../../../utils'
+import { saveFile, slugify } from './../../../../utils'
 
 // Model Controllers
 import Model from './model'
@@ -492,8 +492,20 @@ router.post(
   catchException(async (req, res, next) => {
     delete req.body.id
     const { username, id: idUser } = req.user
+
+    const {
+        body: { title = null  }
+        } = req
+
+    if (!title) {
+        return res.status(400).json({ message: 'Titulo no enviado' })
+    }
+
+    const slug = slugify(title)
+
     let repository = new Repository({
       ...req.body,
+      slug,
       username,
       idUser
     })

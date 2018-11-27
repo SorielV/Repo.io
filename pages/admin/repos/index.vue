@@ -213,7 +213,7 @@
                           | Busqueda: {{ search.param }}
                         iframe.container(src="http://wayou.github.io/t-rex-runner/" style="height: 150px")
         // Crear
-        b-tab-item(label="Crear Base (?)")
+        b-tab-item(label="Crear Base")
           form.block(v-on:submit.prevent="handleSubmitCreate")
             b-field(
               label="Titulo"
@@ -1008,7 +1008,7 @@ export default {
         // Actualizar Repositorio Actual [Editando]
         this.update.data.resource.push(resource)
 
-        this.uploaded.isModalResourceActive = false
+        this.upload.isModalResourceActive = false
 
         this.$toast.open({
           message: 'Recurso Agregado',
@@ -1334,6 +1334,8 @@ export default {
 
         this.create = {}
         this.data.push(data)
+
+        const idRepository = data.id
         const indexTable = Array.from(this.table.data).findIndex(
           ({ id }) => id === idRepository
         )

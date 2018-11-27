@@ -12,9 +12,9 @@ const EditorialSchema = {
     },
     "image": {
       "type": String,
-      "required": true,
+      "required": false,
       "updatable": true,
-      "length": 100
+      "length": 120
     },
     "description": {
       "type": String,

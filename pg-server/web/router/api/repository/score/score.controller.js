@@ -56,7 +56,7 @@ RepositoryScore.getScores = async function(idRepository, _options = {}) {
   }
   `
   const query = `
-    select "${RepositoryScore._Table}".*, Users."profileImage"
+    select "${RepositoryScore._Table}".* ${options.full ? ',Users."profileImage"' : ''}
     from "${RepositoryScore._Table}"
     ${options.full ? 'inner join "Users" as Users on "idUser" = Users.id' : ''}
     where "idRepository" = ${Number(idRepository)} ${

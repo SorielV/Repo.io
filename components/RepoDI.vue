@@ -63,8 +63,7 @@
                       label=""
                     )
                       .buttons.block
-                        button.button.is-info.is-small(
-                          v-show="props.index !== selected"
+                        button.button.is-info.is-small(                     
                           @click="selectResource(props.row)"
                         )
                           i.mdi.mdi-eye
