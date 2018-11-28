@@ -1,36 +1,37 @@
 <template lang="pug">
   section.login
-    .something-semantic
-      .something-else-semantic
-        section.login-from
-          section.login-from-content
-            form(
-              v-on:submit.prevent="handleSubmit"
-            )
-              h1.title Bienvenido
-              div(
-                style="display: block; text-align: -webkit-center; margin: 1rem"
-              )
-                figure.image.is-128x128
-                  img(src="https://bulma.io/images/placeholders/128x128.png")
-              .field
-                .control
-                  input.input(
-                    type="text"
-                    placeholder="Usuario"
-                    v-model="user.username"
-                  )
-              .field
-                .control
-                  b-input(
-                    type="password"
-                    placeholder="Password"
-                    password-reveal
-                    v-model="user.password"
-                  )
-              button.button.is-danger.is-outlined.is-rounded Ingresar
-              section.has-text-left
-                nuxt-link(to='/') Inicio
+    #flow
+      span.flow-1
+      span.flow-2
+      span.flow-3
+    section.hero.is-white.is-fullheight
+      .hero-body
+        .container.has-text-centered
+          .column.is-4.is-offset-4
+            h3.title.has-text-black Iniciar Sesión
+            p.subtitle.has-text-black Logeate en Repo-io para Acceder
+            .box
+              figure.avatar
+                img(src='https://placehold.it/128x128')
+              form
+                .field
+                  .control
+                    input.input(type='email', placeholder='Correo', autofocus='')
+                .field
+                  .control
+                    input.input(type='password', placeholder='Contraseña')
+                .field
+                  b-checkbox(type='is-info')
+                  | Recuerdame
+                button.button.is-block.is-info.is-large.is-fullwidth Iniciar
+            p.has-text-grey
+              a(href='../') Registrate
+              |   · 
+              a(href='../') Olvidaste tu contraseña
+              |   · 
+              a(href='../') Ayuda?
+    script(async='', type='text/javascript', src='../js/bulma.js')
+              
 </template>
 
 <script>
@@ -75,8 +76,89 @@ export default {
   }
 }
 </script>
-
 <style>
+#flow span {
+  display: block;
+  width: 800vw;
+  height: 800vw;
+  position: absolute;
+  top: -180vw;
+  left: -50vw;
+  border-radius: 90vw;
+  opacity: 0.6;
+}
+.flow-1 {
+  background: #191717;
+  -webkit-animation: rotating 20s linear infinite;
+  -moz-animation: rotating 20s linear infinite;
+  -ms-animation: rotating 20s linear infinite;
+  -o-animation: rotating 20s linear infinite;
+  animation: rotating 20s linear infinite;
+}
+
+.flow-2 {
+  background: #0f91e2;
+  position: absolute;
+  -webkit-animation: rotating 15s linear infinite;
+  -moz-animation: rotating 15s linear infinite;
+  -ms-animation: rotating 15s linear infinite;
+  -o-animation: rotating 15s linear infinite;
+  animation: rotating 15s linear infinite;
+}
+
+.flow-3 {
+  background: #a721dc;
+  position: absolute;
+  -webkit-animation: rotating 7s linear infinite;
+  -moz-animation: rotating 7s linear infinite;
+  -ms-animation: rotating 7s linear infinite;
+  -o-animation: rotating 7s linear infinite;
+  animation: rotating 7s linear infinite;
+}
+
+@-webkit-keyframes rotating {
+  from {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+
+  to {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotating {
+  from {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+
+  to {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+.rotating {
+  -webkit-animation: rotating 2s linear infinite;
+  -moz-animation: rotating 2s linear infinite;
+  -ms-animation: rotating 2s linear infinite;
+  -o-animation: rotating 2s linear infinite;
+  animation: rotating 2s linear infinite;
+}
+
 html,
 body,
 #__layout,
@@ -85,7 +167,7 @@ body,
 }
 
 .login {
-  background-color: #4a4090;
+  background-color: white;
   background-image: -webkit-linear-gradient(top, #4a4090, #372e6c);
   background-image: linear-gradient(to bottom, #4a4090, #372e6c);
   width: 100%;
