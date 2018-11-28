@@ -9,10 +9,17 @@ const AuthorSchema = {
       required: false,
       updatable: true
     },
-    image: {
+    name: {
+      type: String,
+      required: true,
+      updatable: true,
+      length: 120
+    },
+    slug: {
       type: String,
       required: false,
-      updatable: true
+      updatable: true,
+      length: 120
     },
     description: {
       type: String,
@@ -20,17 +27,10 @@ const AuthorSchema = {
       updatable: true,
       length: 200
     },
-    lastName: {
+    image: {
       type: String,
       required: false,
-      updatable: true,
-      length: 40
-    },
-    firstName: {
-      type: String,
-      required: false,
-      updatable: true,
-      length: 40
+      updatable: true
     },
     createdAt: {
       type: Date,

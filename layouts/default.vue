@@ -57,7 +57,7 @@ export default {
       const scrollTop =
         document.body.scrollTop || document.documentElement.scrollTop
       const scrollUp = document.getElementById('scrollUp')
-      console.log(scrollUp.style)
+
       scrollUp.style.display = scrollTop > 20 ? 'block' : 'none'
 
       const winScroll =

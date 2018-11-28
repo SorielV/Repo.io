@@ -1,0 +1,30 @@
+[
+  {
+    "idCatalog": 3,
+    "value": "Nyan Mexican\t\n",
+    "slug": "nyan-mexican\t\n",
+    "image": "http://www.nyan.cat/cats/mexinyan.gif",
+    "createdAt": "2018-11-14T06:41:41.350Z"
+  },
+  {
+    "idCatalog": 2,
+    "value": "Arthur Conan Doyle ",
+    "slug": "arthur-conan-doyle ",
+    "image": "/public/repositories/author/1542929397445.jpg",
+    "createdAt": "2018-10-04T22:27:31.000Z"
+  },
+  {
+    "idCatalog": 1,
+    "value": "Nyan Cat\t\n",
+    "slug": "nyan-cat",
+    "image": "http://www.nyan.cat/cats/original.gif",
+    "createdAt": "2018-11-11T02:51:39.912Z"
+  },
+  {
+    "idCatalog": 6,
+    "value": "Nicolas Tesla 2",
+    "slug": "nicolas-tesla-2",
+    "image": "/public/repositories/author/1543376278497.gif",
+    "createdAt": "2018-10-03T02:37:58.000Z"
+  }
+]

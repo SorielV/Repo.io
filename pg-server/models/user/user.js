@@ -17,7 +17,7 @@ const UserSchema = {
     },
     username: {
       type: String,
-      required: false,
+      required: true,
       updatable: true,
       length: 20
     },
@@ -46,13 +46,12 @@ const UserSchema = {
     },
     createdAt: {
       type: Date,
-      required: true,
-      updatable: true,
-      default: 'CURRENT_TIMESTAMP'
+      required: false,
+      updatable: true
     },
     updatedAt: {
       type: Date,
-      required: true,
+      required: false,
       updatable: true
     },
     profileImage: {

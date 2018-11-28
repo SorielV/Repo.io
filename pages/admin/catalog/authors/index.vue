@@ -62,19 +62,11 @@
               ) {{ props.row['id'] }}
 
               b-table-column(
-                field="firstName"
+                field="name"
                 label="Nombre"
                 :visible="true"
                 sortable
-              ) {{ props.row['firstName'] }}
-                  
-
-              b-table-column(
-                field="lastName"
-                label="Apellido"
-                :visible="true"
-                sortable
-              ) {{ props.row['lastName'] }}
+              ) {{ props.row['name'] }}
 
               b-table-column(
                 field="image"
@@ -129,16 +121,7 @@
               label="Nombre"
             )
               b-input(type="Nombre"
-                v-model="create.firstName"
-                value=""
-                maxlength="60"
-                :required="true"
-              )
-            b-field(
-              label="Apellido"
-            )
-              b-input(type="Apellido"
-                v-model="create.lastName"
+                v-model="create.name"
                 value=""
                 maxlength="60"
                 :required="true"
@@ -181,8 +164,8 @@
                           p Suelta La Imagen
 
             .buttons.is-centered
-              button.button.is-danger(@click="cancelCreate") Cancelar
-              button.button.is-dark(type="submit") Crear Autor
+              button.button(@click="cancelCreate") Cancelar
+              button.button.is-info(type="submit") Crear
 
         // Actualizar
         b-tab-item(:label='`Actualizar (id: ${update.data.id})`' :disabled="update.index === null")
@@ -191,16 +174,7 @@
               label="Nombre"
             )
               b-input(type="Nombre"
-                v-model="update.data.firstName"
-                value=""
-                maxlength="60"
-                :required="true"
-              )
-            b-field(
-              label="Apellido"
-            )
-              b-input(type="Apellido"
-                v-model="update.data.lastName"
+                v-model="update.data.name"
                 value=""
                 maxlength="60"
                 :required="true"
@@ -250,10 +224,9 @@
                             b-icon(icon='upload', size='is-large')
                           p Suelta La Imagen
 
-            pre {{ update }}
             .buttons.is-centered
-              button.button.is-danger(@click="cancelUpdate") Cancelar
-              button.button.is-dark(type="submit") Actualizar Autor
+              button.button(@click="cancelUpdate") Cancelar
+              button.button.is-info(type="submit") Actualizar
 </template>
 
 <script>
@@ -307,7 +280,7 @@ export default {
     try {
       const {
         data: { data }
-      } = await app.$axios.get('/api/catalog/author')
+      } = await app.$axios.get('/api/catalog/author?full=true')
       return {
         data: data,
         table: {

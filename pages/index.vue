@@ -16,8 +16,41 @@
                     i.mdi.mdi-magnify
                 .control
                   button.button.is-info(@click="search") Buscar
-
-        .container.has-text-centered.has-my-5
+        .container.has-text-centered.has-my-5(v-if="isLoading")
+          .columns.is-centered
+            .column
+              content-loader(:height='160', :width='400', :speed='2', primaryColor='#000000', secondaryColor='#ecebeb')
+                rect(x='70', y='15', rx='4', ry='4', width='117', height='6.4')
+                  rect(x='70', y='35', rx='3', ry='3', width='85', height='6.4')
+                    rect(x='0', y='80', rx='3', ry='3', width='350', height='6.4')
+                      rect(x='0', y='100', rx='3', ry='3', width='380', height='6.4')
+                        rect(x='0', y='120', rx='3', ry='3', width='201', height='6.4')
+                          circle(cx='30', cy='30', r='30')
+            .column
+              content-loader(:height='160', :width='400', :speed='2', primaryColor='#000000', secondaryColor='#ecebeb')
+                rect(x='70', y='15', rx='4', ry='4', width='117', height='6.4')
+                  rect(x='70', y='35', rx='3', ry='3', width='85', height='6.4')
+                    rect(x='0', y='80', rx='3', ry='3', width='350', height='6.4')
+                      rect(x='0', y='100', rx='3', ry='3', width='380', height='6.4')
+                        rect(x='0', y='120', rx='3', ry='3', width='201', height='6.4')
+                          circle(cx='30', cy='30', r='30')
+            .column
+              content-loader(:height='160', :width='400', :speed='2', primaryColor='#000000', secondaryColor='#ecebeb')
+                rect(x='70', y='15', rx='4', ry='4', width='117', height='6.4')
+                  rect(x='70', y='35', rx='3', ry='3', width='85', height='6.4')
+                    rect(x='0', y='80', rx='3', ry='3', width='350', height='6.4')
+                      rect(x='0', y='100', rx='3', ry='3', width='380', height='6.4')
+                        rect(x='0', y='120', rx='3', ry='3', width='201', height='6.4')
+                          circle(cx='30', cy='30', r='30')
+            .column
+              content-loader(:height='160', :width='400', :speed='2', primaryColor='#000000', secondaryColor='#ecebeb')
+                rect(x='70', y='15', rx='4', ry='4', width='117', height='6.4')
+                  rect(x='70', y='35', rx='3', ry='3', width='85', height='6.4')
+                    rect(x='0', y='80', rx='3', ry='3', width='350', height='6.4')
+                      rect(x='0', y='100', rx='3', ry='3', width='380', height='6.4')
+                        rect(x='0', y='120', rx='3', ry='3', width='201', height='6.4')
+                          circle(cx='30', cy='30', r='30')
+        .container.has-text-centered.has-my-5(v-else)
           h1.title.has-text-black Ultimos Agregados
           .columns.is-centered
             .column.is-3(v-for="(repo, index) in repositories" :key="index")
@@ -25,28 +58,38 @@
                 CardRepository.has-text-black(:repository='repo' @handleViewRepo="handleViewRepo" :key="repo.id")
           .buttons.is-centered
             nuxt-link.button.is-info(to="/repo" style="width: 25%;") Ver Mas
+        
+        
 </template>
 
 <script>
+import { ContentLoader } from 'vue-content-loader'
 import CardRepository from './../components/CardRepository.vue'
 
 export default {
   layout: 'default',
   name: 'HomePage',
   components: {
-    CardRepository
+    CardRepository,
+    ContentLoader
   },
   data() {
     return {
+      isLoading: true,
       repositories: [],
       filter: ''
     }
   },
   async created() {
-    const {
-      data: { data: repositories }
-    } = await this.$axios.get('/api/repo?limit=4')
-    this.repositories = repositories
+    try {
+      const {
+        data: { data: repositories }
+      } = await this.$axios.get('/api/repo?limit=4')
+      this.repositories = repositories
+      this.isLoading = false
+    } catch (err) {
+      console.log(err)
+    }
   },
   methods: {
     handleViewRepo(repo) {

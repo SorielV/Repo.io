@@ -552,7 +552,7 @@ router.put(
 
     return res
       .status(201)
-      .json(repository)
+      .json({ data: repository })
       .end()
   })
 )
@@ -561,7 +561,7 @@ router.delete(
   '/:id',
   catchException(async (req, res, next) => {
     const {
-      param: { id }
+      params: { id }
     } = req
 
     // if is required

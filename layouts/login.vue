@@ -13,13 +13,13 @@
             .box
               figure.avatar
                 img(src='https://placehold.it/128x128')
-              form
+              form(v-on:submit.prevent="handleSubmit")
                 .field
                   .control
-                    input.input(type='email', placeholder='Correo', autofocus='')
+                    input.input(placeholder='Correo', autofocus='' v-model="user.username")
                 .field
                   .control
-                    input.input(type='password', placeholder='Contraseña')
+                    input.input(type='password', placeholder='Contraseña' v-model="user.password")
                 .field
                   b-checkbox(type='is-info')
                   | Recuerdame

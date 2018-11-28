@@ -13,17 +13,21 @@
               .media-content
                 .header.is-flex-desktop.is-inline-flex-mobile
                   p.title(v-text='repository.title')
-                  fieldset.starability-basic(style="margin-left: auto;" @click="isModalScoreActive = true")
-                    input#rate1(type='radio', name='rating', value='1' v-model="score.avg")
-                    label(for='rate1', title='Terrible') 1 star
-                    input#rate2(type='radio', name='rating', value='2' v-model="score.avg")
-                    label(for='rate2', title='Not good') 2 stars
-                    input#rate3(type='radio', name='rating', value='3' v-model="score.avg")
-                    label(for='rate3', title='Average') 3 stars
-                    input#rate4(type='radio', name='rating', value='4' v-model="score.avg")
-                    label(for='rate4', title='Very good') 4 stars
-                    input#rate5(type='radio', name='rating', value='5' v-model="score.avg")
-                    label(for='rate5', title='Amazing') 5 stars
+                  fieldset.starability-basic(style="margin-left: auto;" @click="handleModalScore" v-if="score")
+                    legend.small.has-text-centered(style="font-size: 0.7rem;" v-if="score.avg !== null ")
+                      | {{ scoreText }}
+                    
+                    input#rate1(type='radio', name='rating', :value='1' v-model="score.avgFixed" disabled="true")
+                    label(for='rate1', ) 1 star
+                    input#rate2(type='radio', name='rating', :value='2' v-model="score.avgFixed" disabled="true")
+                    label(for='rate2', title='') 2 stars
+                    input#rate3(type='radio', name='rating', :value='3' v-model="score.avgFixed" disabled="true")
+                    label(for='rate3', title='') 3 stars
+                    input#rate4(type='radio', name='rating', :value='4' v-model="score.avgFixed" disabled="true")
+                    label(for='rate4', title='') 4 stars
+                    input#rate5(type='radio', name='rating', :value='5' v-model="score.avgFixed" disabled="true")
+                    label(for='rate5', title='') 5 stars
+                    
               .content
                 .tags
                   span.small.tag(v-for="(topic, index) in repository.topic" :key='index')
@@ -106,28 +110,32 @@
           )
         .doc(v-else)
           iframe(:src="'https://docs.google.com/viewer?embedded=true&url=' + fileURL(repository.resource[selected].file)")
+    // Submit Review
     b-modal(:active.sync="isModalScoreActive")
       form.box(v-on:submit.prevent="handleSubmitReview")
         .is-flex
           figure.image.is-48x48
             img(:src="$store.state.user.profileImage || 'https://bulma.io/images/placeholders/128x128.png'")
           fieldset.starability-basic(style="margin-left: auto;")
-            input#rate1(type='radio', name='rating', value='1' v-model="review.score")
-            label(for='rate1', title='Terrible') 1 star
-            input#rate2(type='radio', name='rating', value='2' v-model="review.score")
-            label(for='rate2', title='Not good') 2 stars
-            input#rate3(type='radio', name='rating', value='3' v-model="review.score")
-            label(for='rate3', title='Average') 3 stars
-            input#rate4(type='radio', name='rating', value='4' v-model="review.score")
-            label(for='rate4', title='Very good') 4 stars
-            input#rate5(type='radio', name='rating', value='5' v-model="review.score")
-            label(for='rate5', title='Amazing') 5 stars
+            legend.small.has-text-centered(style="font-size: 0.7rem;" v-if="score.avg !== null ")
+              | {{ review.score }}
+            input#rate1P(type='radio', name='ratingp', :value='1' v-model="review.score")
+            label(for='rate1P', title='Terrible') 1 star
+            input#rate2P(type='radio', name='ratingp', :value='2' v-model="review.score")
+            label(for='rate2P', title='Not good') 2 stars
+            input#rate3P(type='radio', name='ratingp', :value='3' v-model="review.score")
+            label(for='rate3P', title='Average') 3 stars
+            input#rate4P(type='radio', name='ratingp', :value='4' v-model="review.score")
+            label(for='rate4P', title='Very good') 4 stars
+            input#rate5P(type='radio', name='ratingp', :value='5' v-model="review.score")
+            label(for='rate5P', title='Amazing') 5 stars
         .field(style="margin:0;")
           b-input#comment(
             maxlength="255"
             type="textarea"
             placeholder="Review"
             :required='true'
+            v-model="review.comment"
           )
         .buttons.is-centered(style="margin-top: 0.5rem;")
           button#handle.button.is-info Resenar
@@ -142,13 +150,14 @@ export default {
     },
     score: {
       type: Object,
-      required: true
+      required: false,
+      default: null
     }
   },
   data() {
     return {
       review: {
-        score: '',
+        score: 0,
         comment: ''
       },
       isModalScoreActive: false,
@@ -163,7 +172,21 @@ export default {
       }
     }
   },
+  computed: {
+    scoreText() {
+      return (
+        Number(this.score.avg).toFixed(2) +
+        '/5 de ' +
+        this.score.count +
+        ' Reviews'
+      )
+    }
+  },
   methods: {
+    handleModalScore() {
+      this.isModalScoreActive = true
+      this.review.score = 5
+    },
     handleSubmitReview() {
       this.$emit('handleSubmitReview', this.review)
     },

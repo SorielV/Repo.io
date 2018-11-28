@@ -17,7 +17,7 @@ export default {
   },
   async asyncData({ app }) {
     const { data: catalog } = await app.$axios.get(
-      '/public/catalog/topics.json'
+      '/public/catalog/authors.json'
     )
 
     return {
@@ -33,7 +33,7 @@ export default {
   },
   methods: {
     redirectTo({ idCatalog }) {
-      this.$router.push('/repo/topics/' + idCatalog)
+      this.$router.push('/repo/authors/' + idCatalog)
     }
   }
 }

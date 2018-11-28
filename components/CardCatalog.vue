@@ -7,7 +7,7 @@
           span.icon
             i.mdi.mdi-facebook(aria-hidden='true')
       .card-content
-        figure.image(@click="redirectTo")
+        figure.image.is-4by3(@click="redirectTo")
           img(:src="catalog.image || '/public/empty.webp'")
       footer.card-footer
 </template>

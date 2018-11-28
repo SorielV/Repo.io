@@ -12,30 +12,36 @@
             p.subtitle.has-text-black Estas listo para el Conocimieto
             .box
               figure.avatar
-                img(src='https://placehold.it/128x128')
-              form
+                img(src='https://placehold.it/128x128' v-model="user.profileImage")
+              form(v-on:submit.prevent="handleSubmit")
                 .field
                   .control
-                    input.input.is-medium(type='text', placeholder='Usuario', autofocus='')
-                .field
+                    input.input(type='text', placeholder='Usuario', autofocus='' v-model="user.username"
+                    required='true'
+                  )
+
+                b-field
+                  .control(style="margin-right: 0.5rem;")
+                    input.input(type='text', placeholder='Nombre(s)' v-model="user.firstName"
+                    required='true')
                   .control
-                    input.input.is-medium(type='text', placeholder='Nombre(s)')
-                .field
-                  .control
-                    input.input.is-medium(type='text', placeholder='Apellidos')
-                  .field
+                    input.input(type='text', placeholder='Apellidos' v-model="user.lastName"
+                    required='true')
+
+                //-.field
                   b-datepicker(
                     placeholder='Fecha de Nacimiento'
                     icon="calendar-today"
-                    v-model="user.birthDate")
-                  .field
-                  .control
-                    input.input.is-medium(type='email', placeholder='Correo Electronico')
+                    v-model="user.birthDate"
+                    required='true')
                 .field
                   .control
-                    input.input.is-medium(type='password', placeholder='Contraseña')
-                
-                button.button.is-block.is-danger.is-large.is-fullwidth Registrarme
+                    input.input(type='email', placeholder='Correo Electronico' v-model="user.email"
+                    required='true')
+                .field
+                  .control
+                    input.input(type='password', placeholder='Contraseña' v-model="user.password" required="true")
+                button.button.is-block.is-danger.is-fullwidth(type="submit") Registrarme
             p.has-text-grey
               |Ya tienes cuenta?, 
               a(href='../') Inicia Sesión
@@ -67,7 +73,15 @@ export default {
   },
   methods: {
     handleSubmit() {
-      alert('Proximamente :D')
+      const form = new FormData()
+      for (const key in this.user) {
+        form.append(key, this.user[key])
+      }
+
+      this.$axios
+        .post('/api/user', form)
+        .then(console.log)
+        .catch(console.error)
     }
   }
 }
@@ -155,12 +169,6 @@ export default {
   -o-animation: rotating 2s linear infinite;
   animation: rotating 2s linear infinite;
 }
-html,
-body,
-#__layout,
-#__nuxt {
-  height: 100%;
-}
 
 .login {
   background-color: #4a4090;
@@ -180,16 +188,5 @@ body,
 
 .login-from-content {
   padding: 5%;
-}
-
-.something-semantic {
-  height: 100%;
-  display: table;
-  width: 100%;
-}
-.something-else-semantic {
-  display: table-cell;
-  text-align: center;
-  vertical-align: middle;
 }
 </style>

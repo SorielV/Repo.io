@@ -2,7 +2,7 @@ import { Router } from 'express'
 import Path from 'path'
 import fileUpload from 'express-fileupload'
 import { catchException, getAuth, isAdminAuth } from './../../../middleware'
-import { saveFile } from './../../../../utils'
+import { saveFile, slugify } from './../../../../utils'
 import Model from './model'
 
 const hasImage = ['editorial', 'topic', 'type', 'author']
@@ -62,14 +62,31 @@ router.post(
   '/:model/',
   catchException(async (req, res, next) => {
     const { username, id: idUser } = req.user
+    const slugProperty =
+      req.model === 'author' || req.model === 'editorial' ? 'name' : 'value'
+
+    console.log(slugProperty)
+
     const {
-      params: { model }
+      params: { model },
+      body: { [slugProperty]: slugFlied = null }
     } = req
 
+    console.log(slugFlied)
     delete req.body.id
 
+    const slug = slugify(slugFlied || '')
+
+    if (!slug) {
+      return res
+        .status(400)
+        .json({ message: slugProperty + ' faltante' })
+        .end()
+    }
+
     let obj = new Model[req.model]({
-      ...req.body
+      ...req.body,
+      slug
     })
 
     if (hasImage.indexOf(model) !== -1 && req.files && req.files.image) {
@@ -100,12 +117,19 @@ router.post(
 router.put(
   '/:model/:id',
   catchException(async (req, res, next) => {
+    const slugProperty =
+      req.model === 'author' || req.model === 'editorial' ? 'name' : 'value'
+
     const { username, id: idUser } = req.user
     const {
-      params: { id, model }
+      params: { id, model },
+      body: { [slugProperty]: slugFlied = null }
     } = req
 
-    console.log(id)
+    delete req.body.id
+    if (slugProperty.trim()) {
+      req.body.slug = slugify(slugFlied)
+    }
 
     const obj = await Model[req.model].findOne(
       {

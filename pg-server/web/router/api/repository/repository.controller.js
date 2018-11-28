@@ -215,7 +215,7 @@ Repository.getRepositoriesByTypesandTopics = async function(_options) {
       Topic.id as "topic.id", Topic.value as "topic.value",
       Type.id as "type.id", Type.value as "type.value",
       Editorial.id as "editorial.id", Editorial.name as "editorial.name",
-      Author.id as "author.id", Author."firstName" as "author.firstName", Author."lastName" as "author.lastName"
+      Author.id as "author.id", Author."name" as "author.name"
     from (
       select *
         from "Repositories" as Repo
@@ -284,6 +284,8 @@ Repository.getRepositoriesByTypes = async function(_options) {
     options
   } = pageOptions(_options)
 
+  const slug = options.where.slug ? slugify(options.where.slug) : null
+
   console.log(options.where.type)
   const types = uniqueIntegers(options.where.type)
 
@@ -293,7 +295,14 @@ Repository.getRepositoriesByTypes = async function(_options) {
   const countQuery = `
     select count(*) from (select RT."idRepository" as "match"
       from public."RepositoryTypes" as RT
-      where RT."idCatalog" in (${types.join(',')})
+      where RT."idCatalog" in (${types.join(',')}) 
+      ${
+        slug
+          ? `and RT."idRepository" in (
+                select id from "Repositories" where slug like '%${slug}%'
+              )`
+          : ``
+      }
       group by RT."idRepository" having count(RT."idRepository") = 1
    ) as count
   `
@@ -302,6 +311,13 @@ Repository.getRepositoriesByTypes = async function(_options) {
     select RT."idRepository", count(RT."idRepository") as "match"
       from public."RepositoryTypes" as RT
       where RT."idCatalog" in (${types.join(',')})
+      ${
+        slug
+          ? `and RT."idRepository" in (
+                select id from "Repositories" where slug like '%${slug}%'
+              )`
+          : ``
+      }
       group by RT."idRepository" having count(RT."idRepository") = ${
         types.length
       }
@@ -323,7 +339,7 @@ Repository.getRepositoriesByTypes = async function(_options) {
       Topic.id as "topic.id", Topic.value as "topic.value",
       Type.id as "type.id", Type.value as "type.value",
       Editorial.id as "editorial.id", Editorial.name as "editorial.name",
-      Author.id as "author.id", Author."firstName" as "author.firstName", Author."lastName" as "author.lastName"
+      Author.id as "author.id", Author."name" as "author.name"
     from (
       select *
         from "Repositories" as Repo
@@ -392,7 +408,7 @@ Repository.getRepositoriesByTopics = async function(_options = {}) {
     options
   } = pageOptions(_options)
 
-  console.log(options.where.topic)
+  const slug = options.where.slug ? slugify(options.where.slug) : null
   const topics = uniqueIntegers(options.where.topic)
 
   const tableAs = 'R'
@@ -402,6 +418,13 @@ Repository.getRepositoriesByTopics = async function(_options = {}) {
     select count(*) from (select RT."idRepository" as "match"
       from public."RepositoryTopics" as RT
       where RT."idCatalog" in (${topics.join(',')})
+      ${
+        slug
+          ? `and RT."idRepository" in (
+                select id from "Repositories" where slug like '%${slug}%'
+              )`
+          : ``
+      }
       group by RT."idRepository" having count(RT."idRepository") = 1
    ) as count
   `
@@ -410,6 +433,13 @@ Repository.getRepositoriesByTopics = async function(_options = {}) {
     select RT."idRepository", count(RT."idRepository") as "match"
       from public."RepositoryTopics" as RT
       where RT."idCatalog" in (${topics.join(',')})
+      ${
+        slug
+          ? `and RT."idRepository" in (
+                select id from "Repositories" where slug like '%${slug}%'
+              )`
+          : ``
+      }
       group by RT."idRepository" having count(RT."idRepository") = ${
         topics.length
       }
@@ -431,7 +461,7 @@ Repository.getRepositoriesByTopics = async function(_options = {}) {
       Topic.id as "topic.id", Topic.value as "topic.value",
       Type.id as "type.id", Type.value as "type.value",
       Editorial.id as "editorial.id", Editorial.name as "editorial.name",
-      Author.id as "author.id", Author."firstName" as "author.firstName", Author."lastName" as "author.lastName"
+      Author.id as "author.id", Author."name" as "author.name"
     from (
       select *
         from "Repositories" as Repo
@@ -547,7 +577,7 @@ Repository.getRepositories = async function(_options = {}) {
           Topic.id as "topic.id", Topic.value as "topic.value",
           Type.id as "type.id", Type.value as "type.value",
           Editorial.id as "editorial.id", Editorial.name as "editorial.name",
-          Author.id as "author.id", Author."firstName" as "author.firstName", Author."lastName" as "author.lastName"
+          Author.id as "author.id", Author."name" as "author.name"
           `
           : `
           RS.id as "resource.id", RS.name as "resource.name", RS.description as "resource.description",
@@ -555,7 +585,7 @@ Repository.getRepositories = async function(_options = {}) {
           RET.id as "topic.id", Topic.id as "topic.idCatalog", Topic.value as "topic.value",
           RETy.id as "type.id", Type.id as "type.idCatalog", Type.value as "type.value",
           REE.id as "editorial.id", Editorial.id as "editorial.idCatalog", Editorial.name as "editorial.name",
-          REA.id as "author.id", Author.id as "author.idAuthor", Author.image as "author.image", Author."firstName" as "author.firstName", Author."lastName" as "author.lastName"
+          REA.id as "author.id", Author.id as "author.idAuthor", Author.image as "author.image", Author."name" as "author.name"
           `
       }
     from (${baseQuery}) as Repo
@@ -631,7 +661,7 @@ Repository.getRepositoryById = async function(id) {
     Topic.id as "topic.id", Topic.value as "topic.value",
     Type.id as "type.id", Type.value as "type.value",
     Editorial.id as "editorial.id", Editorial.name as "editorial.name",
-    Author.id as "author.id", Author."firstName" as "author.firstName", Author."lastName" as "author.lastName"
+    Author.id as "author.id", Author."name" as "author.name"
   from (select * from "Repositories" ${whereConditions}) as Repo
     left join "RepositoryResources" as RS on Repo.id = RS."idRepository"
     left join "RepositoryTopics" as RET on Repo.id = RET."idRepository"

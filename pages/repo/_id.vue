@@ -41,7 +41,8 @@
               span.icon
                 i.mdi.mdi-account
               span(title='Registro C:') Registro
-      b-tab-item(:label="'Reviews => ' + JSON.stringify(score)")
+      // Reviews
+      b-tab-item(label="Reviews")
         article.media(v-for="(comment, index) in reviews" :key="index")
           figure.media-left
             p.image.is-64x64
@@ -49,7 +50,8 @@
           .media-content
             .content
               p
-                strong {{ comment.username }}
+                strong {{ comment.username }} 
+                  i {{ '★'.repeat(comment.score) }}
                 br
                 | {{ comment.comment }}
                 br
@@ -131,6 +133,7 @@ export default {
         )
 
         this.score.avg = avg
+        this.score.avgFixed = Math.round(avg)
         this.score.count = total
         this.reviews = data
       } catch (error) {

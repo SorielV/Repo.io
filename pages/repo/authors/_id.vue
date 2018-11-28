@@ -1,11 +1,12 @@
 <template lang="pug">
   section
-    .type-head
-      figure.image(style="max-height: inherit;")
-        img(:src="catalog.image || '/public/empty.webp'" style="max-height: inherit;")
-        .is-overlay.is-vertical-center(style="background-color: rgba(10, 10, 10, 0.4);")
+    .type-head(style="width: 100%;")
+      figure.image.is-256x256(style="width: 100%;")
+        img.is-256x256(:src="catalog.image || '/public/empty.webp'")
+        hr
+        .is-overlay.is-vertical-center(style="background-color: rgba(10, 10, 10, 0.4); width: 100%;")
           .has-text-centered.is-fullwidth.has-text-white
-            h1.title.has-text-white {{ catalog.value }}
+            h1.title.has-text-white {{ catalog.name }}
             p.subtitle.has-text-white {{ catalog.description }}
     .type-boby.has-my-1rem
       section.block(style='margin:1rem;')
@@ -15,7 +16,7 @@
           p.control
             button.button.is-info(@click="handleFilter" :disabled="isLoading" :class="[isLoading ? 'is-loading' : '']")
               | Buscar
-      section
+      //section
         section
           center
             //-b-dropdown
@@ -55,8 +56,8 @@
                   i.mdi.mdi-view-list
                 .button.is-info(@click="view = 'grid'")
                   i.mdi.mdi-view-grid
-      hr
-      section
+      //hr
+      //section
         .columns.is-centered(v-if="filtered.length === 0")
           .column.is-12
             section.hero.has-text-centered
@@ -79,16 +80,16 @@
             .column.is-12(v-for="(repo, index) in filtered" :key="index")
               transition-group(name="component-fade" tag="section")
                 ListRepository(:repository='repo' @handleViewRepo="handleViewRepo" :key="repo.id")
-      hr
-      b-pagination.is-centered(
+      //hr
+      //b-pagination.is-centered(
         v-if="!filter || filter.length === 0"
         :total='pagination.total'
         :current.sync='pagination.page'
         :simple='false'
         :rounded='false'
         :per-page='pagination.offset'
-      )
-      hr
+      //)
+      //hr
 </template>
 
 <script>
@@ -136,7 +137,7 @@ export default {
     try {
       const {
         data: { data: catalog }
-      } = await app.$axios.get('/api/catalog/type/' + idType)
+      } = await app.$axios.get('/api/catalog/author/' + idType)
 
       return {
         catalog,
@@ -220,7 +221,7 @@ export default {
       this.setFiltered()
     }
   },
-  async created() {
+  async createds() {
     const { slug, types: _types, topics: _topics } = this.query
     const queryParam =
       '?' +
@@ -557,7 +558,7 @@ export default {
     width: 128px !important;
   }
 }
-.is-256x246 {
+.is-256x256 {
   height: 256px;
   width: 256px;
 }

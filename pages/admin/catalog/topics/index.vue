@@ -468,20 +468,17 @@ export default {
       }
 
       try {
-        const { data } = await this.$axios.put(
-          '/api/catalog/topic/' + typeId,
-          type
-        )
+        const {
+          data: { data: item }
+        } = await this.$axios.put('/api/catalog/topic/' + typeId, type)
 
-        this.update.index = null
         this.update.data = {}
-        this.data.splice(this.update.index, 1, data.data)
-
         const index = this.update.index
-
+        this.data.splice(index, 1, item)
         if (index !== -1) {
-          this.table.data.splice(index, 1, data.data)
+          this.table.data.splice(index, 1, item)
         }
+
         this.selectedTab = 0
         this.$toast.open({
           message: 'Tema Actualizado',

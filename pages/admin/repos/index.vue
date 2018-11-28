@@ -59,7 +59,7 @@
                   label="Id"
                   :visible="true"
                   :sortable="true"
-                ) {{ props.row['id'] }}
+                ) {{ (props.index + 1) + ((search.page - 1) * search.perPage) }}
 
                 b-table-column(
                   field="title"
@@ -367,16 +367,39 @@
                     :required="false"
                   )
 
-                b-field(
-                  label="Imagen"
-                )
-                  b-input(
-                    type="text"
-                    v-model="update.data.image"
-                    value=""
-                    maxlength="80"
-                    :required="false"
-                  )
+                .field
+                  label.label Imagen
+                  .control.is-box(v-show="!upload.isAdding && update.data.image")
+                    // Original
+                    figure.image.is-256x256
+                      img(:src='update.data.image')
+                    .is-overlay
+                      .buttons
+                        button.button.is-danger(v-on:click.stop="handleRemoveImage")
+                          i.mdi.mdi-close
+                  .control.is-box(v-if="upload.isAdding || (!upload.isAdding && !update.data.image)")
+                    // Nueva Imagen
+                    div(v-if="upload.isSelected")
+                      figure.image.is-256x256
+                        img(:src='upload.src')
+                      .is-overlay
+                        .buttons
+                          button.button.is-danger(v-on:click.stop="cancelImage")
+                            i.mdi.mdi-close
+                    div(v-else)
+                      b-upload(
+                        v-model='upload.imageFile'
+                        type="is-black"
+                        single drag-drop
+                        style="width: 100%;"
+                        @input="handleRenderImage"
+                      )
+                        section.section
+                          center
+                            .content.has-text-centered
+                              p
+                                b-icon(icon='upload', size='is-large')
+                              p Suelta La Imagen
 
                 .field
                   label.label Visibilidad
@@ -386,8 +409,8 @@
                         option(v-for="(type, key) in catalog.visibility" v-text="type.text" :value="type.value")
 
                 .buttons.is-centered
-                  button.button.is-danger(@click="handleCancelEvent") Cancelar
-                  button.button.is-dark(type="submit") Actualizar Repositorio
+                  button.button(@click="handleCancelEvent") Cancelar
+                  button.button.is-info(type="submit") Actualizar
 
             // Autores, Tipos, Temas
             b-tab-item(label='Autores, Tipos, Temas')
@@ -427,7 +450,6 @@
                                   a.button.is-danger.is-small.level-item(aria-label='reply')
                                     span.icon.is-small
                                       i.mdi.mdi-window-close(aria-hidden='true')
-
               b-field(label='Tipos')
                 b-taginput(
                   v-model='update.data.type'
@@ -453,9 +475,10 @@
                   @remove="removeTopic"
                   @add="addTopic"
                 )
+              .buttons.is-centered
+                button.button(@click="handleCancelEvent") Cancelar
             // Recursos
             b-tab-item(label='Recursos')
-              button.is-info(@click="upload.isModalResourceActive = true") Agregar
               b-table(
                 v-cloak
                 :data="update.data.resource"
@@ -499,7 +522,9 @@
                         i.mdi.mdi-delete
                       button.button.is-link.is-small(@click="downloadFile(props.row)")
                         i.mdi.mdi-download
-
+              .buttons.is-centered
+                button.button(@click="handleCancelEvent") Cancelar
+                button.button.is-info(@click="upload.isModalResourceActive = true") Nuevo
               // Nuevo Recurso
               b-modal(:active.sync='upload.isModalResourceActive', has-modal-card='')
                 .card(style="padding: 2rem; border-radius: 0.275rem;")
@@ -566,7 +591,7 @@
                           :required="true"
                         )
                     .buttons
-                      button.button.is-danger(@click="closeResourceModal") Cancelar
+                      button.button(@click="closeResourceModal") Cancelar
                       button.button.is-info(type="submit") Guardar
         //- Upload File
         //-b-upload(v-model='update.dropFiles' type="is-black" multiple drag-drop style="width: 100%;")
@@ -749,6 +774,9 @@ export default {
         total: 0
       },
       upload: {
+        isAdding: false,
+        hasImage: false,
+        isSelected: false,
         isModalResourceActive: false,
         isSelected: false,
         file: {
@@ -892,6 +920,8 @@ export default {
           ({ field }) => field === _field
         )
 
+        console.log(_field, type)
+
         if (type === 'string' || type === 'date') {
           const param = nparam.toUpperCase()
           this.table.data = Array.apply(null, this.data).filter(item => {
@@ -913,6 +943,37 @@ export default {
     }
   },
   methods: {
+    async renderImage() {
+      const [file] = this.upload.imageFile
+
+      if (file) {
+        const reader = new FileReader()
+        return await new Promise((resolve, reject) => {
+          reader.onerror = e => {
+            reader.abort()
+            return reject(null)
+          }
+
+          reader.onload = e => {
+            this.$set(this.upload, 'src', e.target.result)
+            return resolve()
+          }
+          reader.readAsDataURL(file)
+        })
+      }
+      return Promise.resolve(null)
+    },
+    handleRemoveImage(ev) {
+      ev.preventDefault()
+      this.upload.isAdding = true
+      this.upload.imageFile = []
+    },
+    async handleRenderImage(files) {
+      console.log(this.upload.imageFile)
+      this.upload.isSelected = true
+      await this.renderImage()
+    },
+    // Fix
     handleRemoveResourceDialog(ev, resource) {
       ev.preventDefault()
 
@@ -1369,7 +1430,7 @@ export default {
 
       const repository = this.data[index] || {}
 
-      const item = Object.keys(this.update.data).reduce((acc, prop) => {
+      const merge = Object.keys(this.update.data).reduce((acc, prop) => {
         if (
           !Array.isArray(this.update.data[prop]) &&
           this.update.data[prop] !== repository[prop]
@@ -1379,24 +1440,30 @@ export default {
         return acc
       }, {})
 
+      const hasImage = this.upload.isSelected
+      const item = hasImage ? this.createFormData(merge) : merge
+
+      if (hasImage) {
+        const [image] = this.upload.imageFile
+        item.delete('image')
+        item.append('image', image)
+      }
+
       try {
-        const { data } = await this.$axios.put(
-          '/api/repo/' + idRepository,
-          item
-        )
-        this.update.index = null
-        this.update.data = {
-          author: [],
-          id: 0
+        const {
+          data: { data: updateItem }
+        } = await this.$axios.put('/api/repo/' + idRepository, item)
+
+        for (const key in updateItem) {
+          this.update.data[key] = updateItem[key]
         }
-        this.data.splice(this.update.index, 1, data.data)
 
         if (index !== -1) {
-          this.data.splice(index, 1, data.data)
+          this.data.splice(index, 1, this.update.data)
           const indexTable = Array.from(this.table.data).findIndex(
             ({ id }) => id === idRepository
           )
-          this.table.data.splice(indexTable, 1, data.data)
+          this.table.data.splice(indexTable, 1, this.update.data)
         }
 
         this.selectedTab = 0

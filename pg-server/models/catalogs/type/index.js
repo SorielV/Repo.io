@@ -15,6 +15,12 @@ const TypeSchema = {
       updatable: true,
       length: 30
     },
+    slug: {
+      type: String,
+      required: false,
+      updatable: true,
+      length: 30
+    },
     description: {
       type: String,
       required: true,

@@ -19,7 +19,7 @@
                 v-if="$store.state.isAuth && $store.state.isAdmin"
               ) Dashboard
               nuxt-link.navbar-item(to='/repo')
-                | Repositorios
+                | Repositorio
               .navbar-item.has-dropdown.is-hoverable.is-mega
                 nuxt-link.navbar-link(to='/repo/topics') Tematicas
                 #nav-repo.navbar-dropdown(data-style='width: 18rem;')
@@ -87,8 +87,9 @@
                   hr.navbar-divider
                   .buttons.is-centered
                     button.button.is-info.is-small Ver Todos
-                
-
+              
+              nuxt-link.navbar-item(to='/repo/authors')
+                | Autores
               .navbar-item.has-dropdown.is-hoverable
                 nuxt-link.navbar-link(to='/community') Comunidad
                 .navbar-dropdown

@@ -1,0 +1,81 @@
+<template lang="pug">
+  section(style="padding: 2%;")
+    .container
+      h1.title Explora Diferentes Recursos
+      hr
+      section.block
+        .field.is-grouped.is-fullwidth(style="justify-content: center;")
+          p.control.is-expanded
+            input.input(type='text', placeholder='Tematicas' v-model="filter")
+      section.has-pt-1rem
+        .buttons.is-right
+          .button.is-info(@click="view = 'list'")
+            i.mdi.mdi-view-list
+          .button.is-info(@click="view = 'grid'")
+            i.mdi.mdi-view-grid
+      .container
+        .columns.is-multiline.is-centered(v-if="view === 'grid'")
+          .column.is-3(v-for="(catalog, index) in filtered" :key='index')
+            transition-group(name="component-fade" tag="section")
+              CardCatalog(:catalog="catalog" @redirectTo="redirectToType" :key='index')
+        .columns.is-multiline.is-centered(v-else)
+          .column.is-12(v-for="(catalog, index) in filtered")
+            transition-group(name="component-fade" tag="section")
+              ListCatalog(:catalog="catalog" @redirectTo="redirectToType" :key='index')
+</template>
+
+<script>
+import CardCatalog from './../../../components/CardCatalog.vue'
+import ListCatalog from './../../../components/ListCatalog.vue'
+
+export default {
+  components: {
+    CardCatalog,
+    ListCatalog
+  },
+  async asyncData({ app }) {
+    const { data: catalog } = await app.$axios.get(
+      '/public/catalog/topics.json'
+    )
+
+    return {
+      catalog,
+      filtered: catalog
+    }
+  },
+  data() {
+    return {
+      view: 'grid',
+      filter: '',
+      filtered: [],
+      catalog: []
+    }
+  },
+  watch: {
+    filter(_filter, _oldFilter) {
+      const oldFilter = _oldFilter.trim().toUpperCase()
+      const filter = _filter.trim().toUpperCase()
+
+      if (filter.length === 0) {
+        this.filtered = this.catalog
+        return
+      }
+
+      const flag =
+        this.filtered.length === 0 || filter.length < oldFilter.length
+
+      this.filtered = Array.from(flag ? this.catalog : this.filtered).filter(
+        ({ value }) => value.toUpperCase().includes(filter)
+      )
+    }
+  },
+  methods: {
+    redirectToType({ idCatalog }) {
+      this.$router.push('/repo/topics/' + idCatalog)
+    }
+  }
+}
+</script>
+
+<style scoped>
+</style>

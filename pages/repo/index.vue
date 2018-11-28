@@ -84,6 +84,7 @@
       :simple='false'
       :rounded='false'
       :per-page='pagination.offset'
+      @change="onPageChanged"
     )
     hr
     pre {{ pagination }}
@@ -207,23 +208,6 @@ export default {
       if (current === old) {
         return
       }
-
-      const { limit, offset } = this.pagination
-      const options = `page=${current}&limt=${limit}&offset=${offset}`
-      const queryParams = this.getQueryParam()
-      const url = '/api/repo?' + options + '&' + queryParams
-
-      try {
-        const {
-          data: { data: repositories = [], ...pagination }
-        } = await this.$axios.get(url)
-        this.repositories = repositories
-        this.pagination = pagination
-        this.filtered = repositories
-        window.scrollTo(0, 0)
-      } catch (error) {
-        console.error(error)
-      }
     },
     types(types) {
       if (types.length === 0) {
@@ -240,6 +224,8 @@ export default {
   },
   async created() {
     // fetch
+    console.log(this.$route.matched)
+
     const promises = [
       this.$axios.get('/public/catalog/topics.json'),
       this.$axios.get('/public/catalog/types.json')
@@ -283,6 +269,24 @@ export default {
     }
   },
   methods: {
+    async onPageChanged(page) {
+      const { limit, offset } = this.pagination
+      const options = `page=${current}&limt=${limit}&offset=${offset}`
+      const queryParams = this.getQueryParam()
+      const url = '/api/repo?' + options + '&' + queryParams
+
+      try {
+        const {
+          data: { data: repositories = [], ...pagination }
+        } = await this.$axios.get(url)
+        this.repositories = repositories
+        this.pagination = pagination
+        this.filtered = repositories
+        window.scrollTo(0, 0)
+      } catch (error) {
+        console.error(error)
+      }
+    },
     getQueryParam() {
       const baseSlug = (this.query.slug || '').trim().toLowerCase()
       const slug = this.filter.trim().toLowerCase()
@@ -308,8 +312,6 @@ export default {
         },
         []
       )
-
-      console.log(topics, types)
 
       const queryParam =
         '' +
@@ -394,45 +396,70 @@ export default {
     },
     // Reciclable
     async handleFilter() {
-      const baseSlug = (this.query.slug || '').trim().toLowerCase()
-      const slug = this.filter.trim().toLowerCase()
-
-      const types = this.catalogs.types.reduce(
-        (acc, { idCatalog, isSelected }) => {
-          if (isSelected) {
-            acc.push(`type[]=${idCatalog}`)
-          }
-          return acc
-        },
-        []
-      )
+      const baseSlug = this.query.slug
+      const slug = slugify(this.filter || '')
 
       const topics = this.catalogs.topics.reduce(
         (acc, { idCatalog, isSelected }) => {
           if (isSelected) {
-            acc.push(`topic[]=${idCatalog}`)
+            acc.push(idCatalog)
           }
           return acc
         },
         []
       )
+      topics.sort()
+
+      const newTopics = this.query.topics.every(
+        item => topics.indexOf(item) !== 1
+      )
+
+      const types = this.catalogs.types.reduce(
+        (acc, { idCatalog, isSelected }) => {
+          if (isSelected) {
+            acc.push(idCatalog)
+          }
+          return acc
+        },
+        []
+      )
+      types.sort()
+
+      const newTypes = this.query.topics.every(
+        item => topics.indexOf(item) !== 1
+      )
+
+      const qTypes = types.map(idCatalog => `type[]=${idCatalog}`)
+      const qTopics = topics.map(idCatalog => `topic[]=${idCatalog}`)
 
       // Cambio Visual [Compartir Link de Contenido]
-      if (slug.length > 0 && slug !== baseSlug) {
+      if (slug !== baseSlug || newTopics || newTypes) {
+        const [topicParam, typeParam] = [
+          topics.length ? qTopics.join('&') : '',
+          types.length ? qTypes.join('&') : ''
+        ]
+
+        console.log(topicParam, typeParam)
+        const slugParam = slug ? 'slug=' + slug : ''
+
         const url =
-          '/repo?slug=' +
-          slug +
-          (types.length ? '&' + types.join('&') : '') +
-          (topics.length ? '&' + topics.join('&') : '')
+          slugParam + topicParam ||
+          '&' + topicParam + typeParam ||
+          '&' + typeParam
+
+        const windowUrl = `/repo?` + url
 
         const {
           data: { data: repositories = [], ...pagination }
-        } = await this.$axios.get('/api' + url)
+        } = await this.$axios.get('/api/repo?' + url)
 
+        this.query.slug = slug
+        this.query.topics = topics
+        this.query.types = types
         this.repositories = repositories
         this.pagination = pagination
         this.filtered = repositories
-        window.history.pushState(undefined, 'Repo', url)
+        window.history.pushState(undefined, 'Repo', windowUrl)
         window.scrollTo(0, 0)
       }
     },
