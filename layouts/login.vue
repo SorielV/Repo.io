@@ -9,7 +9,9 @@
         .container.has-text-centered
           .column.is-4.is-offset-4
             h3.title.has-text-black Iniciar Sesión
-            p.subtitle.has-text-black Logeate en Repo-io para Acceder
+            p.subtitle.has-text-black Logeate en 
+              nuxt-link(to="/").has-text-warning Repo-io 
+              | para Acceder
             .box
               figure.avatar
                 img(src='https://placehold.it/128x128')
@@ -25,7 +27,7 @@
                   | Recuerdame
                 button.button.is-block.is-info.is-large.is-fullwidth Iniciar
             p.has-text-grey
-              a(href='../') Registrate
+              nuxt-link(to='/singup') Registrate
               |   · 
               a(href='../') Olvidaste tu contraseña
               |   · 

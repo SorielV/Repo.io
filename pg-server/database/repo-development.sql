@@ -181,9 +181,9 @@ CREATE TABLE public."CatalogAuthors" (
     id integer NOT NULL,
     image character varying(100),
     description character varying(200),
-    "lastName" character varying(40) NOT NULL,
-    "firstName" character varying(40) NOT NULL,
-    "createdAt" timestamp without time zone DEFAULT now()
+    "createdAt" timestamp without time zone DEFAULT now(),
+    name character varying(120),
+    slug character varying(120)
 );
 
 
@@ -218,7 +218,8 @@ CREATE TABLE public."CatalogEditorials" (
     id integer NOT NULL,
     image character varying(100),
     description character varying(200),
-    name character varying(80) NOT NULL
+    name character varying(80) NOT NULL,
+    slug character varying(80)
 );
 
 
@@ -253,7 +254,8 @@ CREATE TABLE public."CatalogTopics" (
     id integer NOT NULL,
     value character varying(30) NOT NULL,
     description character varying(200) DEFAULT ''::character varying NOT NULL,
-    image character varying(100)
+    image character varying(100),
+    slug character varying(30)
 );
 
 
@@ -288,7 +290,8 @@ CREATE TABLE public."CatalogTypes" (
     id integer NOT NULL,
     value character varying(30) NOT NULL,
     description character varying(200) DEFAULT ''::character varying,
-    image character varying(100)
+    image character varying(100),
+    slug character varying(30) DEFAULT NULL::character varying
 );
 
 
@@ -590,7 +593,9 @@ CREATE TABLE public."RepositoryScore" (
     score smallint NOT NULL,
     comment character varying(255),
     "createdAt" timestamp without time zone DEFAULT now(),
-    "updatedAt" timestamp without time zone
+    "updatedAt" timestamp without time zone,
+    "idRepository" integer,
+    CONSTRAINT ck_repositoryscore_score CHECK (((score >= 0) AND (score <= 5)))
 );
 
 
@@ -987,10 +992,15 @@ COPY public."BundleRepository" (id, "idBundle", "idRepository", "createdAt") FRO
 -- Data for Name: CatalogAuthors; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public."CatalogAuthors" (id, image, description, "lastName", "firstName", "createdAt") FROM stdin;
-1	http://www.nyan.cat/cats/original.gif	Is a Cat	Cat	Nyan	2018-11-10 20:51:39.912119
-3	http://www.nyan.cat/cats/mexinyan.gif	Is a Mexican Cat	Mexican	Nyan	2018-11-14 00:41:41.350202
-2	/public/repositories/author/1542929397445.jpg	Arthur Ignatius Conan Doyle ​ fue un escritor y médico ...	Conan Doyle	Arthur	2018-10-04 17:27:31
+COPY public."CatalogAuthors" (id, image, description, "createdAt", name, slug) FROM stdin;
+3	http://www.nyan.cat/cats/mexinyan.gif	Is a Mexican Cat	2018-11-14 00:41:41.350202	Nyan Mexican\t\n	nyan-mexican\t\n
+2	/public/repositories/author/1542929397445.jpg	Arthur Ignatius Conan Doyle ​ fue un escritor y médico ...	2018-10-04 17:27:31	Arthur Conan Doyle 	arthur-conan-doyle 
+1	http://www.nyan.cat/cats/original.gif	Is a Cat	2018-11-10 20:51:39.912119	Nyan Cat\t\n	nyan-cat
+6	/public/repositories/author/1543376278497.gif	Energio ...	2018-10-02 21:37:58	Nicolas Tesla 2	nicolas-tesla-2
+7	/public/repositories/author/1543422686656.jfif	escritor ingles	2018-11-28 10:31:26.66449	Aldous Huxley	aldous-huxley
+8	/public/repositories/author/1543423512654.jfif	autor frances	2018-11-28 10:45:12.662737	JEAN-FRANÇOIS PÉPIN	jean-franois-ppin
+9	/public/repositories/author/1543434514980.jpg	Es un PTC	2018-11-28 13:48:34.987476	Roman Herrera	roman-herrera
+10	/public/repositories/author/1543434515262.jpg	Es un PTC	2018-11-28 13:48:35.263751	Roman Herrera	roman-herrera
 \.
 
 
@@ -998,8 +1008,8 @@ COPY public."CatalogAuthors" (id, image, description, "lastName", "firstName", "
 -- Data for Name: CatalogEditorials; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public."CatalogEditorials" (id, image, description, name) FROM stdin;
-1	/public/repositories/editorial/1542991877781.png	Nintendo	nintendo
+COPY public."CatalogEditorials" (id, image, description, name, slug) FROM stdin;
+1	/public/repositories/editorial/1542991877781.png	Nintendo	Nintendo	nintendo
 \.
 
 
@@ -1007,30 +1017,31 @@ COPY public."CatalogEditorials" (id, image, description, name) FROM stdin;
 -- Data for Name: CatalogTopics; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public."CatalogTopics" (id, value, description, image) FROM stdin;
-2	Samples	Samples	\N
-3	Cultura		\N
-8	Fotografia		\N
-12	Negocios		\N
-13	Disenio		\N
-17	Javascript		\N
-19	Machine Learning		\N
-20	Programing		\N
-21	Sotfware		\N
-22	Tecnologia		\N
-23	Otros		\N
-26	cartoons	Cartoons	\N
-1	Examples	Examples	/public/repositories/topic/1542923104975.png
-5	Videojuegos	jsjsjsjs	/public/repositories/topic/1542925161094.jpg
-6	Humor	Es el dia del platanooooooooooo	/public/repositories/topic/1542925182247.jpg
-25	anime	Gorubin slaya	/public/repositories/topic/1542925214137.jpg
-24	pokemon	El mundo pokemon	/public/repositories/topic/1542925257184.jpg
-9	Deportes	Vive sano	/public/repositories/topic/1542925296798.jpg
-11	TV	Tv chavos	/public/repositories/topic/1542925331120.jpg
-16	Economia	dinero	/public/repositories/topic/1542925351444.jpg
-4	Comida	Para chuparse los dedos	/public/repositories/topic/1542925425995.jpg
-7	Musica	Relax	/public/repositories/topic/1542925463115.jpg
-10	Estilo	Manera de vivir	/public/repositories/topic/1542925517090.jpg
+COPY public."CatalogTopics" (id, value, description, image, slug) FROM stdin;
+2	Samples	Samples	\N	\N
+3	Cultura		\N	\N
+8	Fotografia		\N	\N
+12	Negocios		\N	\N
+13	Disenio		\N	\N
+17	Javascript		\N	\N
+19	Machine Learning		\N	\N
+20	Programing		\N	\N
+21	Sotfware		\N	\N
+22	Tecnologia		\N	\N
+23	Otros		\N	\N
+1	Examples	Examples	/public/repositories/topic/1542923104975.png	\N
+5	Videojuegos	jsjsjsjs	/public/repositories/topic/1542925161094.jpg	\N
+6	Humor	Es el dia del platanooooooooooo	/public/repositories/topic/1542925182247.jpg	\N
+24	pokemon	El mundo pokemon	/public/repositories/topic/1542925257184.jpg	\N
+9	Deportes	Vive sano	/public/repositories/topic/1542925296798.jpg	\N
+11	TV	Tv chavos	/public/repositories/topic/1542925331120.jpg	\N
+16	Economia	dinero	/public/repositories/topic/1542925351444.jpg	\N
+4	Comida	Para chuparse los dedos	/public/repositories/topic/1542925425995.jpg	\N
+7	Musica	Relax	/public/repositories/topic/1542925463115.jpg	\N
+10	Estilo	Manera de vivir	/public/repositories/topic/1542925517090.jpg	\N
+25	Anime	Gorubin slaya	/public/repositories/topic/1542925214137.jpg	anime
+26	Cartoons	Cartoons	\N	cartoons
+43	Pages	Paginas	/public/repositories/topic/1543377168060.gif	pages
 \.
 
 
@@ -1038,41 +1049,41 @@ COPY public."CatalogTopics" (id, value, description, image) FROM stdin;
 -- Data for Name: CatalogTypes; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public."CatalogTypes" (id, value, description, image) FROM stdin;
-8	Infografias y Memes		\N
-32	bug	Tipo de pokemon {bug}	\N
-2	grass	Tipo de pokemon {grass}	/public/catalog/types/2.jpeg
-36	Exampleee	1111	\N
-29	steel	Tipo de pokemon {steel}	/public/repositories/type/1542924202119.png
-30	flying	Tipo de pokemon {flying}	/public/repositories/type/1542924241606.jpg
-28	dragon	BESTO POKEMON DRAGON	/public/repositories/type/1542924154620.png
-24	fighting	BESTO HUSBANDO	/public/repositories/type/1542923886326.png
-20	electric	uy	/public/repositories/type/1542924297001.png
-21	ice	Nievesita de la villa	/public/repositories/type/1542923645574.jpg
-18	dark	Este no es ditto	/public/repositories/type/1542923426076.jpg
-15	water	Tipo de pokemon {water}	/public/repositories/type/1542924548431.jpg
-39	Gato	Soy en un gato	/public/repositories/type/1542925698239.png
-42	1	11111	/public/repositories/type/1543207625545.gif
-1	Example	222222	/public/repositories/type/1542922171911.png
-6	Tools Software	111111	/public/repositories/type/1542922546005.png
-5	Portales Blogs	1111	/public/repositories/type/1542922562831.png
-7	PPTs SlideShare	Es CHIdo	/public/repositories/type/1542922613227.png
-9	People To Follow	Ni Idea	/public/repositories/type/1542922677135.png
-3	Cursos	22211111111111222	/public/repositories/type/1542922848657.jpg
-4	Videos	22211111111111222	/public/repositories/type/1542922881736.jpg
-10	Comunidades	Comunidades comunitivas	/public/repositories/type/1542922974203.jpg
-12	DataSets	Lorem ipsum dolore	/public/repositories/type/1542923118304.png
-13	Papers	Cosas cientificas	undefined
-14	Books	C U L T U R A	/public/repositories/type/1542923192722.jpg
-11	APIs	COSAS	/public/repositories/type/1542923214261.png
-17	normal	Tipo de pokemon {normal}	/public/repositories/type/1542923348496.png
-16	fire	Tipo de pokemon {fire}	/public/repositories/type/1542923389154.jpg
-19	poison	Tipo de pokemon {poison}	/public/repositories/type/1542923453725.jpg
-22	ground	Tipo de pokemon {ground}	/public/repositories/type/1542923731687.jpg
-23	fairy	Tipo de pokemon {fairy}	/public/repositories/type/1542923816746.png
-25	psychic	Tipo de pokemon {psychic}	/public/repositories/type/1542924008060.jpg
-26	rock	Tipo de pokemon {rock}	/public/repositories/type/1542924094888.png
-27	ghost	Tipo de pokemon {ghost}	/public/repositories/type/1542924130006.jpg
+COPY public."CatalogTypes" (id, value, description, image, slug) FROM stdin;
+8	Infografias y Memes		\N	\N
+32	bug	Tipo de pokemon {bug}	\N	\N
+29	steel	Tipo de pokemon {steel}	/public/repositories/type/1542924202119.png	\N
+30	flying	Tipo de pokemon {flying}	/public/repositories/type/1542924241606.jpg	\N
+28	dragon	BESTO POKEMON DRAGON	/public/repositories/type/1542924154620.png	\N
+24	fighting	BESTO HUSBANDO	/public/repositories/type/1542923886326.png	\N
+20	electric	uy	/public/repositories/type/1542924297001.png	\N
+21	ice	Nievesita de la villa	/public/repositories/type/1542923645574.jpg	\N
+39	Gato	Soy en un gato	/public/repositories/type/1542925698239.png	\N
+42	1	11111	/public/repositories/type/1543207625545.gif	\N
+1	Example	Solo un ejemplo	/public/repositories/type/1542922171911.png	example
+2	Grass	Tipo de pokemon {grass}	/public/catalog/types/2.jpeg	grass
+15	Water	Tipo de pokemon {water}	/public/repositories/type/1542924548431.jpg	water
+16	Fire	Tipo de pokemon {fire}	/public/repositories/type/1542923389154.jpg	fire
+17	Normal	Tipo de pokemon {normal}	/public/repositories/type/1542923348496.png	normal
+18	Dark	Este no es ditto	/public/repositories/type/1542923426076.jpg	dark
+6	Tools Software	111111	/public/repositories/type/1542922546005.png	\N
+5	Portales Blogs	1111	/public/repositories/type/1542922562831.png	\N
+7	PPTs SlideShare	Es CHIdo	/public/repositories/type/1542922613227.png	\N
+9	People To Follow	Ni Idea	/public/repositories/type/1542922677135.png	\N
+36	Exampleee	1111	/public/repositories/type/1543420282231.png	exampleee
+3	Cursos	22211111111111222	/public/repositories/type/1542922848657.jpg	\N
+4	Videos	22211111111111222	/public/repositories/type/1542922881736.jpg	\N
+10	Comunidades	Comunidades comunitivas	/public/repositories/type/1542922974203.jpg	\N
+12	DataSets	Lorem ipsum dolore	/public/repositories/type/1542923118304.png	\N
+13	Papers	Cosas cientificas	undefined	\N
+14	Books	C U L T U R A	/public/repositories/type/1542923192722.jpg	\N
+11	APIs	COSAS	/public/repositories/type/1542923214261.png	\N
+19	poison	Tipo de pokemon {poison}	/public/repositories/type/1542923453725.jpg	\N
+22	ground	Tipo de pokemon {ground}	/public/repositories/type/1542923731687.jpg	\N
+23	fairy	Tipo de pokemon {fairy}	/public/repositories/type/1542923816746.png	\N
+25	psychic	Tipo de pokemon {psychic}	/public/repositories/type/1542924008060.jpg	\N
+26	rock	Tipo de pokemon {rock}	/public/repositories/type/1542924094888.png	\N
+27	ghost	Tipo de pokemon {ghost}	/public/repositories/type/1542924130006.jpg	\N
 \.
 
 
@@ -1097,13 +1108,22 @@ COPY public."MyList" (id, "idUser", username, "idRepository", type, "createdAt")
 --
 
 COPY public."Repositories" (id, "idUser", username, title, description, image, tags, visibility, "createdAt", "updatedAt", slug, content) FROM stdin;
-3397	1	admin	Nuevo Repositorio	Es Solo Un Nuevo Repositorio	/public/repositories/images/1543065644038.png	nuevo	2	2018-11-24 07:20:44.046192	\N	nuevo-repositorio	Sin Descripcion
 3125	1	admin	Espurr	Espurr es el pokemon numero #677	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/677.png	ghost,dark,bug	1	2018-11-16 05:59:04.766272	\N	espurr	Sin Descripcion
 3344	1	admin	Salandit	Salandit es el pokemon numero #757	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/757.png	water,psychic,ground,rock	1	2018-11-16 05:59:07.41775	\N	salandit	Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed malesuada risus eu congue tristique. Aenean pharetra laoreet ligula, sit amet sagittis massa. Cras cursus ultricies egestas. Pellentesque iaculis tincidunt elit id convallis. Sed maximus ligula augue, vel convallis lectus iaculis ut. Proin diam enim, porttitor sollicitudin magna vitae, aliquam cursus ligula. Proin sit amet erat ac massa volutpat interdum. Donec ut tristique neque, vitae egestas arcu. Aliquam gravida mauris nec nunc lacinia pulvinar. In iaculis nec nisl sed volutpat. Nullam at hendrerit nunc, quis auctor nibh. Pellentesque volutpat luctus molestie. Morbi molestie purus ultrices, semper nunc accumsan, lobortis dolor. Maecenas lacinia, tortor vel suscipit vulputate, justo tellus molestie tortor, ac laoreet ipsum orci eget felis. Donec id magna vitae nulla feugiat molestie. Duis porttitor orci quis odio sagittis laoreet.\n\nIn dignissim eros quis laoreet vehicula. Nunc placerat ante vel fringilla semper. Duis non ornare ex, eu lacinia sapien. Mauris mauris arcu, pharetra vitae convallis et, elementum non sem. Nullam id ipsum orci. Maecenas sit amet libero erat. Maecenas quis nisi feugiat, finibus nisi nec, ullamcorper eros. Integer nec eleifend erat. Aenean ultricies nibh orci, ac luctus turpis dignissim faucibus. In erat elit, fermentum at arcu at, malesuada interdum orci. Nam ultrices finibus sagittis. Quisque feugiat vestibulum scelerisque.\n\nSed quis ultricies ex. Suspendisse vitae quam faucibus orci efficitur dictum. Donec ac tempus ipsum. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nunc commodo turpis vitae interdum viverra. Sed dignissim magna lacus, sit amet mollis est tempus at.
+3401	1	admin	Base de datos distribuida	La arquitectura de un sistema de base de datos está influenciada en gran medida por el sistema informático subyacente en el que se ejecuta el sistema de base de datos. 	/public/repositories/images/1543381527850.jpg	base de datos	1	2018-11-27 23:05:27.856392	\N	base-de-datos-distribuida	Sin Contenido
+3397	1	admin	JavaScript The Good Parts	This Book describes the reliable features of JavaScript, covering such topics as syntax, objects, functions, arrays, regular expressions, inheritance, and methods.	undefined	JavaScript	1	2018-11-24 07:20:44.046192	\N	nuevo-repositorio	Sin Descripcion
+3402	1	admin	Blender	Material necesario para el aprendizaje.	undefined	3d, diseño, modelado.	1	2018-11-28 09:39:26.597522	\N	blender	Sin Contenido
 3396	1	admin	Gato	Es solo un gato	/public/repositories/images/1542837643699.png	gato,cat,kawaii,moe	2	2018-11-21 16:00:43.725486	\N	gato	Sin Descripcion
-3398	1	admin	1111111	11111111111111	/public/repositories/images/1543205492940.jpg	11111111111	1	2018-11-25 22:11:32.971983	\N	\N	Sin Contenido
-3399	1	admin	11	1111	/public/repositories/images/1543205582179.jpg	11	1	2018-11-25 22:13:02.181692	\N	\N	Sin Contenido
+3398	1	admin	Actualizar Fixed C: C:	Un Errores	/public/repositories/images/1543205492940.jpg	11111111111	1	2018-11-25 22:11:32.971983	\N	\N	Sin Contenido
+3403	1	admin	C++	Aprende C++	/public/repositories/images/1543420370067.png	C++	1	2018-11-28 09:52:50.072324	\N	c	Sin Contenido
+3404	1	admin	Blender	Pequeña introducción a Blender	/public/repositories/images/1543420848715.png	Video	1	2018-11-28 10:00:48.727578	\N	blender	Sin Contenido
 3346	1	admin	Araquanid	Araquanid es el pokemon numero #752111	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/752.png	flying,electric,rock	1	2018-11-16 05:59:07.424949	\N	araquanid	Sin Descripcion
+3405	1	admin	Curso de zbrush	Curso basico de zbrush.	/public/repositories/images/1543420937924.jpg	Modelado, diseño, esculpido.	1	2018-11-28 10:02:17.926651	\N	curso-de-zbrush	Sin Contenido
+3406	1	admin	Tensei shitara Slime Datta Ken	Satoru Mikami tiene un mal trabajo, sin salida y que no es feliz con la vida que lleva, muere a manos de un ladrón y piensa que es su fin, se despierta descubriendo que se ha reencarnado en un slime.	/public/repositories/images/1543421268577.jpg	Anime	1	2018-11-28 10:07:48.580851	\N	tensei-shitara-slime-datta-ken	Sin Contenido
+3407	1	admin	Un mundo feliz	Un mundo feliz es la novela más famosa del escritor británico Aldous Huxley, publicada por primera vez en 1932. La novela es una distopia que anticipa el desarrollo en tecnología reproductiva.	/public/repositories/images/1543421695308.jpg	cultura	1	2018-11-28 10:14:55.313819	\N	un-mundo-feliz	Sin Contenido
+3409	1	admin	kilo de cultura general 	Es uno de los libros de cultura general más recomendados para todo aquel que quiera saber un poco de todo. Muchos críticos lo definen como el libro más completo  y ambicioso de la historia	/public/repositories/images/1543423060725.jfif	cultura	1	2018-11-28 10:37:40.727551	\N	kilo-de-cultura-general	Sin Contenido
+3410	1	admin	Samsung Galaxy J8	Caracteristicas de este Telefono	/public/repositories/images/1543423870966.jpg	SmartPhones	1	2018-11-28 10:51:10.972297	\N	samsung-galaxy-j8	Sin Contenido
+3411	1	admin	Programacion en access	Libro muy bueno de access y postgress	/public/repositories/images//1543434345540.jpg	postgress, access	1	2018-11-28 13:42:03.690146	\N	programacion-en-access	Sin Contenido
 2585	1	admin	Squirtle	Squirtle es el pokemon numero #7	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/007.png	electric,grass	1	2018-11-16 05:58:58.20554	\N	squirtle	Sin Descripcion
 2586	1	admin	Ivysaur	Ivysaur es el pokemon numero #2	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/002.png	fire,flying,ice,psychic	1	2018-11-16 05:58:58.207023	\N	ivysaur	Sin Descripcion
 2587	1	admin	Charizard	Charizard es el pokemon numero #6	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/006.png	rock,electric,water	1	2018-11-16 05:58:58.218169	\N	charizard	Sin Descripcion
@@ -1920,6 +1940,7 @@ COPY public."RepositoryAuthors" (id, "idRepository", "idAuthor") FROM stdin;
 7	2585	1
 8	3396	3
 9	3344	3
+10	3401	3
 \.
 
 
@@ -1939,6 +1960,19 @@ COPY public."RepositoryComment" (id, "idUser", username, "idRepository", comment
 21	1	admin	3344	hola\n	2018-11-25 17:37:18.580961	\N
 22	1	admin	3344	1111111111111111111111111	2018-11-25 21:30:42.484896	\N
 23	1	admin	3360	1111111111111111111\n	2018-11-25 23:14:51.482593	\N
+24	2	Soriel	3348	11111111111	2018-11-26 22:20:01.978616	\N
+25	2	Soriel	3348	11111111111111111111111111	2018-11-26 22:20:03.802695	\N
+26	2	Soriel	3398	11111111111111	2018-11-26 23:59:24.989302	\N
+27	2	Soriel	3398	1111111111111111111111	2018-11-26 23:59:26.457652	\N
+28	2	Soriel	3398	dsdasda	2018-11-26 23:59:28.45368	\N
+29	1	admin	3401	aun no funciona cerrar sesion?	2018-11-28 00:51:29.438912	\N
+30	1	admin	3363	Comentario de Gerry Larios	2018-11-28 13:19:02.715643	\N
+31	1	admin	3363	Comentario de Gerry Larios	2018-11-28 13:19:11.247502	\N
+32	1	admin	3363	Comentario de Gerry Larios	2018-11-28 13:19:13.765363	\N
+33	1	admin	3406	this is cool	2018-11-28 13:30:24.905547	\N
+34	1	admin	3407	Excelente libro, lo recomiendo ampliamente	2018-11-28 13:45:40.997582	\N
+35	1	admin	3407	Excelente libro, lo recomiendo ampliamente	2018-11-28 13:50:13.867347	\N
+36	1	admin	3407	Excelente libro, lo recomiendo ampliamente	2018-11-28 13:50:16.160399	\N
 \.
 
 
@@ -2767,6 +2801,17 @@ COPY public."RepositoryResources" (id, "idUser", username, "idRepository", file,
 820	1	admin	3344	https://www.youtube.com/watch?v=4jBDnYE1WjI	3	f	2018-11-25 16:55:05.955346	\N	pdf2	pdf2
 821	1	admin	3344	https://www.youtube.com/watch?v=8YReJfHIyo0&list=PLi38ScxZn6T6s1c-8eRL-a95JZHmOSZTZ	4	f	2018-11-25 16:58:43.062013	\N	Playlist	Super Science Friends
 822	1	admin	3344	/public/repositories/resources/1543188283862.svg	2	t	2018-11-25 17:24:44.034881	\N	svg	Dabase de datos
+829	1	admin	3401	https://iessanvicente.com/colaboraciones/BBDDdistribuidas.pdf	2	f	2018-11-27 23:07:13.644207	\N	Base de tatos	Un libro
+830	1	admin	3397	https://7chan.org/pr/src/OReilly_JavaScript_The_Good_Parts_May_2008.pdf	2	f	2018-11-28 09:36:08.442096	\N	JavaScript 	JavaScript Book
+831	1	admin	3402	https://www.youtube.com/playlist?list=PLn3ukorJv4vtkqLZLtxVDgM3BSCukFF7Y	4	f	2018-11-28 09:51:29.432441	\N	Blender Basics	Pequeña introduccion a blender
+832	1	admin	3403	https://www.youtube.com/watch?v=7x9369_-cWc&list=PL4A486BBFC5AD733B	4	f	2018-11-28 09:54:04.037774	\N	Aprende C++ Facil	Introduccion a C++ by CodigoFacilito 
+833	1	admin	3404	https://www.youtube.com/watch?v=tAFTbbaKqSs&list=PLGW1bRAddcdrm6-Z12v9UBheJ7h9_j-aC	4	f	2018-11-28 10:02:03.37287	\N	Blender Basics	Introducción a Blender
+835	1	admin	3405	https://www.youtube.com/watch?v=qXDnkgbc6e8&list=PLf-uWfGxf6jM1uPk39cMWIadHV3G707Ac	4	f	2018-11-28 10:06:46.18484	\N	Tutorial	Videos basicos
+836	1	admin	3406	https://www.youtube.com/watch?v=ojDfl4Agam8	3	f	2018-11-28 10:10:40.845181	\N	Teaser Trailer	Teaser de lo que es Rimura Tempest
+837	1	admin	3406	https://www.youtube.com/watch?v=q1sBMxCtsGI	3	f	2018-11-28 10:13:10.180525	\N	Capitulo 2	El slime se hace amigo de Verudora, quien le da al fin un nombre: Rimuru Tempest
+838	1	admin	3407	http://www.formarse.com.ar/libros/Libros-recomendados-pdf/Un%20mundo%20feliz-Aldous%20Huxley.pdf	2	f	2018-11-28 10:32:51.288234	\N	Un mundo feliz	libro de cultura
+839	1	admin	3409	https://www.planetadelibros.com/libros_contenido_extra/32/31125_1KiloDeCulturaGeneral.pdf	2	f	2018-11-28 10:40:33.024819	\N	1 kilo de cultura general	un libro de cultura
+840	1	admin	3410	https://www.youtube.com/watch?v=OJyBgtMz1w4	3	f	2018-11-28 10:52:28.168015	\N	Samsung Galaxy J8	Reviwe SmartPhone
 \.
 
 
@@ -2774,7 +2819,13 @@ COPY public."RepositoryResources" (id, "idUser", username, "idRepository", file,
 -- Data for Name: RepositoryScore; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public."RepositoryScore" (id, "idUser", username, score, comment, "createdAt", "updatedAt") FROM stdin;
+COPY public."RepositoryScore" (id, "idUser", username, score, comment, "createdAt", "updatedAt", "idRepository") FROM stdin;
+3	2	Soriel	4	Review Chidori	2018-11-26 23:07:57.317203	\N	3348
+4	2	Soriel	4	Review Chidori x2	2018-11-27 00:02:26.631046	\N	3398
+5	2	Soriel	4	Nuevo :v	2018-11-27 19:50:25.975469	\N	2901
+6	2	Soriel	5	dsddas	2018-11-28 00:40:26.343971	\N	3351
+7	1	admin	5	muy bien	2018-11-28 09:46:42.419834	\N	3402
+8	1	admin	4	Perfecto :)	2018-11-28 09:55:02.400461	\N	3403
 \.
 
 
@@ -5208,6 +5259,16 @@ COPY public."RepositoryTopics" (id, "idRepository", "idCatalog") FROM stdin;
 5292	2585	2
 5293	3396	1
 5294	3381	17
+5295	3401	21
+5296	3397	17
+5297	3403	20
+5298	3402	13
+5299	3404	13
+5300	3405	13
+5301	3407	3
+5302	3407	6
+5303	3409	3
+5304	3410	22
 \.
 
 
@@ -6430,6 +6491,17 @@ COPY public."RepositoryTypes" (id, "idRepository", "idCatalog") FROM stdin;
 2687	3235	22
 2691	2585	8
 2692	3396	8
+2693	3401	2
+2694	3397	2
+2695	3397	2
+2696	3403	4
+2697	3402	4
+2698	3404	4
+2699	3405	4
+2700	3406	4
+2701	3407	2
+2702	3409	2
+2703	3410	4
 \.
 
 
@@ -6483,7 +6555,7 @@ SELECT pg_catalog.setval('public."Bundle_id_seq"', 1, false);
 -- Name: CatalogAuthors_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."CatalogAuthors_id_seq"', 2, true);
+SELECT pg_catalog.setval('public."CatalogAuthors_id_seq"', 10, true);
 
 
 --
@@ -6525,21 +6597,21 @@ SELECT pg_catalog.setval('public."MyList_id_seq"', 1, false);
 -- Name: Repositories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."Repositories_id_seq"', 3399, true);
+SELECT pg_catalog.setval('public."Repositories_id_seq"', 3412, true);
 
 
 --
 -- Name: RepositoryAuthors_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."RepositoryAuthors_id_seq"', 9, true);
+SELECT pg_catalog.setval('public."RepositoryAuthors_id_seq"', 10, true);
 
 
 --
 -- Name: RepositoryComment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."RepositoryComment_id_seq"', 23, true);
+SELECT pg_catalog.setval('public."RepositoryComment_id_seq"', 36, true);
 
 
 --
@@ -6553,35 +6625,35 @@ SELECT pg_catalog.setval('public."RepositoryEditorials_id_seq"', 2, true);
 -- Name: RepositoryResources_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."RepositoryResources_id_seq"', 828, true);
+SELECT pg_catalog.setval('public."RepositoryResources_id_seq"', 840, true);
 
 
 --
 -- Name: RepositoryScore_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."RepositoryScore_id_seq"', 1, false);
+SELECT pg_catalog.setval('public."RepositoryScore_id_seq"', 8, true);
 
 
 --
 -- Name: RepositoryTopics_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."RepositoryTopics_id_seq"', 5294, true);
+SELECT pg_catalog.setval('public."RepositoryTopics_id_seq"', 5304, true);
 
 
 --
 -- Name: RepositoryTypes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."RepositoryTypes_id_seq"', 2692, true);
+SELECT pg_catalog.setval('public."RepositoryTypes_id_seq"', 2703, true);
 
 
 --
 -- Name: Users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."Users_id_seq"', 2, true);
+SELECT pg_catalog.setval('public."Users_id_seq"', 10, true);
 
 
 --
@@ -6595,7 +6667,7 @@ SELECT pg_catalog.setval('public."Verification_Token_id_seq"', 1, false);
 -- Name: catalogtopics_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.catalogtopics_id_seq', 42, true);
+SELECT pg_catalog.setval('public.catalogtopics_id_seq', 43, true);
 
 
 --
@@ -7072,6 +7144,14 @@ ALTER TABLE ONLY public."Verification_Token"
 
 ALTER TABLE ONLY public."Verification_Token"
     ADD CONSTRAINT "Verification_Token_username_fkey" FOREIGN KEY (username) REFERENCES public."Users"(username);
+
+
+--
+-- Name: RepositoryScore fk_RepositoryScore_idRepository; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."RepositoryScore"
+    ADD CONSTRAINT "fk_RepositoryScore_idRepository" FOREIGN KEY ("idRepository") REFERENCES public."Repositories"(id);
 
 
 --

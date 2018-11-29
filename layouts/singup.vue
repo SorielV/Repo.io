@@ -10,6 +10,9 @@
           .column.is-4.is-offset-4
             h3.title.has-text-black Registrate
             p.subtitle.has-text-black Estas listo para el Conocimieto
+              br
+              nuxt-link(to="/").has-text-warning Repo-io
+
             .box
               figure.avatar
                 img(src='https://placehold.it/128x128' v-model="user.profileImage")
@@ -44,7 +47,7 @@
                 button.button.is-block.is-danger.is-fullwidth(type="submit") Registrarme
             p.has-text-grey
               |Ya tienes cuenta?, 
-              a(href='../') Inicia Sesión
+              nuxt-link(to='/login') Inicia Sesión
               |   · 
               a(href='../') Necesitas Ayuda?
     script(async='', type='text/javascript', src='../js/bulma.js')
@@ -72,16 +75,18 @@ export default {
     }
   },
   methods: {
-    handleSubmit() {
+    async handleSubmit() {
       const form = new FormData()
       for (const key in this.user) {
         form.append(key, this.user[key])
       }
 
-      this.$axios
-        .post('/api/user', form)
-        .then(console.log)
-        .catch(console.error)
+      const {
+        data: {
+          data: { token, user }
+        }
+      } = await this.$axios.post('/api/user', form)
+      this.$router.push('/login')
     }
   }
 }

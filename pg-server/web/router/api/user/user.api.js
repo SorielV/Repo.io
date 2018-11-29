@@ -2,6 +2,8 @@ import { Router } from 'express'
 import fileUpload from 'express-fileupload'
 import { catchException, getAuth, isAdminAuth } from './../../../middleware'
 import { saveFile } from './../../../../utils'
+import jwt from 'jsonwebtoken'
+import jwtConfig from './../../../../config/jwt.json'
 
 const router = Router()
 const { User } = require('./../../../../models/user')
@@ -59,7 +61,30 @@ router.post(
     return next()
   }),
   (req, res) => {
-    return res.json(req.user).end()
+    const { user } = req
+    delete user.password
+
+    jwt.sign(
+      user,
+      jwtConfig.secret,
+      { expiresIn: jwtConfig.tokenLife },
+      (error, token) => {
+        if (error) {
+          console.error(error)
+          return res
+            .status(400)
+            .json({
+              message: error.message
+            })
+            .end()
+        }
+
+        return res
+          .status(200)
+          .json({ data: { user, token } })
+          .end()
+      }
+    )
   }
 )
 

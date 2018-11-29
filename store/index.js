@@ -32,6 +32,10 @@ const store = () => {
         state.user = user
         state.isAuth = true
         state.isAdmin = user.type === 1
+        if (process.browser) {
+          window.sessionStorage.setItem('token', state.token)
+          window.sessionStorage.setItem('user', JSON.stringify(state.user))
+        }
       },
       login: (state, { user, token }) => {
         state.isAuth = true
