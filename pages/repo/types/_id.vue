@@ -56,14 +56,48 @@
                 .button.is-info(@click="view = 'grid'")
                   i.mdi.mdi-view-grid
       hr
-      section
+      section(v-if="isLoading")
+        .columns.is-centered
+          .column
+            content-loader(:height='160', :width='400', :speed='2', primaryColor='#000000', secondaryColor='#ecebeb')
+              rect(x='70', y='15', rx='4', ry='4', width='117', height='6.4')
+                rect(x='70', y='35', rx='3', ry='3', width='85', height='6.4')
+                  rect(x='0', y='80', rx='3', ry='3', width='350', height='6.4')
+                    rect(x='0', y='100', rx='3', ry='3', width='380', height='6.4')
+                      rect(x='0', y='120', rx='3', ry='3', width='201', height='6.4')
+                        circle(cx='30', cy='30', r='30')
+          .column
+            content-loader(:height='160', :width='400', :speed='2', primaryColor='#000000', secondaryColor='#ecebeb')
+              rect(x='70', y='15', rx='4', ry='4', width='117', height='6.4')
+                rect(x='70', y='35', rx='3', ry='3', width='85', height='6.4')
+                  rect(x='0', y='80', rx='3', ry='3', width='350', height='6.4')
+                    rect(x='0', y='100', rx='3', ry='3', width='380', height='6.4')
+                      rect(x='0', y='120', rx='3', ry='3', width='201', height='6.4')
+                        circle(cx='30', cy='30', r='30')
+          .column
+            content-loader(:height='160', :width='400', :speed='2', primaryColor='#000000', secondaryColor='#ecebeb')
+              rect(x='70', y='15', rx='4', ry='4', width='117', height='6.4')
+                rect(x='70', y='35', rx='3', ry='3', width='85', height='6.4')
+                  rect(x='0', y='80', rx='3', ry='3', width='350', height='6.4')
+                    rect(x='0', y='100', rx='3', ry='3', width='380', height='6.4')
+                      rect(x='0', y='120', rx='3', ry='3', width='201', height='6.4')
+                        circle(cx='30', cy='30', r='30')
+          .column
+            content-loader(:height='160', :width='400', :speed='2', primaryColor='#000000', secondaryColor='#ecebeb')
+              rect(x='70', y='15', rx='4', ry='4', width='117', height='6.4')
+                rect(x='70', y='35', rx='3', ry='3', width='85', height='6.4')
+                  rect(x='0', y='80', rx='3', ry='3', width='350', height='6.4')
+                    rect(x='0', y='100', rx='3', ry='3', width='380', height='6.4')
+                      rect(x='0', y='120', rx='3', ry='3', width='201', height='6.4')
+                        circle(cx='30', cy='30', r='30')
+      section(v-else)
         .columns.is-centered(v-if="filtered.length === 0")
           .column.is-12
             section.hero.has-text-centered
               .hero-body
                 .container
                   h1.title
-                    | Error
+                    | Opps
                   h2.subtitle
                     | Repositorios no encontrados
                   h2.subtitle(v-if="repositories.length !== 0")
@@ -92,6 +126,7 @@
 </template>
 
 <script>
+import { ContentLoader } from 'vue-content-loader'
 import CardRepository from './../../../components/CardRepository.vue'
 import ListRepository from './../../../components/ListRepository.vue'
 
@@ -112,6 +147,7 @@ function parseUrl() {
 
 export default {
   components: {
+    ContentLoader,
     CardRepository,
     ListRepository
   },
@@ -155,7 +191,7 @@ export default {
   },
   data() {
     return {
-      isLoading: false,
+      isLoading: true,
       view: 'grid',
       query: {
         slug: '',
@@ -182,31 +218,6 @@ export default {
     }
   },
   watch: {
-    async 'pagination.page'(current, old) {
-      if (current === old) {
-        return
-      }
-
-      const { limit, offset } = this.pagination
-      const options = `page=${current}&limt=${limit}&offset=${offset}`
-      const queryParams = this.getQueryParam()
-      const url = '/api/repo?' + options + '&' + queryParams
-
-      try {
-        this.isLoading = true
-        const {
-          data: { data: repositories = [], ...pagination }
-        } = await this.$axios.get(url)
-        this.repositories = repositories
-        this.pagination = pagination
-        this.filtered = repositories
-        window.scrollTo(0, 0)
-        this.isLoading = false
-      } catch (error) {
-        this.isLoading = false
-        console.error(error)
-      }
-    },
     types(types) {
       if (types.length === 0) {
         this.filtered = this.repositories
@@ -238,6 +249,7 @@ export default {
       this.pagination = pagination
       this.repositories = repositories
       this.filtered = repositories
+      this.isLoading = false
     } catch (error) {
       console.error(error.message)
       const repositories = []
@@ -275,6 +287,27 @@ export default {
     }
   },
   methods: {
+    async onPageChange(page) {
+      const { limit, offset } = this.pagination
+      const options = `page=${page}&limt=${limit}&offset=${offset}`
+      const queryParams = this.getQueryParam()
+      const url = '/api/repo?' + options + '&' + queryParams
+
+      try {
+        this.isLoading = true
+        const {
+          data: { data: repositories = [], ...pagination }
+        } = await this.$axios.get(url)
+        this.repositories = repositories
+        this.pagination = pagination
+        this.filtered = repositories
+        window.scrollTo(0, 0)
+        this.isLoading = false
+      } catch (error) {
+        this.isLoading = false
+        console.error(error)
+      }
+    },
     getQueryParam() {
       const baseSlug = (this.query.slug || '').trim().toLowerCase()
       const slug = this.filter.trim().toLowerCase()

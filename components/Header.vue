@@ -1,7 +1,7 @@
 <template lang="pug">
   section.header
     section
-      nav.navbar.is-black.is-fixed-top
+      nav.navbar.is-dark.is-fixed-top.has-shadow
         .container
           .navbar-brand
             a.navbar-item(href='/')
@@ -21,32 +21,32 @@
               nuxt-link.navbar-item(to='/repo')
                 | Repositorio
               .navbar-item.has-dropdown.is-hoverable.is-mega
-                nuxt-link.navbar-link(to='/repo/topics') Tematicas
+                nuxt-link.navbar-link(to='/repo/topics') Temáticas
                 #nav-repo.navbar-dropdown(data-style='width: 18rem;')
                   .container.is-fluid
                     .columns
                       .column
-                        nuxt-link.navbar-item(to='/repo/topics/cultura')
+                        nuxt-link.navbar-item(to='/repo/topics/3')
                           .navbar-content
                             p Cultura
-                        nuxt-link.navbar-item(to='/repo/topics/videojuegos')
+                        nuxt-link.navbar-item(to='/repo/topics/5')
                           .navbar-content
                             p Videojuegos
-                        nuxt-link.navbar-item(to='/repo/topics/sotfware')
+                        nuxt-link.navbar-item(to='/repo/topics/21')
                           .navbar-content
                             p Sotfware
 
                       .column
-                        nuxt-link.navbar-item(to='/repo/topics/javascript')
+                        nuxt-link.navbar-item(to='/repo/topics/17')
                           .navbar-content
                             p Javascript
-                        nuxt-link.navbar-item(to='/repo/topics/machine')
+                        nuxt-link.navbar-item(to='/repo/topics/19')
                           .navbar-content
                             p Machine
-                        nuxt-link.navbar-item(to='/repo/topics/programing')
+                        nuxt-link.navbar-item(to='/repo/topics/20')
                           .navbar-content
                             p Programing
-                        nuxt-link.navbar-item(to='/repo/topics/programing')
+                        nuxt-link.navbar-item(to='/repo/topics')
                           .navbar-content
                             p Todas
 
@@ -60,27 +60,27 @@
                   .container.is-fluid
                     .columns
                       .column
-                        nuxt-link.navbar-item(to='/repo/types/cursos')
+                        nuxt-link.navbar-item(to='/repo/types/3')
                           .navbar-content
                             p Cursos
-                        nuxt-link.navbar-item(to='/repo/types/videos')
+                        nuxt-link.navbar-item(to='/repo/types/4')
                           .navbar-content
                             p Videos
-                        nuxt-link.navbar-item(to='/repo/types/comunidades')
+                        nuxt-link.navbar-item(to='/repo/types/10')
                           .navbar-content
                             p Comunidades
 
                       .column
-                        nuxt-link.navbar-item(to='/repo/types/datasets')
+                        nuxt-link.navbar-item(to='/repo/types/12')
                           .navbar-content
                             p DataSets
-                        nuxt-link.navbar-item(to='/repo/types/papers')
+                        nuxt-link.navbar-item(to='/repo/types/13')
                           .navbar-content
                             p Papers
-                        nuxt-link.navbar-item(to='/repo/types/books')
+                        nuxt-link.navbar-item(to='/repo/types/14')
                           .navbar-content
                             p Books
-                        nuxt-link.navbar-item(to='/repo/types/todos')
+                        nuxt-link.navbar-item(to='/repo/types')
                           .navbar-content
                             p.tag.is-danger Todos
 
@@ -88,7 +88,7 @@
                   .buttons.is-centered
                     button.button.is-info.is-small Ver Todos
               
-              nuxt-link.navbar-item(to='/repo/authors')
+              //-nuxt-link.navbar-item(to='/repo/authors')
                 | Autores
               .navbar-item.has-dropdown.is-hoverable
                 nuxt-link.navbar-link(to='/community') Comunidad

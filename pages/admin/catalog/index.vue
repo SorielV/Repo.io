@@ -1,6 +1,6 @@
 <template lang="pug">
   section.container(style="padding:2%;")
-    h1.title Administrar Catalogos
+    h1.title Administrar Catálogos
     hr
     .columns.is-multiline
       .column.is-4
@@ -10,7 +10,7 @@
               h1.title
                 | Autores
               h2.subtitle
-                | Administra Catalogo de Autores
+                | Administra Catálogo de Autores
 
       .column.is-4
         section.hero
@@ -19,7 +19,7 @@
               h1.title
                 | Tipos
               h2.subtitle
-                | Administra Catalogo de Tipos
+                | Administra Catálogo de Tipos
 
       .column.is-4
         section.hero
@@ -28,7 +28,7 @@
               h1.title
                 | Tematicas
               h2.subtitle
-                | Administra Catalogo de Temas
+                | Administra Catálogo de Temas
 
       .column.is-4
         section.hero
@@ -37,7 +37,7 @@
               h1.title
                 | Editoriales
               h2.subtitle
-                | Administra Catalogo de Editoriales
+                | Administra Catálogo de Editoriales
 
 </template>
 

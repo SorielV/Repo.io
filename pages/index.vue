@@ -1,10 +1,10 @@
 <template lang="pug">
   section
-    .home.hero.is-white.is-medium.is-bold
+    .home.hero.is-medium
       .hero-body
-        .container.has-text-centered.has-mb-5
+        .container.has-text-centered.has-mb-2
           h1.title
-            | Una alternativa de consulta recuros digitales
+            | Una alternativa de consulta recursos dígitales
           h2.subtitle.has-my-1rem
             | Encuentra recursos ahora
           center
@@ -53,13 +53,11 @@
         .container.has-text-centered.has-my-5(v-else)
           h1.title.has-text-black Ultimos Agregados
           .columns.is-centered
-            .column.is-3(v-for="(repo, index) in repositories" :key="index")
+            .column(v-for="(repo, index) in repositories" :key="index")
               transition-group(name="component-fade" tag="section")
                 CardRepository.has-text-black(:repository='repo' @handleViewRepo="handleViewRepo" :key="repo.id")
           .buttons.is-centered
             nuxt-link.button.is-info(to="/repo" style="width: 25%;") Ver Mas
-        
-        
 </template>
 
 <script>
@@ -84,7 +82,7 @@ export default {
     try {
       const {
         data: { data: repositories }
-      } = await this.$axios.get('/api/repo?limit=4')
+      } = await this.$axios.get('/api/repo?limit=5')
       this.repositories = repositories
       this.isLoading = false
     } catch (err) {
@@ -107,8 +105,8 @@ export default {
 </script>
 
 <style scoped>
-.has-mb-5 {
-  margin-bottom: 5%;
+.has-mb-2 {
+  margin-bottom: 2%;
 }
 .has-my-10 {
   margin: 5%;

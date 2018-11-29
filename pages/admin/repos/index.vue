@@ -428,10 +428,8 @@
                         .media-left
                           img(width='32' :src="props.option.image || 'https://bulma.io/images/placeholders/128x128.png'")
                         .media-content
-                          | {{ props.option.firstName + ' ' + props.option.lastName }}
+                          | {{ props.option.value }}
                           br
-                          small
-                            | rated
 
                   section.has-my-1
                     .columns.is-multiline
@@ -790,91 +788,8 @@ export default {
         filteredTypes: [],
         filteredTopics: [],
         authors: [],
-        types: [
-          {
-            image: 'http://www.nyan.cat/cats/original.gif',
-            value: 'Papers',
-            idCatalog: 1
-          },
-          {
-            image: 'http://www.nyan.cat/cats/original.gif',
-            value: 'Books',
-            idCatalog: 2
-          },
-          {
-            image: 'http://www.nyan.cat/cats/original.gif',
-            value: 'Cursos',
-            idCatalog: 3
-          },
-          {
-            image: 'http://www.nyan.cat/cats/original.gif',
-            value: 'Videos',
-            idCatalog: 4
-          },
-          {
-            image: 'http://www.nyan.cat/cats/original.gif',
-            value: 'Portales Blogs',
-            idCatalog: 5
-          },
-          {
-            image: 'http://www.nyan.cat/cats/original.gif',
-            value: 'Tools Software',
-            idCatalog: 6
-          },
-          {
-            image: 'http://www.nyan.cat/cats/original.gif',
-            value: 'PPTs SlideShare',
-            idCatalog: 7
-          },
-          {
-            image: 'http://www.nyan.cat/cats/original.gif',
-            value: 'Infografias y Memes',
-            idCatalog: 8
-          },
-          {
-            image: 'http://www.nyan.cat/cats/original.gif',
-            value: 'People To Follow',
-            idCatalog: 9
-          },
-          {
-            image: 'http://www.nyan.cat/cats/original.gif',
-            value: 'Comunidades',
-            idCatalog: 10
-          },
-          {
-            image: 'http://www.nyan.cat/cats/original.gif',
-            value: 'APIs',
-            idCatalog: 11
-          },
-          {
-            image: 'http://www.nyan.cat/cats/original.gif',
-            value: 'DataSets',
-            idCatalog: 12
-          }
-        ],
-        topics: [
-          { value: 'Arte', idCatalog: 1 },
-          { value: 'Comics', idCatalog: 2 },
-          { value: 'Cultura', idCatalog: 3 },
-          { value: 'Comida', idCatalog: 4 },
-          { value: 'Videojuegos', idCatalog: 5 },
-          { value: 'Humor', idCatalog: 6 },
-          { value: 'Musica', idCatalog: 7 },
-          { value: 'Fotografia', idCatalog: 8 },
-          { value: 'Deportes', idCatalog: 9 },
-          { value: 'Estilo', idCatalog: 10 },
-          { value: 'TV', idCatalog: 11 },
-          { value: 'Negocios', idCatalog: 12 },
-          { value: 'Disenio', idCatalog: 13 },
-          { value: 'Negocios', idCatalog: 14 },
-          { value: 'Econimia', idCatalog: 16 },
-          { value: 'Javascript', idCatalog: 17 },
-          { value: 'Machine Learning', idCatalog: 19 },
-          { value: 'Programing', idCatalog: 20 },
-          { value: 'Sotfware', idCatalog: 21 },
-          { value: 'Tecnologia', idCatalog: 22 },
-          { value: 'Otros', idCatalog: 23 }
-        ],
+        types: [],
+        topics: [],
         visibility: [
           { text: 'Visible', value: 1 },
           { text: 'Oculto', value: 2 },
@@ -894,13 +809,11 @@ export default {
       const filter = this.catalog.authorFilter || ''
 
       if (filter.length > 1) {
-        const filtered = Array.from(this.catalog.authors).filter(author => {
-          return (
-            `${author.firstName} ${author.lastName}`
-              .toLowerCase()
-              .indexOf(filter.toLowerCase()) !== -1
-          )
-        })
+        const filtered = Array.from(this.catalog.authors).filter(
+          ({ value }) => {
+            return value.toLowerCase().indexOf(filter.toLowerCase()) !== -1
+          }
+        )
         return filtered
       } else {
         return []
@@ -940,6 +853,23 @@ export default {
         oldFile.length !== 0
           ? newFile.filter(file => oldFile.indexOf(file) === -1)
           : newFile
+    }
+  },
+  async created() {
+    try {
+      const [{ data: topics }, { data: types }] = await Promise.all([
+        this.$axios.get('/public/catalog/topics.json'),
+        this.$axios.get('/public/catalog/types.json')
+      ])
+
+      this.catalog.types = types
+      this.catalog.topics = topics
+    } catch (error) {
+      this.$toast.open({
+        message: 'Error al obtener lista de autores',
+        type: 'is-danger'
+      })
+      this.catalog.authors = []
     }
   },
   methods: {
@@ -1131,9 +1061,9 @@ export default {
     /*
     filterAuthors(param) {
       this.catalog.filterAuthors = Array.from(this.catalog.authors).filter(
-        author => {
+        ({ name }) => {
           return (
-            `${author.firstName} ${author.lastName}`
+            name
               .toLowerCase()
               .indexOf(param.toLowerCase()) >= 0
           )
@@ -1342,7 +1272,7 @@ export default {
     },
     async getAuthors() {
       try {
-        const { data } = await this.$axios.get('/public/authors.json')
+        const { data } = await this.$axios.get('/public/catalog/authors.json')
         this.catalog.authors = data
       } catch (error) {
         console.error(error)

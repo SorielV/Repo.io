@@ -26,5 +26,12 @@
     "slug": "nicolas-tesla-2",
     "image": "/public/repositories/author/1543376278497.gif",
     "createdAt": "2018-10-03T02:37:58.000Z"
+  },
+  {
+    "idCatalog": 7,
+    "value": "Aldous Huxley",
+    "slug": "aldous-huxley",
+    "image": "/public/repositories/author/1543422686656.jfif",
+    "createdAt": "2018-11-28T16:31:26.664Z"
   }
 ]

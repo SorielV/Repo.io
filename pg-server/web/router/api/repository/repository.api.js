@@ -494,11 +494,11 @@ router.post(
     const { username, id: idUser } = req.user
 
     const {
-        body: { title = null  }
-        } = req
+      body: { title = null }
+    } = req
 
     if (!title) {
-        return res.status(400).json({ message: 'Titulo no enviado' })
+      return res.status(400).json({ message: 'Titulo no enviado' })
     }
 
     const slug = slugify(title)
@@ -536,23 +536,59 @@ router.post(
 router.put(
   '/:id',
   catchException(async (req, res, next) => {
-    const {
-      params: { id }
-    } = req
-
     // if is required
     const { username, id: idUser } = req.user
+    const {
+      params: { id, model },
+      body: { title = null }
+    } = req
 
-    const repository = await Repository.findOneAndUpadate(
+    if (title) {
+      req.body.slug = slugify(title)
+    }
+
+    const obj = await Repository.findOne(
       {
+        id
+      },
+      false
+    )
+
+    obj.merge(
+      {
+        ...req.body
+      },
+      false
+    )
+
+    if (req.files && req.files.image) {
+      const {
+        files: { image }
+      } = req
+
+      const client = '/public/repositories/images/'
+      console.log(process.env.CLIENT_PATH, client)
+      console.log(Path.join(process.env.CLIENT_PATH, client))
+
+      const path = Path.join(process.env.CLIENT_PATH, client)
+      const fileName = await saveFile(image, null, path)
+      obj.updateData.image = fileName ? client + '/' + fileName : null
+    }
+
+    const results = await obj.update()
+
+    /*
+    const repository = await Repository.findOneAndUpadate(
+      { 
         id
       },
       req.body
     )
+    */
 
     return res
       .status(201)
-      .json({ data: repository })
+      .json({ data: results })
       .end()
   })
 )

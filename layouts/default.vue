@@ -1,6 +1,21 @@
 <template lang="pug">
   div.Site
     Header
+    b-modal(:active.sync='isCardModalActive', :width='640', scroll='keep')
+      .card
+        .card-content
+          .media
+            .media-left
+              figure.image.is-48x48
+                img(src='/public/profiles/admin.gif', alt='Image')
+            .media-content
+              p.title.is-4 Admin
+              p.subtitle.is-6 cvallejo0@ucol.mx
+          .content
+            p En desarrollo => reparacion bugs, vistas e interaccion
+            br
+            small
+
     button#scrollUp.button.is-black.is-outlined
       i.mdi.mdi-chevron-up
     section.Site-content
@@ -25,6 +40,7 @@ export default {
   },
   data() {
     return {
+      isCardModalActive: true,
       items: [
         { title: 'Home', icon: 'home', to: { name: 'index' } },
         { title: 'Inspire', icon: 'lightbulb', to: { name: 'inspire' } }

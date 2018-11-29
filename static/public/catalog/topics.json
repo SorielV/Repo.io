@@ -1,117 +1,146 @@
 [
   {
-    "idCatalog": 1,
-    "value": "Examples",
-    "image": null
-  },
-  {
     "idCatalog": 2,
     "value": "Samples",
+    "slug": null,
     "image": null
   },
   {
     "idCatalog": 3,
     "value": "Cultura",
-    "image": null
-  },
-  {
-    "idCatalog": 4,
-    "value": "Comida",
-    "image": null
-  },
-  {
-    "idCatalog": 5,
-    "value": "Videojuegos",
-    "image": null
-  },
-  {
-    "idCatalog": 6,
-    "value": "Humor",
-    "image": null
-  },
-  {
-    "idCatalog": 7,
-    "value": "Musica",
+    "slug": null,
     "image": null
   },
   {
     "idCatalog": 8,
     "value": "Fotografia",
-    "image": null
-  },
-  {
-    "idCatalog": 9,
-    "value": "Deportes",
-    "image": null
-  },
-  {
-    "idCatalog": 10,
-    "value": "Estilo",
-    "image": null
-  },
-  {
-    "idCatalog": 11,
-    "value": "TV",
+    "slug": null,
     "image": null
   },
   {
     "idCatalog": 12,
     "value": "Negocios",
+    "slug": null,
     "image": null
   },
   {
     "idCatalog": 13,
     "value": "Disenio",
-    "image": null
-  },
-  {
-    "idCatalog": 16,
-    "value": "Economia",
+    "slug": null,
     "image": null
   },
   {
     "idCatalog": 17,
     "value": "Javascript",
+    "slug": null,
     "image": null
   },
   {
     "idCatalog": 19,
     "value": "Machine Learning",
+    "slug": null,
     "image": null
   },
   {
     "idCatalog": 20,
     "value": "Programing",
+    "slug": null,
     "image": null
   },
   {
     "idCatalog": 21,
     "value": "Sotfware",
+    "slug": null,
     "image": null
   },
   {
     "idCatalog": 22,
     "value": "Tecnologia",
+    "slug": null,
     "image": null
   },
   {
     "idCatalog": 23,
     "value": "Otros",
+    "slug": null,
     "image": null
+  },
+  {
+    "idCatalog": 1,
+    "value": "Examples",
+    "slug": null,
+    "image": "/public/repositories/topic/1542923104975.png"
+  },
+  {
+    "idCatalog": 5,
+    "value": "Videojuegos",
+    "slug": null,
+    "image": "/public/repositories/topic/1542925161094.jpg"
+  },
+  {
+    "idCatalog": 6,
+    "value": "Humor",
+    "slug": null,
+    "image": "/public/repositories/topic/1542925182247.jpg"
   },
   {
     "idCatalog": 24,
     "value": "pokemon",
-    "image": null
+    "slug": null,
+    "image": "/public/repositories/topic/1542925257184.jpg"
+  },
+  {
+    "idCatalog": 9,
+    "value": "Deportes",
+    "slug": null,
+    "image": "/public/repositories/topic/1542925296798.jpg"
+  },
+  {
+    "idCatalog": 11,
+    "value": "TV",
+    "slug": null,
+    "image": "/public/repositories/topic/1542925331120.jpg"
+  },
+  {
+    "idCatalog": 16,
+    "value": "Economia",
+    "slug": null,
+    "image": "/public/repositories/topic/1542925351444.jpg"
+  },
+  {
+    "idCatalog": 4,
+    "value": "Comida",
+    "slug": null,
+    "image": "/public/repositories/topic/1542925425995.jpg"
+  },
+  {
+    "idCatalog": 7,
+    "value": "Musica",
+    "slug": null,
+    "image": "/public/repositories/topic/1542925463115.jpg"
+  },
+  {
+    "idCatalog": 10,
+    "value": "Estilo",
+    "slug": null,
+    "image": "/public/repositories/topic/1542925517090.jpg"
   },
   {
     "idCatalog": 25,
-    "value": "anime",
-    "image": null
+    "value": "Anime",
+    "slug": "anime",
+    "image": "/public/repositories/topic/1542925214137.jpg"
   },
   {
     "idCatalog": 26,
-    "value": "cartoons",
+    "value": "Cartoons",
+    "slug": "cartoons",
     "image": null
+  },
+  {
+    "idCatalog": 43,
+    "value": "Pages",
+    "slug": "pages",
+    "image": "/public/repositories/topic/1543377168060.gif"
   }
 ]
