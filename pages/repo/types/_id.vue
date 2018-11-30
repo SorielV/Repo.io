@@ -127,7 +127,7 @@
 
 <script>
 import { ContentLoader } from 'vue-content-loader'
-import CardRepository from './../../../components/CardRepository.vue'
+import CardRepository from './../../../components/CardRepositoryV2.vue'
 import ListRepository from './../../../components/ListRepository.vue'
 
 function slugify(text) {
@@ -244,7 +244,7 @@ export default {
     try {
       const {
         data: { data: repositories = [], ...pagination }
-      } = await this.$axios.get('/api/repo' + queryParam)
+      } = await this.$axios.get('/api/repo' + queryParam + 'limit=32')
 
       this.pagination = pagination
       this.repositories = repositories

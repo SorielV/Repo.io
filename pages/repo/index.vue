@@ -1,13 +1,20 @@
 <template lang="pug">
-  section(style="padding: 2%;")
-    section.block
-      .field.is-grouped.is-fullwidth(style="justify-content: center;")
-        p.control.is-expanded
-          input.input(type='text', placeholder='Lorem ...'  @keyup.enter="handleFilter" v-model="filter")
-        p.control
-          button.button.is-info(@click="handleFilter")
-            | Buscar
-    section
+  section
+    section.hero.is-medium.is-dark
+      .hero-body
+        .container
+          h1.title
+            | Hero title
+          h2.subtitle
+            | Hero subtitle
+    section.is-hidden-desktop
+      section
+        .field.is-grouped.is-fullwidth(style="justify-content: center;")
+          p.control.is-expanded
+            input.input(type='text', placeholder='Lorem ...'  @keyup.enter="handleFilter" v-model="filter")
+          p.control
+            button.button.is-info(@click="handleFilter")
+              | Buscar
       section
         center
           b-dropdown
@@ -36,6 +43,7 @@
               .column.is-6(v-for="(catalog, key) in catalogs.editorials" :key="key" style="padding: 0")
                 b-checkbox(v-model='catalog.isSelected' type="is-danger")
                   | {{ catalog.value }}
+    section.is-hidden-desktop
       section.has-pt-1rem
         .columns.is-mobile
           .column.has-text-centered
@@ -47,35 +55,73 @@
                 i.mdi.mdi-view-list
               .button.is-info(@click="view = 'grid'")
                 i.mdi.mdi-view-grid
-    hr
-    section
-      .columns.is-centered(v-if="filtered.length === 0")
-        .column.is-12
-          section.hero.has-text-centered
-            .hero-body
-              .container
-                h1.title
-                  | Error
-                h2.subtitle
-                  | Repositorios no encontrados
-                h2.subtitle(v-if="repositories.length !== 0")
-                  | Busqueda: {{ filter }}
-                iframe.container(src="http://wayou.github.io/t-rex-runner/" style="height: 150px")
-                //img(src="https://i.gifer.com/7WOr.gif")
-      .container(v-else)
-        .columns.is-multiline.is-centered(v-if="view === 'grid'")
-          .column.is-3( v-for="(repo, index) in filtered" :key="index")
-            transition-group(name="component-fade" tag="section")
-              CardRepository(
-                :repository='repo'
-                @handleViewRepo="handleViewRepo"
-                @handleViewType="handleViewType"
-                :key="repo.id"
-              )
-        .columns.is-multiline.is-centered(v-else)
-          .column.is-12(v-for="(repo, index) in filtered" :key="index")
-            transition-group(name="component-fade" tag="section")
-              ListRepository(:repository='repo' @handleViewRepo="handleViewRepo" :key="repo.id")
+    br
+    section.container
+      .columns
+        .column.is-4(style="min-width: 350px; max-width: 400px;")
+          p Filtros
+          b-collapse.panel(:open.sync='isOpen')
+            .panel-heading(slot='trigger')
+              strong Tipos
+            section.columns.is-multiline(style="padding: 1rem; margin: auto;")
+              .column.is-6(v-for="(catalog, key) in catalogs.types" :key="key" style="padding: 0")
+                b-checkbox(v-model='catalog.isSelected' @input="handleFilterCatalog(catalog, 0)" type="is-danger")
+                  | {{ catalog.value }}
+
+          b-collapse.panel(:open.sync='isOpen')
+            .panel-heading(slot='trigger')
+              strong Temas
+            section.columns.is-multiline(style="padding: 1rem; margin: auto;")
+              .column.is-6(v-for="(catalog, key) in catalogs.topics" :key="key" style="padding: 0")
+                b-checkbox(v-model='catalog.isSelected' @input="handleFilterCatalog(catalog, 1)" type="is-danger")
+                  | {{ catalog.value }}
+        .column.is-auto
+          .column.is-12
+            .columns.is-multiline
+              .column.is-12
+                .field.is-grouped.is-fullwidth(style="justify-content: center;")
+                  p.control.is-expanded
+                    input.input(type='text', placeholder='Lorem ...'  @keyup.enter="handleFilter" v-model="filter")
+                  p.control
+                    button.button.is-info(@click="handleFilter")
+                      | Buscar
+              .column.is-12
+                .columns.is-centered
+                  .column.has-text-centered
+                    div(style="margin-top: 0.75rem;")
+                      span.small Mostrando {{ repositories.length }} [{{ (pagination.page - 1 || 1) * pagination.offset }} a {{ (pagination.page || 1) * pagination.offset }}] de {{ pagination.total }}
+                  .column.is-narrow
+                    .buttons
+                      .button.is-info(@click="view = 'list'")
+                        i.mdi.mdi-view-list
+                      .button.is-info(@click="view = 'grid'")
+                        i.mdi.mdi-view-grid
+          .column.is-12
+            template(v-if="filtered.length === 0")
+              section.hero.has-text-centered
+                .hero-body
+                  section
+                    h1.title
+                      | Error
+                    h2.subtitle
+                      | Repositorios no encontrados
+                    h2.subtitle(v-if="repositories.length !== 0")
+                      | Busqueda: {{ filter }}
+                    //img(src="https://i.gifer.com/7WOr.gif")
+            template(v-else)
+              .columns.is-multiline(v-if="view === 'grid'")
+                .column(v-for="(repo, index) in filtered" :key="index")
+                  transition-group(name="component-fade" tag="section")
+                    CardRepository(
+                      :repository='repo'
+                      @handleViewRepo="handleViewRepo"
+                      @handleViewType="handleViewType"
+                      :key="repo.id"
+                    )
+              .columns.is-multiline.is-centered(v-else)
+                .column(v-for="(repo, index) in filtered" :key="index")
+                  transition-group(name="component-fade" tag="section")
+                    ListRepository(:repository='repo' @handleViewRepo="handleViewRepo" :key="repo.id")
     hr
     b-pagination.is-centered(
       v-if="!filter || filter.length === 0"
@@ -91,7 +137,7 @@
 </template>
 
 <script>
-import CardRepository from './../../components/CardRepository.vue'
+import CardRepository from './../../components/CardRepositoryV2.vue'
 import ListRepository from './../../components/ListRepository.vue'
 
 function slugify(text) {
@@ -158,7 +204,7 @@ export default {
       } else {
         const {
           data: { data: repositories = [], ...pagination }
-        } = await app.$axios.get('/api/repo')
+        } = await app.$axios.get('/api/repo?limit=32')
         return {
           pagination,
           query: queryParams,
@@ -271,7 +317,7 @@ export default {
   methods: {
     async onPageChanged(page) {
       const { limit, offset } = this.pagination
-      const options = `page=${current}&limt=${limit}&offset=${offset}`
+      const options = `page=${page}&limt=${limit}&offset=${offset}`
       const queryParams = this.getQueryParam()
       const url = '/api/repo?' + options + '&' + queryParams
 
@@ -572,5 +618,11 @@ export default {
 }
 .card.is-horizontal .card-stacked .card-content {
   flex-grow: 1;
+}
+.has-mb-1 {
+  margin-bottom: 1rem;
+}
+section.hero.is-dark {
+  background: #0a0a0a !important;
 }
 </style>

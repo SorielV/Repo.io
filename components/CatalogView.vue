@@ -14,7 +14,7 @@
           i.mdi.mdi-view-grid
     .container
       .columns.is-multiline.is-centered(v-if="view === 'grid'")
-        .column.is-3(v-for="(catalog, index) in filtered" :key='index')
+        .column(v-for="(catalog, index) in filtered" :key='index')
           transition-group(name="component-fade" tag="section")
             CardCatalog(:catalog="catalog" @redirectTo="redirectTo" :key='index')
       .columns.is-multiline.is-centered(v-else)

@@ -1,7 +1,7 @@
 <template lang="pug">
   section.header
     section
-      nav.navbar.is-dark.is-fixed-top.has-shadow
+      nav.navbar.is-dark.is-fixed-top
         .container
           .navbar-brand
             a.navbar-item(href='/')
@@ -155,6 +155,9 @@ export default {
 </script>
 
 <style scoped>
+nav.navbar.is-dark {
+  background: #0a0a0a !important;
+}
 .beta-feacture {
   margin-right: 1rem;
   margin-left: 1rem;

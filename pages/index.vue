@@ -1,12 +1,13 @@
 <template lang="pug">
   section
-    .home.hero.is-medium
+    section.hero.is-medium.is-dark
       .hero-body
-        .container.has-text-centered.has-mb-2
-          h1.title
-            | Una alternativa de consulta recursos dígitales
-          h2.subtitle.has-my-1rem
-            | Encuentra recursos ahora
+        .container
+          .content.has-text-centered
+            h1.title
+              | Una alternativa de consulta recursos dígitales
+            h4.subtitle
+              | Encuentra recursos ahora
           center
             .container.search
               .field.has-addons
@@ -16,6 +17,8 @@
                     i.mdi.mdi-magnify
                 .control
                   button.button.is-info(@click="search") Buscar
+    section.hero.is-medium.is-white
+      .hero-body
         .container.has-text-centered.has-my-5(v-if="isLoading")
           .columns.is-centered
             .column
@@ -51,7 +54,6 @@
                         rect(x='0', y='120', rx='3', ry='3', width='201', height='6.4')
                           circle(cx='30', cy='30', r='30')
         .container.has-text-centered.has-my-5(v-else)
-          h1.title.has-text-black Ultimos Agregados
           .columns.is-centered
             .column(v-for="(repo, index) in repositories" :key="index")
               transition-group(name="component-fade" tag="section")
@@ -62,7 +64,7 @@
 
 <script>
 import { ContentLoader } from 'vue-content-loader'
-import CardRepository from './../components/CardRepository.vue'
+import CardRepository from './../components/CardRepositoryV2.vue'
 
 export default {
   layout: 'default',
@@ -124,5 +126,8 @@ export default {
 }
 .container.search {
   width: 70%;
+}
+section.hero.is-dark {
+  background: #0a0a0a !important;
 }
 </style>

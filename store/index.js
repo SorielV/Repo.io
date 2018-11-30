@@ -126,4 +126,16 @@ const store = () => {
   })
 }
 
+const elements = document.getElementsByClassName('post-module')
+Array.from(elements).forEach(el => {
+  el.onmouseover = function(ev) {
+    const [description] = this.getElementsByClassName('description')
+    description.style.display = 'block'
+  }
+  el.onmouseleave = function(ev) {
+    const [description] = this.getElementsByClassName('description')
+    description.style.display = 'none'
+  }
+})
+
 export default store
