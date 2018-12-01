@@ -19,13 +19,14 @@
     button#scrollUp.button.is-black.is-outlined
       i.mdi.mdi-chevron-up
     section.Site-content
+      .has-navbar-fixed-top
       nuxt
     Footer
 </template>
 
 <script>
 import Vuex from 'vuex'
-import Header from './../components/Header.vue'
+import Header from './../components/HeaderV2.vue'
 import Footer from './../components/Footer.vue'
 
 export default {
@@ -35,7 +36,7 @@ export default {
   },
   head: {
     bodyAttrs: {
-      class: 'has-navbar-fixed-top'
+      class: ''
     }
   },
   data() {
@@ -84,6 +85,21 @@ export default {
         document.documentElement.clientHeight
       const scrolled = (winScroll / height) * 100
     }
+
+    const [hamburger, nav, masthead] = [
+      document.getElementsByClassName('hamburger'),
+      document.getElementById('site-nav'),
+      document.getElementById('masthead')
+    ]
+
+    Array.from(hamburger).forEach(hamburger => {
+      hamburger.addEventListener('click', function(ev) {
+        this.classList.toggle('is-active')
+        nav.classList.toggle('is-active')
+        masthead.classList.toggle('is-active')
+        return false
+      })
+    })
   },
   created() {
     this.$store.dispatch('loadAuth')
@@ -101,9 +117,12 @@ body {
   min-height: 100vh;
   flex-direction: column;
 }
-
 .Site-content {
   flex: 1;
+}
+div.has-navbar-fixed-top {
+  background: black;
+  padding-top: 4.5rem;
 }
 #scrollUp {
   display: none;

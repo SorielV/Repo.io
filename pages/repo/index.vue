@@ -4,9 +4,9 @@
       .hero-body
         .container
           h1.title
-            | Hero title
+            | Desarrollo Actual
           h2.subtitle
-            | Hero subtitle
+            | Error de busqueda (post-update) Reparando...
     section.is-hidden-desktop
       section
         .field.is-grouped.is-fullwidth(style="justify-content: center;")
@@ -55,26 +55,57 @@
                 i.mdi.mdi-view-list
               .button.is-info(@click="view = 'grid'")
                 i.mdi.mdi-view-grid
-    br
-    section.container
+    section.section(style="padding: 1rem 1.5rem;")
       .columns
-        .column.is-4(style="min-width: 350px; max-width: 400px;")
-          p Filtros
+        .column.is-3
+          nav.panel
+            p.panel-heading.has-background-white.has-text-black
+              | Filtros
+            .panel-block
+              p.control.has-icons-left
+                input.input(type='text', placeholder='search')
+                span.icon.is-small.is-left
+                  i.mdi.mdi-search(aria-hidden='true')
+            p.panel-tabs
+              // Catalogogs
+              b-tabs(v-model='activeTab' expanded)
+                // Catalogo Recursos
+                b-tab-item(label='Recurso')
+                  section.columns.is-multiline(style="padding: 1rem; margin: auto;")
+                    .column.is-6(v-for="(catalog, key) in catalogs.types" :key="key" style="padding: 0")
+                      b-checkbox(v-model='catalog.isSelected' @input="handleFilterCatalog(catalog, 0)" type="is-danger")
+                        | {{ catalog.value }}
+
+                // Catalogo Tematicas
+                b-tab-item(label='Tematica')
+                  section.columns.is-multiline(style="padding: 1rem; margin: auto;")
+                    .column.is-6(v-for="(catalog, key) in catalogs.topics" :key="key" style="padding: 0")
+                      b-checkbox(v-model='catalog.isSelected' @input="handleFilterCatalog(catalog, 1)" type="is-danger")
+                        | {{ catalog.value }}
+
+                // Catalogo Autor
+                b-tab-item(label='Autor')
+
+                // Catalogo Editorial
+                b-tab-item(label='Editorial')
+            .panel-block
+              .buttons
+                button.button
+                  | Eliminar Filtros
+                button.button.is-info
+                  | Filtrar
+          pre {{ query }}
           b-collapse.panel(:open.sync='isOpen')
             .panel-heading(slot='trigger')
               strong Tipos
-            section.columns.is-multiline(style="padding: 1rem; margin: auto;")
-              .column.is-6(v-for="(catalog, key) in catalogs.types" :key="key" style="padding: 0")
-                b-checkbox(v-model='catalog.isSelected' @input="handleFilterCatalog(catalog, 0)" type="is-danger")
-                  | {{ catalog.value }}
+            
 
           b-collapse.panel(:open.sync='isOpen')
             .panel-heading(slot='trigger')
               strong Temas
-            section.columns.is-multiline(style="padding: 1rem; margin: auto;")
-              .column.is-6(v-for="(catalog, key) in catalogs.topics" :key="key" style="padding: 0")
-                b-checkbox(v-model='catalog.isSelected' @input="handleFilterCatalog(catalog, 1)" type="is-danger")
-                  | {{ catalog.value }}
+            
+          p Paginacion
+          pre {{ pagination }}
         .column.is-auto
           .column.is-12
             .columns.is-multiline
@@ -151,10 +182,6 @@ function slugify(text) {
     .replace(/-+$/, '') // Trim - from end of text
 }
 
-function parseUrl() {
-  return
-}
-
 export default {
   components: {
     CardRepository,
@@ -164,6 +191,7 @@ export default {
     const params = new URLSearchParams(window.location.search)
 
     const slug = slugify(query['slug'] || '')
+
     const types = query['type[]']
       ? Array.isArray(query['type[]'])
         ? query['type[]']
@@ -188,8 +216,13 @@ export default {
       (types.length ? '&' + types.map(id => 'type=' + id).join('&') : '') +
       (topics.length ? '&' + topics.map(id => 'topic=' + id).join('&') : '')
 
+    const hasSlug = Boolean(queryParams['slug'])
+    const hasType = Boolean(queryParams['types'])
+    const hasTopic = Boolean(queryParams['topics'])
+    console.log(queryParam, hasSlug, hasTopic, hasType)
+
     try {
-      if (query['slug']) {
+      if (hasSlug || hasTopic || hasType) {
         const {
           data: { data: repositories = [], ...pagination }
         } = await app.$axios.get('/api/repo' + queryParam)
@@ -226,6 +259,7 @@ export default {
   },
   data() {
     return {
+      isOpen: false,
       view: 'grid',
       query: {
         slug: '',
@@ -250,11 +284,13 @@ export default {
     }
   },
   watch: {
+    /*
     async 'pagination.page'(current, old) {
       if (current === old) {
         return
       }
     },
+    */
     types(types) {
       if (types.length === 0) {
         this.filtered = this.repositories
@@ -270,7 +306,7 @@ export default {
   },
   async created() {
     // fetch
-    console.log(this.$route.matched)
+    /// console.log(this.$route.matched)
 
     const promises = [
       this.$axios.get('/public/catalog/topics.json'),

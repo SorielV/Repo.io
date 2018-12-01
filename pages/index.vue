@@ -17,9 +17,48 @@
                     i.mdi.mdi-magnify
                 .control
                   button.button.is-info(@click="search") Buscar
-    section.hero.is-medium.is-white
+
+    section.hero.is-medium.is-white(style="background-color: #EFF3F4;")
       .hero-body
-        .container.has-text-centered.has-my-5(v-if="isLoading")
+        .container
+          .columns.features
+            .column.is-4
+              .card.is-shady
+                .card-image.has-text-centered
+                  i.mdi.mdi-facebook
+                .card-content
+                  .content
+                    h4 Tristique senectus et netus et. 
+                    p
+                      | Purus semper eget duis at tellus at urna condimentum mattis. Non blandit massa enim nec. Integer enim neque volutpat ac tincidunt vitae semper quis. Accumsan tortor posuere ac ut consequat semper viverra nam.
+                    p
+                      a(href='#') Leer Mas
+            .column.is-4
+              .card.is-shady
+                .card-image.has-text-centered
+                  i.mdi.mdi-facebook
+                .card-content
+                  .content
+                    h4 Tempor orci dapibus ultrices in.
+                    p
+                      | Ut venenatis tellus in metus vulputate. Amet consectetur adipiscing elit pellentesque. Sed arcu non odio euismod lacinia at quis risus. Faucibus turpis in eu mi bibendum neque egestas cmonsu songue. Phasellus vestibulum lorem
+                      | sed risus.
+                    p
+                      a(href='#') Leer Mas
+            .column.is-4
+              .card.is-shady
+                .card-image.has-text-centered
+                  i.mdi.mdi-facebook
+                .card-content
+                  .content
+                    h4  Leo integer malesuada nunc vel risus. 
+                    p
+                      | Imperdiet dui accumsan sit amet nulla facilisi morbi. Fusce ut placerat orci nulla pellentesque dignissim enim. Libero id faucibus nisl tincidunt eget nullam. Commodo viverra maecenas accumsan lacus vel facilisis.
+                    p
+                      a(href='#') Leer Mas
+    section.hero.is-fullheight
+      .hero-body
+        .container.has-text-centered.has-my-5(v-if="isLoading")            
           .columns.is-centered
             .column
               content-loader(:height='160', :width='400', :speed='2', primaryColor='#000000', secondaryColor='#ecebeb')
@@ -53,9 +92,26 @@
                       rect(x='0', y='100', rx='3', ry='3', width='380', height='6.4')
                         rect(x='0', y='120', rx='3', ry='3', width='201', height='6.4')
                           circle(cx='30', cy='30', r='30')
-        .container.has-text-centered.has-my-5(v-else)
-          .columns.is-centered
-            .column(v-for="(repo, index) in repositories" :key="index")
+        .container.has-text-centered(v-else)
+          .columns.is-centered.is-multiline
+            .column.is-12
+              .container.has-text-centered
+                p.title Repositorios
+                p.subtitle Ultimos Agregados
+            .column.is-8
+              CardRepository.has-text-black(:repository='repositories[0]' @handleViewRepo="handleViewRepo" :key="repositories[0].id")
+            .column.is-4
+              CardRepository.has-text-black(:repository='repositories[1]' @handleViewRepo="handleViewRepo" :key="repositories[1].id")
+            .column.is-auto
+              CardRepository.has-text-black(:repository='repositories[2]' @handleViewRepo="handleViewRepo" :key="repositories[2].id")
+            .column.is-auto
+              CardRepository.has-text-black(:repository='repositories[3]' @handleViewRepo="handleViewRepo" :key="repositories[3].id")
+            .column.is-auto
+              CardRepository.has-text-black(:repository='repositories[4]' @handleViewRepo="handleViewRepo" :key="repositories[4].id")
+            .column.is-auto
+              CardRepository.has-text-black(:repository='repositories[5]' @handleViewRepo="handleViewRepo" :key="repositories[5].id")
+          //-.columns.is-centered.is-multiline
+            .column.is-6(v-for="(repo, index) in repositories" :key="index")
               transition-group(name="component-fade" tag="section")
                 CardRepository.has-text-black(:repository='repo' @handleViewRepo="handleViewRepo" :key="repo.id")
           .buttons.is-centered
@@ -84,7 +140,7 @@ export default {
     try {
       const {
         data: { data: repositories }
-      } = await this.$axios.get('/api/repo?limit=5')
+      } = await this.$axios.get('/api/repo?limit=6')
       this.repositories = repositories
       this.isLoading = false
     } catch (err) {
@@ -129,5 +185,11 @@ export default {
 }
 section.hero.is-dark {
   background: #0a0a0a !important;
+}
+.card.is-shady .card-image {
+  font-size: 8rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  color: #209cee;
 }
 </style>
