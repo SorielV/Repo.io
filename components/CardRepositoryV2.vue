@@ -26,12 +26,12 @@
       p.description {{ repository.description }}
       .post-meta.has-text-centered
         span.timestamp
-          i.mdi.mdi-clock 
+          i.mdi.mdi-clock
         span.starts
-          | -★
+          | ★ {{ repository.score && repository.reviews ? repository.score : '-' }}
         span.comments
           i.mdi.mdi-comment
-          a(@click="handleViewRepo") -
+          a(@click="handleViewRepo") {{ repository.comments || 0 }}
 </template>
 
 <script>

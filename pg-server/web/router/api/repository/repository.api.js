@@ -94,9 +94,15 @@ router.get(
   '/:id',
   catchException(async (req, res, next) => {
     const {
-      params: { id }
+      params: { id },
+      query: { format }
     } = req
-    const data = await Repository.getRepositoryById(id)
+    const data = await Repository.getRepositoryById(id, format)
+
+    if (data) {
+      data.avg = data.avg || 0
+    }
+
     return res.json({ data })
   })
 )

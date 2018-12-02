@@ -140,7 +140,7 @@ export default {
     try {
       const {
         data: { data: repositories }
-      } = await this.$axios.get('/api/repo?limit=6')
+      } = await this.$axios.get('/api/repo?format=user&limit=6')
       this.repositories = repositories
       this.isLoading = false
     } catch (err) {

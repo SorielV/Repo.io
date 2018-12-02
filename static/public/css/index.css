@@ -211,17 +211,6 @@
     display: none;
   }
 }
-.hearty {
-  position: absolute;
-  background: url(https://abs.twimg.com/a/1446686284/img/t1/web_heart_animation.png);
-  background-position: left;
-  background-repeat: no-repeat;
-  background-size: auto;
-  height: 100px;
-  width: 100px;
-  left: 100px;
-  top: 100px;
-}
 
 /*.hearty:hover {
   -webkit-animation: play 1s steps(7);
@@ -232,3 +221,6 @@
   100% { background-position: -2800px 0px; }
 }
 */
+section.hero.is-dark {
+  background: #0a0a0a !important;
+}

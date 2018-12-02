@@ -7,115 +7,21 @@
             | Desarrollo Actual
           h2.subtitle
             | Error de busqueda (post-update) Reparando...
-    section.is-hidden-desktop
-      section
-        .field.is-grouped.is-fullwidth(style="justify-content: center;")
-          p.control.is-expanded
-            input.input(type='text', placeholder='Lorem ...'  @keyup.enter="handleFilter" v-model="filter")
-          p.control
-            button.button.is-info(@click="handleFilter")
-              | Buscar
-      section
-        center
-          b-dropdown
-            button.button.is-primary(slot='trigger')
-              | Tipos
-              b-icon(icon='menu-down')
-            section.columns.is-multiline(style="padding: 1rem; margin: auto;")
-              .column.is-6(v-for="(catalog, key) in catalogs.types" :key="key" style="padding: 0")
-                b-checkbox(v-model='catalog.isSelected' @input="handleFilterCatalog(catalog, 0)" type="is-danger")
-                  | {{ catalog.value }}
-
-          b-dropdown
-            button.button.is-primary(slot='trigger')
-              | Temas
-              b-icon(icon='menu-down')
-            section.columns.is-multiline(style="padding: 1rem; margin: auto;")
-              .column.is-6(v-for="(catalog, key) in catalogs.topics" :key="key" style="padding: 0")
-                b-checkbox(v-model='catalog.isSelected' @input="handleFilterCatalog(catalog, 1)" type="is-danger")
-                  | {{ catalog.value }}
-
-          b-dropdown(:disabled="true")
-            button.button.is-primary(slot='trigger')
-              | Editoriales
-              b-icon(icon='menu-down')
-            section.columns.is-multiline(style="padding: 1rem; margin: auto;")
-              .column.is-6(v-for="(catalog, key) in catalogs.editorials" :key="key" style="padding: 0")
-                b-checkbox(v-model='catalog.isSelected' type="is-danger")
-                  | {{ catalog.value }}
-    section.is-hidden-desktop
-      section.has-pt-1rem
-        .columns.is-mobile
-          .column.has-text-centered
-            div(style="margin-top: 0.75rem;")
-              span.small Mostrando {{ repositories.length }} [{{ (pagination.page - 1 || 1) * pagination.offset }} a {{ (pagination.page || 1) * pagination.offset }}] de {{ pagination.total }}
-          .column.is-narrow
-            .buttons
-              .button.is-info(@click="view = 'list'")
-                i.mdi.mdi-view-list
-              .button.is-info(@click="view = 'grid'")
-                i.mdi.mdi-view-grid
-    section.section(style="padding: 1rem 1.5rem;")
+    section.container(style="padding: 1rem 1.5rem;")
       .columns
-        .column.is-3
-          nav.panel
-            p.panel-heading.has-background-white.has-text-black
-              | Filtros
-            .panel-block
-              p.control.has-icons-left
-                input.input(type='text', placeholder='search')
-                span.icon.is-small.is-left
-                  i.mdi.mdi-search(aria-hidden='true')
-            p.panel-tabs
-              // Catalogogs
-              b-tabs(v-model='activeTab' expanded)
-                // Catalogo Recursos
-                b-tab-item(label='Recurso')
-                  section.columns.is-multiline(style="padding: 1rem; margin: auto;")
-                    .column.is-6(v-for="(catalog, key) in catalogs.types" :key="key" style="padding: 0")
-                      b-checkbox(v-model='catalog.isSelected' @input="handleFilterCatalog(catalog, 0)" type="is-danger")
-                        | {{ catalog.value }}
-
-                // Catalogo Tematicas
-                b-tab-item(label='Tematica')
-                  section.columns.is-multiline(style="padding: 1rem; margin: auto;")
-                    .column.is-6(v-for="(catalog, key) in catalogs.topics" :key="key" style="padding: 0")
-                      b-checkbox(v-model='catalog.isSelected' @input="handleFilterCatalog(catalog, 1)" type="is-danger")
-                        | {{ catalog.value }}
-
-                // Catalogo Autor
-                b-tab-item(label='Autor')
-
-                // Catalogo Editorial
-                b-tab-item(label='Editorial')
-            .panel-block
-              .buttons
-                button.button
-                  | Eliminar Filtros
-                button.button.is-info
-                  | Filtrar
-          pre {{ query }}
-          b-collapse.panel(:open.sync='isOpen')
-            .panel-heading(slot='trigger')
-              strong Tipos
-            
-
-          b-collapse.panel(:open.sync='isOpen')
-            .panel-heading(slot='trigger')
-              strong Temas
-            
-          p Paginacion
-          pre {{ pagination }}
-        .column.is-auto
+        .column.is-12
           .column.is-12
+            // Filtros Comunes
             .columns.is-multiline
+              // Buscador
               .column.is-12
                 .field.is-grouped.is-fullwidth(style="justify-content: center;")
                   p.control.is-expanded
-                    input.input(type='text', placeholder='Lorem ...'  @keyup.enter="handleFilter" v-model="filter")
+                    input.input(type='text', placeholder='Titulos'  @keyup.enter="handleFilter" v-model="filter")
                   p.control
                     button.button.is-info(@click="handleFilter")
                       | Buscar
+              // Informacion Paginacion
               .column.is-12
                 .columns.is-centered
                   .column.has-text-centered
@@ -127,6 +33,25 @@
                         i.mdi.mdi-view-list
                       .button.is-info(@click="view = 'grid'")
                         i.mdi.mdi-view-grid
+                      .button.is-info(@click="handleModalFilter")
+                        i.mdi.mdi-filter
+              // Informacion Filtros Base
+              .column.is-12
+                p Filtros Base
+                  span.tag.is-info(v-show="query.slug")
+                   | titulo = {{ query.slug }}
+                  // Types
+                  span.tag.is-danger(
+                    v-for="(idType, typeIndex) in query.types"
+                    :key="typeIndex"
+                  ) {{ getValueOfType(idType) || 'Otros' }}
+
+                  // Topics
+                  span.tag(
+                    v-for="(idTopic, topicIndex) in query.topics"
+                    :key="topicIndex + 't'"
+                  ) {{ getValueOfTopic(idTopic) || 'Otro' }}
+
           .column.is-12
             template(v-if="filtered.length === 0")
               section.hero.has-text-centered
@@ -141,7 +66,7 @@
                     //img(src="https://i.gifer.com/7WOr.gif")
             template(v-else)
               .columns.is-multiline(v-if="view === 'grid'")
-                .column(v-for="(repo, index) in filtered" :key="index")
+                .column(v-for="(repo, index) in filtered" :key="repo.id")
                   transition-group(name="component-fade" tag="section")
                     CardRepository(
                       :repository='repo'
@@ -154,6 +79,48 @@
                   transition-group(name="component-fade" tag="section")
                     ListRepository(:repository='repo' @handleViewRepo="handleViewRepo" :key="repo.id")
     hr
+    // Filters
+    b-modal(:active.sync="modalFilter")
+      nav.panel.has-background-white(style="border-radius: 6px")
+          p.panel-heading.has-text-black
+            | Filtros
+          .panel-block
+            p.control.has-icons-left
+              input.input(
+                type='text'
+                placeholder='Titulos'
+                v-model="filter"
+              )
+              span.icon.is-small.is-left
+                i.mdi.mdi-magnify(aria-hidden='true')
+          p.panel-tabs
+            // Catalogogs
+            b-tabs(v-model='filterTab' expanded)
+              // Catalogo Recursos
+              b-tab-item(label='Recurso')
+                section.columns.is-multiline(style="padding: 1rem; margin: auto;")
+                  .column.is-6(v-for="(catalog, key) in catalogs.types" :key="key" style="padding: 0")
+                    b-checkbox(v-model='catalog.isSelected' @input="handleFilterCatalog(catalog, 0)" type="is-danger")
+                      | {{ catalog.value }}
+
+              // Catalogo Tematicas
+              b-tab-item(label='Tematica')
+                section.columns.is-multiline(style="padding: 1rem; margin: auto;")
+                  .column.is-6(v-for="(catalog, key) in catalogs.topics" :key="key" style="padding: 0")
+                    b-checkbox(v-model='catalog.isSelected' @input="handleFilterCatalog(catalog, 1)" type="is-white")
+                      | {{ catalog.value }}
+
+              // Catalogo Autor
+              b-tab-item(label='Autor')
+
+              // Catalogo Editorial
+              b-tab-item(label='Editorial')
+          .panel-block
+            .buttons
+              button.button
+                | Eliminar Filtros
+              button.button.is-info(@click="handleFilter")
+                | Filtrar
     b-pagination.is-centered(
       v-if="!filter || filter.length === 0"
       :total='pagination.total'
@@ -182,6 +149,15 @@ function slugify(text) {
     .replace(/-+$/, '') // Trim - from end of text
 }
 
+function integerValues(arr) {
+  return arr.reduce((arr, val) => {
+    if (!isNaN(val)) {
+      arr.push(Number.parseInt(val))
+    }
+    return arr
+  }, [])
+}
+
 export default {
   components: {
     CardRepository,
@@ -206,26 +182,32 @@ export default {
 
     const queryParams = {
       slug,
-      types,
-      topics
+      types: integerValues(types),
+      topics: integerValues(topics)
     }
 
-    const queryParam =
-      '?' +
-      (slug ? 'slug=' + slug : '') +
-      (types.length ? '&' + types.map(id => 'type=' + id).join('&') : '') +
-      (topics.length ? '&' + topics.map(id => 'topic=' + id).join('&') : '')
+    const hasSlug = Boolean(slug)
+    const hasType = Boolean(types)
+    const hasTopic = Boolean(topics)
 
-    const hasSlug = Boolean(queryParams['slug'])
-    const hasType = Boolean(queryParams['types'])
-    const hasTopic = Boolean(queryParams['topics'])
-    console.log(queryParam, hasSlug, hasTopic, hasType)
+    const queryParam = [
+      hasSlug ? 'slug=' + slug : null,
+      hasType ? types.map(id => 'type[]=' + id).join('&') : null,
+      hasTopic ? topics.map(id => 'topic[]=' + id).join('&') : null
+    ]
+      .reduce((arr, param) => {
+        if (param) {
+          arr.push(param)
+        }
+        return arr
+      }, [])
+      .join('&')
 
     try {
       if (hasSlug || hasTopic || hasType) {
         const {
           data: { data: repositories = [], ...pagination }
-        } = await app.$axios.get('/api/repo' + queryParam)
+        } = await app.$axios.get('/api/repo?format=user&' + queryParam)
         return {
           pagination,
           query: queryParams,
@@ -237,7 +219,7 @@ export default {
       } else {
         const {
           data: { data: repositories = [], ...pagination }
-        } = await app.$axios.get('/api/repo?limit=32')
+        } = await app.$axios.get('/api/repo?format=user&limit=32')
         return {
           pagination,
           query: queryParams,
@@ -259,6 +241,9 @@ export default {
   },
   data() {
     return {
+      baseRouter: '/repo',
+      filterTab: 1,
+      modalFilter: false,
       isOpen: false,
       view: 'grid',
       query: {
@@ -284,13 +269,6 @@ export default {
     }
   },
   watch: {
-    /*
-    async 'pagination.page'(current, old) {
-      if (current === old) {
-        return
-      }
-    },
-    */
     types(types) {
       if (types.length === 0) {
         this.filtered = this.repositories
@@ -307,7 +285,6 @@ export default {
   async created() {
     // fetch
     /// console.log(this.$route.matched)
-
     const promises = [
       this.$axios.get('/public/catalog/topics.json'),
       this.$axios.get('/public/catalog/types.json')
@@ -351,11 +328,31 @@ export default {
     }
   },
   methods: {
+    getValueOfTopic(id) {
+      const { value = null } =
+        this.catalogs.topics.find(({ idCatalog }) => idCatalog === id) || {}
+      return value
+    },
+    getValueOfType(id) {
+      const { value = null } =
+        this.catalogs.types.find(({ idCatalog }) => idCatalog === id) || {}
+      return value
+    },
+    getValueOfEditorial(id) {
+      const { value = null } =
+        this.catalogs.editorials.find(({ idCatalog }) => idCatalog === id) || {}
+      return value
+    },
+    getValueOfAuthor(id) {
+      const { value = null } =
+        this.catalogs.authors.find(({ idCatalog }) => idCatalog === id) || {}
+      return value
+    },
     async onPageChanged(page) {
       const { limit, offset } = this.pagination
       const options = `page=${page}&limt=${limit}&offset=${offset}`
       const queryParams = this.getQueryParam()
-      const url = '/api/repo?' + options + '&' + queryParams
+      const url = '/api/repo?format=user&' + options + '&' + queryParams
 
       try {
         const {
@@ -368,40 +365,6 @@ export default {
       } catch (error) {
         console.error(error)
       }
-    },
-    getQueryParam() {
-      const baseSlug = (this.query.slug || '').trim().toLowerCase()
-      const slug = this.filter.trim().toLowerCase()
-
-      console.log(this.catalogs.types)
-
-      const types = this.catalogs.types.reduce(
-        (acc, { idCatalog, isSelected }) => {
-          if (isSelected) {
-            acc.push(`type[]=${idCatalog}`)
-          }
-          return acc
-        },
-        []
-      )
-
-      const topics = this.catalogs.topics.reduce(
-        (acc, { idCatalog, isSelected }) => {
-          if (isSelected) {
-            acc.push(`topic[]=${idCatalog}`)
-          }
-          return acc
-        },
-        []
-      )
-
-      const queryParam =
-        '' +
-        (slug ? 'slug=' + slug + '&' : '') +
-        (types.length ? types.join('&') + '&' : '') +
-        (topics.length ? topics.join('&') + '&' : '')
-
-      return queryParam
     },
     setFiltered() {
       const data = this.repositories
@@ -438,7 +401,6 @@ export default {
           if (type.length > 0) {
             for (const idCatalog of types) {
               if (!type.find(({ id }) => idCatalog === id)) {
-                console.warn('Exit Type')
                 return false
               }
             }
@@ -451,7 +413,6 @@ export default {
           if (topic.length > 0) {
             for (const idCatalog of topics) {
               if (!topic.find(({ id }) => idCatalog === id)) {
-                console.warn('Exit Topic')
                 return false
               }
             }
@@ -476,64 +437,118 @@ export default {
         this.setFiltered()
       }
     },
+    handleModalFilter() {
+      this.modalFilter = true
+    },
     // Reciclable
-    async handleFilter() {
+    getQueryParam() {
       const baseSlug = this.query.slug
-      const slug = slugify(this.filter || '')
-
-      const topics = this.catalogs.topics.reduce(
-        (acc, { idCatalog, isSelected }) => {
-          if (isSelected) {
-            acc.push(idCatalog)
-          }
-          return acc
-        },
-        []
-      )
-      topics.sort()
-
-      const newTopics = this.query.topics.every(
-        item => topics.indexOf(item) !== 1
-      )
+      const slug = slugify(this.filter.trim())
 
       const types = this.catalogs.types.reduce(
         (acc, { idCatalog, isSelected }) => {
           if (isSelected) {
-            acc.push(idCatalog)
+            acc.push(`type[]=${idCatalog}`)
           }
           return acc
         },
         []
       )
+
+      const topics = this.catalogs.topics.reduce(
+        (acc, { idCatalog, isSelected }) => {
+          if (isSelected) {
+            acc.push(`topic[]=${idCatalog}`)
+          }
+          return acc
+        },
+        []
+      )
+
+      const hasSlug = Boolean(slug)
+      const hasType = Boolean(types.length)
+      const hasTopic = Boolean(topics.length)
+
+      alert('x')
+      const queryParam = [
+        hasSlug ? 'slug=' + slug : null,
+        hasType ? types.join('&') : null,
+        hasTopic ? topics.join('&') : null
+      ]
+        .reduce((arr, param) => {
+          if (param) {
+            arr.push(param)
+          }
+          return arr
+        }, [])
+        .join('&')
+
+      return queryParam
+    },
+    async handleFilter() {
+      if (this.modalFilter) {
+        this.modalFilter = false
+      }
+
+      const baseSlug = this.query.slug
+      const slug = slugify(this.filter.trim())
+
+      const [queyTypes, types] = this.catalogs.types.reduce(
+        (acc, { idCatalog, isSelected }) => {
+          if (isSelected) {
+            acc[0].push(`type[]=${idCatalog}`)
+            acc[1].push(idCatalog)
+          }
+          return acc
+        },
+        [[], []]
+      )
       types.sort()
 
-      const newTypes = this.query.topics.every(
+      const hasNewType = this.query.topics.every(
         item => topics.indexOf(item) !== 1
       )
 
-      const qTypes = types.map(idCatalog => `type[]=${idCatalog}`)
-      const qTopics = topics.map(idCatalog => `topic[]=${idCatalog}`)
+      const [queyTopics, topics] = this.catalogs.topics.reduce(
+        (acc, { idCatalog, isSelected }) => {
+          if (isSelected) {
+            acc[0].push(`topic[]=${idCatalog}`)
+            acc[1].push(idCatalog)
+          }
+          return acc
+        },
+        [[], []]
+      )
+      topics.sort()
+
+      const hasNewTopic = this.query.topics.every(
+        item => topics.indexOf(item) !== 1
+      )
+
+      const hasSlug = Boolean(slug)
+      const hasType = Boolean(types.length)
+      const hasTopic = Boolean(topics.length)
+
+      const queryParam = [
+        hasSlug ? 'slug=' + slug : null,
+        hasType ? queyTypes.join('&') : null,
+        hasTopic ? queyTopics.join('&') : null
+      ]
+        .reduce((arr, param) => {
+          if (param) {
+            arr.push(param)
+          }
+          return arr
+        }, [])
+        .join('&')
+
+      const hasNewFilter = slug !== baseSlug || hasNewTopic || hasNewType
 
       // Cambio Visual [Compartir Link de Contenido]
-      if (slug !== baseSlug || newTopics || newTypes) {
-        const [topicParam, typeParam] = [
-          topics.length ? qTopics.join('&') : '',
-          types.length ? qTypes.join('&') : ''
-        ]
-
-        console.log(topicParam, typeParam)
-        const slugParam = slug ? 'slug=' + slug : ''
-
-        const url =
-          slugParam + topicParam ||
-          '&' + topicParam + typeParam ||
-          '&' + typeParam
-
-        const windowUrl = `/repo?` + url
-
+      if (hasNewFilter) {
         const {
           data: { data: repositories = [], ...pagination }
-        } = await this.$axios.get('/api/repo?' + url)
+        } = await this.$axios.get('/api/repo?format=user&' + queryParam)
 
         this.query.slug = slug
         this.query.topics = topics
@@ -541,6 +556,9 @@ export default {
         this.repositories = repositories
         this.pagination = pagination
         this.filtered = repositories
+
+        const windowUrl =
+          this.baseRouter + `?page=${pagination.page}&` + queryParam
         window.history.pushState(undefined, 'Repo', windowUrl)
         window.scrollTo(0, 0)
       }
@@ -657,8 +675,5 @@ export default {
 }
 .has-mb-1 {
   margin-bottom: 1rem;
-}
-section.hero.is-dark {
-  background: #0a0a0a !important;
 }
 </style>

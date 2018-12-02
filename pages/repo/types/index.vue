@@ -1,11 +1,10 @@
 <template lang="pug">
-  section(style="padding: 2%;")
-    .container
-      CatalogView(
-        :catalogs="catalog"
-        title="Explora Diferentes Recursos"
-        @redirectTo="redirectTo"
-      )
+  section
+    CatalogView(
+      :catalogs="catalog"
+      title="Explora Diferentes Recursos"
+      @redirectTo="redirectTo"
+    )
 </template>
 
 <script>

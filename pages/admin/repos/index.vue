@@ -213,7 +213,7 @@
                           | Busqueda: {{ search.param }}
                         iframe.container(src="http://wayou.github.io/t-rex-runner/" style="height: 150px")
         // Crear
-        b-tab-item(label="Crear Base")
+        b-tab-item(label="Crear")
           form.block(v-on:submit.prevent="handleSubmitCreate")
             b-field(
               label="Titulo"
@@ -702,7 +702,9 @@ export default {
     try {
       const {
         data: { data = [], ...pagination }
-      } = await app.$axios.get('/api/repo?full=true')
+      } = await app.$axios.get(
+        '/api/repo?format=full&limit=' + 10 + '&offset=10'
+      )
 
       return {
         data: data,
@@ -713,7 +715,7 @@ export default {
           defaultOpenedDetails: [],
           checkedRows: [],
           data: data,
-          total: data.length
+          total: pagination.total
         }
       }
     } catch (error) {

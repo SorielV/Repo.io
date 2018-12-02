@@ -414,6 +414,20 @@ CREATE TABLE public."Repositories" (
 ALTER TABLE public."Repositories" OWNER TO postgres;
 
 --
+-- Name: RepositoriesInformation; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."RepositoriesInformation" (
+    idrepository integer,
+    comments integer DEFAULT 0,
+    reviews integer DEFAULT 0,
+    review_score double precision DEFAULT 0
+);
+
+
+ALTER TABLE public."RepositoriesInformation" OWNER TO postgres;
+
+--
 -- Name: Repositories_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -1122,7 +1136,7 @@ COPY public."Repositories" (id, "idUser", username, title, description, image, t
 3406	1	admin	Tensei shitara Slime Datta Ken	Satoru Mikami tiene un mal trabajo, sin salida y que no es feliz con la vida que lleva, muere a manos de un ladrón y piensa que es su fin, se despierta descubriendo que se ha reencarnado en un slime.	/public/repositories/images/1543421268577.jpg	Anime	1	2018-11-28 10:07:48.580851	\N	tensei-shitara-slime-datta-ken	Sin Contenido
 3407	1	admin	Un mundo feliz	Un mundo feliz es la novela más famosa del escritor británico Aldous Huxley, publicada por primera vez en 1932. La novela es una distopia que anticipa el desarrollo en tecnología reproductiva.	/public/repositories/images/1543421695308.jpg	cultura	1	2018-11-28 10:14:55.313819	\N	un-mundo-feliz	Sin Contenido
 3409	1	admin	kilo de cultura general 	Es uno de los libros de cultura general más recomendados para todo aquel que quiera saber un poco de todo. Muchos críticos lo definen como el libro más completo  y ambicioso de la historia	/public/repositories/images/1543423060725.jfif	cultura	1	2018-11-28 10:37:40.727551	\N	kilo-de-cultura-general	Sin Contenido
-3410	1	admin	Samsung Galaxy J8	Caracteristicas de este Telefono	/public/repositories/images/1543423870966.jpg	SmartPhones	1	2018-11-28 10:51:10.972297	\N	samsung-galaxy-j8	Sin Contenido
+3410	1	admin	Samsung Galaxy J8	Caracteristicas de este Telefono.	/public/repositories/images/1543423870966.jpg	SmartPhones	1	2018-11-28 10:51:10.972297	\N	samsung-galaxy-j8	Sin Contenido
 3411	1	admin	Programacion en access	Libro muy bueno de access y postgress	/public/repositories/images//1543434345540.jpg	postgress, access	1	2018-11-28 13:42:03.690146	\N	programacion-en-access	Sin Contenido
 2585	1	admin	Squirtle	Squirtle es el pokemon numero #7	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/007.png	electric,grass	1	2018-11-16 05:58:58.20554	\N	squirtle	Sin Descripcion
 2586	1	admin	Ivysaur	Ivysaur es el pokemon numero #2	https://assets.pokemon.com/assets/cms2/img/pokedex/detail/002.png	fire,flying,ice,psychic	1	2018-11-16 05:58:58.207023	\N	ivysaur	Sin Descripcion
@@ -1932,6 +1946,35 @@ COPY public."Repositories" (id, "idUser", username, title, description, image, t
 
 
 --
+-- Data for Name: RepositoriesInformation; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."RepositoriesInformation" (idrepository, comments, reviews, review_score) FROM stdin;
+3344	2	0	\N
+3403	0	1	4
+3398	3	3	4
+3407	3	0	\N
+3402	0	1	5
+3351	0	1	5
+3360	1	0	\N
+3397	1	0	\N
+2783	1	0	\N
+3345	2	0	\N
+3391	2	0	\N
+3357	1	1	3
+3401	1	0	\N
+3406	1	0	\N
+2622	1	0	\N
+2901	0	1	4
+3348	2	2	4
+3396	1	0	\N
+3363	3	0	\N
+3355	1	1	4
+3356	1	1	4
+\.
+
+
+--
 -- Data for Name: RepositoryAuthors; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1973,6 +2016,9 @@ COPY public."RepositoryComment" (id, "idUser", username, "idRepository", comment
 34	1	admin	3407	Excelente libro, lo recomiendo ampliamente	2018-11-28 13:45:40.997582	\N
 35	1	admin	3407	Excelente libro, lo recomiendo ampliamente	2018-11-28 13:50:13.867347	\N
 36	1	admin	3407	Excelente libro, lo recomiendo ampliamente	2018-11-28 13:50:16.160399	\N
+37	1	admin	3355	Esta Chido\n	2018-12-01 15:01:02.346218	\N
+38	1	admin	3356	dsdasaddsad	2018-12-01 15:01:29.613797	\N
+39	1	admin	3357	dsaadda	2018-12-01 15:01:38.378743	\N
 \.
 
 
@@ -2826,6 +2872,9 @@ COPY public."RepositoryScore" (id, "idUser", username, score, comment, "createdA
 6	2	Soriel	5	dsddas	2018-11-28 00:40:26.343971	\N	3351
 7	1	admin	5	muy bien	2018-11-28 09:46:42.419834	\N	3402
 8	1	admin	4	Perfecto :)	2018-11-28 09:55:02.400461	\N	3403
+9	1	admin	4	Esta Muy Bueno	2018-12-01 15:01:13.516207	\N	3355
+10	1	admin	4	dsdasdad	2018-12-01 15:01:26.281446	\N	3356
+11	1	admin	3	dsdsadsda	2018-12-01 15:01:42.188997	\N	3357
 \.
 
 
@@ -6512,6 +6561,13 @@ COPY public."RepositoryTypes" (id, "idRepository", "idCatalog") FROM stdin;
 COPY public."Users" (id, email, username, password, "firstName", "lastName", type, "createdAt", "updatedAt", "profileImage") FROM stdin;
 1	admin@admin	admin	Nyan	Admin	Is Admin	1	\N	\N	/public/profiles/admin.gif
 2	xxsorielxx@gmail.com	Soriel	Nyan	Soriel	Vallejo	2	2018-11-20 14:18:05.000653	\N	/public/profiles/admin.gif
+11	S@S.com	S	S	S	S	0	2018-11-28 19:16:46.182607	\N	
+12	sas@sasa.com	sasa	dsa	sasa	sasa	0	2018-11-28 19:47:35.107583	\N	
+14	sas@sasaa.com	sasaaa	dsa	sasa	sasa	0	2018-11-28 19:47:59.923464	\N	
+15	SS@AAA.OCM	SsS	a	SS	SS	0	2018-11-28 19:58:09.254592	\N	
+16	aaa@aaa.com	aaa	aaa	aa	aa	0	2018-11-28 19:58:56.321338	\N	
+17	sss@aaa	s	aa	sss	sss	0	2018-11-28 20:00:31.689985	\N	
+18	aas@sss.com	sssss	 	sss	ss	0	2018-11-28 20:03:57.273943	\N	
 \.
 
 
@@ -6611,7 +6667,7 @@ SELECT pg_catalog.setval('public."RepositoryAuthors_id_seq"', 10, true);
 -- Name: RepositoryComment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."RepositoryComment_id_seq"', 36, true);
+SELECT pg_catalog.setval('public."RepositoryComment_id_seq"', 39, true);
 
 
 --
@@ -6632,7 +6688,7 @@ SELECT pg_catalog.setval('public."RepositoryResources_id_seq"', 840, true);
 -- Name: RepositoryScore_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."RepositoryScore_id_seq"', 8, true);
+SELECT pg_catalog.setval('public."RepositoryScore_id_seq"', 11, true);
 
 
 --
@@ -6653,7 +6709,7 @@ SELECT pg_catalog.setval('public."RepositoryTypes_id_seq"', 2703, true);
 -- Name: Users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."Users_id_seq"', 10, true);
+SELECT pg_catalog.setval('public."Users_id_seq"', 18, true);
 
 
 --
@@ -6763,6 +6819,14 @@ ALTER TABLE ONLY public."Files"
 
 ALTER TABLE ONLY public."MyList"
     ADD CONSTRAINT "MyList_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: RepositoriesInformation RepositoriesInformation_idrepository_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."RepositoriesInformation"
+    ADD CONSTRAINT "RepositoriesInformation_idrepository_key" UNIQUE (idrepository);
 
 
 --

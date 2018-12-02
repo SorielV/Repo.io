@@ -19,50 +19,74 @@
               | Recursos
             nuxt-link.navbar-item(to='/repo/topics')
               | Tematicas
+            nuxt-link.navbar-item.is-hidden-desktop-only(to='/repo/authors')
+              | Autores
+            nuxt-link.navbar-item.is-hidden-desktop-only(to='/repo/editorials')
+              | Editoriales
           form#masthead-search
             input.draw(type='search', name='s', aria-labelledby='search-label', placeholder='Buscar')
           nav#site-nav(role='navigation')
-            .columns.is-centered(style="margin-top: 1rem;")
-              .column
-                h4 Expertise
-                ul
-                  li
-                    a(href='#') Insurance Industry
-                  li
-                    a(href='#') Retail Industry
-                  li
-                    a(href='#') Logistics Industry
-                  li
-                    a(href='#') Blog
-              .column
-                h4 Results
-                ul
-                  li
-                    a(href='#') Case Studies
-                  li
-                    a(href='#') Client Partners
-              .column
-                h4 Company
-                ul
-                  li
-                    a(href='#') Our Story
-                  li
-                    a(href='#') Our Team
-                  li
-                    a(href='#') Our Culture
-                  li
-                    a(href='#') News
-                  li
-                    a(href='#') Join Us
-              .column
-                h4 Approach
-                ul
-                  li
-                    a(href='#') Digital Transformation
-                  li
-                    a(href='#') Digital Readiness Tool
-                  li
-                    a(href='#') Solution Partners
+            .container
+              .columns.is-centered(style="margin-top: 1rem;")
+                .column
+                  h4 Paginas
+                  ul
+                    li
+                      nuxt-link(to='/')
+                        | Inicio
+                    li
+                      nuxt-link(
+                        to='/admin'
+                        v-if="$store.state.isAuth && $store.state.isAdmin"
+                      ) Dashboard
+                    li
+                      nuxt-link(to='/repo')
+                        | Repositorio
+                    li
+                      nuxt-link(to='/repo/types')
+                        | Recursos
+                    li
+                      nuxt-link(to='/repo/topics')
+                        | Tematicas
+                    li
+                      nuxt-link(to='/repo/authors')
+                        | Autores
+                    li
+                      nuxt-link(to='/repo/editorials')
+                        | Editoriales
+                .column
+                  h4 Recursos
+                  ul
+                    li
+                      a(href='#') 1
+                    li
+                      a(href='#') 2
+                    li
+                      a(href='#') 3
+                    li
+                      a(href='#') 4
+                    li
+                      a(href='#') 5
+                .column
+                  h4 Tematicas
+                  ul
+                    li
+                      a(href='#') 1
+                    li
+                      a(href='#') 2
+                    li
+                      a(href='#') 3
+                    li
+                      a(href='#') 4
+                    li
+                      a(href='#') 5
+                .column
+                  h4 Usuario
+                  ul
+                    li
+                      nuxt-link(to='/login') Login
+                    li
+                      nuxt-link(to='/singup') Registro
 </template>
 
 <style>

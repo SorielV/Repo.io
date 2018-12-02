@@ -1,26 +1,31 @@
 <template lang="pug">
   section
-    h1.title {{ title }}
-    hr
-    section.block
-      .field.is-grouped.is-fullwidth(style="justify-content: center;")
-        p.control.is-expanded
-          input.input(type='text', placeholder='Tematicas' v-model="filter")
-    section.has-pt-1rem
-      .buttons.is-right
-        .button.is-info(@click="view = 'list'")
-          i.mdi.mdi-view-list
-        .button.is-info(@click="view = 'grid'")
-          i.mdi.mdi-view-grid
-    .container
-      .columns.is-multiline.is-centered(v-if="view === 'grid'")
-        .column(v-for="(catalog, index) in filtered" :key='index')
-          transition-group(name="component-fade" tag="section")
-            CardCatalog(:catalog="catalog" @redirectTo="redirectTo" :key='index')
-      .columns.is-multiline.is-centered(v-else)
-        .column.is-12(v-for="(catalog, index) in filtered")
-          transition-group(name="component-fade" tag="section")
-            ListCatalog(:catalog="catalog" @redirectTo="redirectTo" :key='index')
+    section.hero.is-medium.is-dark
+      .hero-body
+        .container
+          p.title {{ title }}
+          p.subtitle {{ text }}
+    section.container(style="padding: 1rem 1.5rem;")
+      section.block
+        .field.is-grouped.is-fullwidth(style="justify-content: center;")
+          p.control.is-expanded
+            input.input(type='text', placeholder='Tematicas' v-model="filter")
+          p.control
+            .buttons.is-right
+              .button.is-info(@click="view = 'list'")
+                i.mdi.mdi-view-list
+              .button.is-info(@click="view = 'grid'")
+                i.mdi.mdi-view-grid
+
+      .container
+        .columns.is-multiline.is-centered(v-if="view === 'grid'")
+          .column(v-for="(catalog, index) in filtered" :key='index')
+            transition-group(name="component-fade" tag="section")
+              CardCatalog(:catalog="catalog" @redirectTo="redirectTo" :key='index')
+        .columns.is-multiline.is-centered(v-else)
+          .column.is-12(v-for="(catalog, index) in filtered")
+            transition-group(name="component-fade" tag="section")
+              ListCatalog(:catalog="catalog" @redirectTo="redirectTo" :key='index')
 </template>
 
 <script>
@@ -42,6 +47,13 @@ export default {
       require: false,
       default() {
         return 'Catalogo'
+      }
+    },
+    text: {
+      type: String,
+      require: false,
+      default() {
+        return ''
       }
     }
   },
