@@ -31,7 +31,39 @@ router.get(
       query: { full = false }
     } = req
 
-    if (req.query.type) {
+    if (req.query.author) {
+      const author = req.query.author
+      const isValid = Array.isArray(author)
+        ? author.every(author => !isNaN(author))
+        : !isNaN(author)
+
+      if (isValid) {
+        const data = await Repository.getRepositoriesByIdAuthor({
+          ...req.query,
+          api,
+          full
+        })
+        return res.json(data)
+      } else {
+        return res.status(400).json({ message: 'Parametro Topic no valido' })
+      }
+    } else if (req.query.editorial) {
+      const editorial = req.query.editorial
+      const isValid = Array.isArray(editorial)
+        ? editorial.every(editorial => !isNaN(editorial))
+        : !isNaN(editorial)
+
+      if (isValid) {
+        const data = await Repository.getRepositoriesByIdEditorial({
+          ...req.query,
+          api,
+          full
+        })
+        return res.json(data)
+      } else {
+        return res.status(400).json({ message: 'Parametro Topic no valido' })
+      }
+    } else if (req.query.type) {
       const type = req.query.type
       const isTypeValid = Array.isArray(type)
         ? type.every(type => !isNaN(type))

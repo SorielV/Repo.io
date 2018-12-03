@@ -16,7 +16,7 @@
                   fieldset.starability-basic(style="margin-left: auto;" @click="handleModalScore" v-if="score")
                     legend.small.has-text-centered(style="font-size: 0.7rem;" v-if="score.avg !== null ")
                       | {{ scoreText }}
-                    
+                    input#rate0(type='radio', name='rating', :value='0' v-model="score.avgFixed" disabled="true")
                     input#rate1(type='radio', name='rating', :value='1' v-model="score.avgFixed" disabled="true")
                     label(for='rate1', ) 1 star
                     input#rate2(type='radio', name='rating', :value='2' v-model="score.avgFixed" disabled="true")
@@ -27,7 +27,7 @@
                     label(for='rate4', title='') 4 stars
                     input#rate5(type='radio', name='rating', :value='5' v-model="score.avgFixed" disabled="true")
                     label(for='rate5', title='') 5 stars
-                    
+
               .content
                 .tags
                   span.small.tag(v-for="(topic, index) in repository.topic" :key='index')

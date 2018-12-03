@@ -34,7 +34,7 @@
                             i.mdi.mdi-view-list
                           .button.is-info(@click="view = 'grid'")
                             i.mdi.mdi-view-grid
-                          .button.is-info(@click="handleModalFilter" disabled)
+                          .button.is-info(@click="handleModalFilter" disabled='true')
                             i.mdi.mdi-filter
                   // Informacion Filtros Base
                   .column.is-12
@@ -81,7 +81,7 @@
                         ListRepository(:repository='repo' @handleViewRepo="handleViewRepo" :key="repo.id")
         hr
         // Filters
-        //b-modal(:active.sync="modalFilter")
+        //-b-modal(:active.sync="modalFilter")
           nav.panel.has-background-white(style="border-radius: 6px")
               p.panel-heading.has-text-black
                 | Filtros
@@ -193,7 +193,8 @@ export default {
 
     const queryParams = {
       slug,
-      authors: integerValues([idCatalog]),
+      authors: [],
+      editorials: integerValues([idCatalog]),
       /* Next Feacture
       types: integerValues(types),
       topics: integerValues(topics)
@@ -266,22 +267,24 @@ export default {
     }
   },
   async created() {
-    const { types, topics, authors, slug } = this.query
+    const { types, topics, authors, editorials, slug } = this.query
     const hasSlug = Boolean(slug)
     /* Next Feacture
     const hasType = Boolean(types.length)
     const hasTopic = Boolean(topics.length)
     */
-    const hasAuthor = Boolean(authors.length)
 
     const hasType = false
     const hasTopic = false
+    const hasAuthor = false
+    const hasEditorial = Boolean(editorials.length)
 
     const params = [
       slug ? 'slug=' + slug : null,
       hasType ? types.map(id => 'type[]=' + id).join('&') : null,
       hasTopic ? topics.map(id => 'topic[]=' + id).join('&') : null,
-      hasAuthor ? authors.map(id => 'author[]=' + id).join('&') : null
+      hasAuthor ? authors.map(id => 'author[]=' + id).join('&') : null,
+      hasEditorial ? editorials.map(id => 'editorial[]=' + id).join('&') : null
     ]
 
     const queryParam = params
@@ -295,7 +298,7 @@ export default {
       .join('&')
 
     try {
-      if (hasSlug || hasTopic || hasType || hasAuthor) {
+      if (hasSlug || hasTopic || hasType || hasAuthor || hasEditorial) {
         const {
           data: { data: repositories = [], ...pagination }
         } = await this.$axios.get('/api/repo?format=user&' + queryParam)

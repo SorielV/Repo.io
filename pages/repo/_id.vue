@@ -131,8 +131,8 @@ export default {
           `/api/repo/${this.repository.id}/score?full=true`
         )
 
-        this.score.avg = avg
-        this.score.avgFixed = Math.round(avg)
+        this.score.avg = avg || 0
+        this.score.avgFixed = Math.round(avg || 0)
         this.score.count = total
         this.reviews = data
       } catch (error) {

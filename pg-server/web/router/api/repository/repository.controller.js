@@ -6,7 +6,6 @@ import { slugify } from './../../../../utils/index'
 
 const groupBy = (arr, fn) => {
   let currentId = arr[0][0]
-  console.log(currentId)
   let pos = 0
   return arr
     .map(typeof fn === 'function' ? fn : val => val[fn])
@@ -18,7 +17,6 @@ const groupBy = (arr, fn) => {
         acc[++pos] = acc[pos] || []
         acc[pos].push(arr[i])
         currentId = arr[i][0]
-        console.log(currentId)
       }
 
       return acc
@@ -660,6 +658,206 @@ Repository.getRepositoryById = async function(id, format = 'simple') {
   } else {
     return {}
   }
+}
+
+Repository.getRepositoriesByIdEditorial = async function(_options) {
+  const { api } = _options
+  if (!_options.hasOwnProperty('editorial')) {
+    return new Error('Editorial no enviado API' + api)
+  }
+
+  const {
+    pagination: { limit, offset, page, orderBy, orderDirection },
+    options
+  } = pageOptions(_options)
+
+  const slug = options.where.slug ? slugify(options.where.slug) : null
+  const editorial = uniqueIntegers(options.where.editorial)
+
+  const tableAs = 'R'
+  const whereConditions = ''
+
+  const countQuery = `
+    select count(*) from (select RT."idRepository" as "match"
+      from public."RepositoryEditorials" as RT
+      where RT."idCatalog" in (${editorial.join(',')}) 
+      ${
+        slug
+          ? `and RT."idRepository" in (
+                select id from "Repositories" where slug like '%${slug}%'
+              )`
+          : ``
+      }
+      group by RT."idRepository" having count(RT."idRepository") = 1
+   ) as count
+  `
+
+  const baseQuery = `
+    select RT."idRepository", count(RT."idRepository") as "match"
+      from public."RepositoryEditorials" as RT
+      where RT."idCatalog" in (${editorial.join(',')})
+      ${
+        slug
+          ? `and RT."idRepository" in (
+                select id from "Repositories" where slug like '%${slug}%'
+              )`
+          : ``
+      }
+      group by RT."idRepository" having count(RT."idRepository") = ${
+        editorial.length
+      }
+      ${options.all ? '' : ` limit ${limit} offset ${offset * (page - 1)} `}
+  `
+  const { format } = options
+
+  const query = getQuery(
+    `
+    select *
+      from "Repositories" as Repo
+        inner join (
+          ${baseQuery}
+        ) as match
+      on Repo.id = match."idRepository"`,
+    format,
+    'order by Repo.id;'
+  )
+
+  const promises = [
+    Repository.query({
+      text: countQuery,
+      rowMode: 'array'
+    }),
+    Repository.query({
+      text: query,
+      rowMode: 'array'
+    })
+  ]
+
+  const [
+    {
+      rows: [[total]]
+    },
+    { rows, fields }
+  ] = await Promise.all(promises)
+
+  return Number.parseInt(total) === 0 || rows.length === 0
+    ? new Pagination(options.api, [], {
+        limit,
+        offset,
+        page,
+        orderBy,
+        orderDirection,
+        total: Number(total)
+      })
+    : new Pagination(options.api, getNestedData(fields, rows), {
+        limit,
+        offset,
+        page,
+        orderBy,
+        orderDirection,
+        total: Number(total)
+      })
+}
+
+Repository.getRepositoriesByIdAuthor = async function(_options) {
+  const { api } = _options
+  if (!_options.hasOwnProperty('author')) {
+    return new Error('Author no enviado API' + api)
+  }
+
+  const {
+    pagination: { limit, offset, page, orderBy, orderDirection },
+    options
+  } = pageOptions(_options)
+
+  const slug = options.where.slug ? slugify(options.where.slug) : null
+
+  console.log(options.where.type)
+  const authors = uniqueIntegers(options.where.author)
+
+  const tableAs = 'R'
+  const whereConditions = ''
+
+  const countQuery = `
+    select count(*) from (select RT."idRepository" as "match"
+      from public."RepositoryAuthors" as RT
+      where RT."idAuthor" in (${authors.join(',')}) 
+      ${
+        slug
+          ? `and RT."idRepository" in (
+                select id from "Repositories" where slug like '%${slug}%'
+              )`
+          : ``
+      }
+      group by RT."idRepository" having count(RT."idRepository") = 1
+   ) as count
+  `
+
+  const baseQuery = `
+    select RT."idRepository", count(RT."idRepository") as "match"
+      from public."RepositoryAuthors" as RT
+      where RT."idAuthor" in (${authors.join(',')})
+      ${
+        slug
+          ? `and RT."idRepository" in (
+                select id from "Repositories" where slug like '%${slug}%'
+              )`
+          : ``
+      }
+      group by RT."idRepository" having count(RT."idRepository") = ${
+        authors.length
+      }
+      ${options.all ? '' : ` limit ${limit} offset ${offset * (page - 1)} `}
+  `
+  const { format } = options
+
+  const query = getQuery(
+    `
+    select *
+      from "Repositories" as Repo
+        inner join (
+          ${baseQuery}
+        ) as match
+      on Repo.id = match."idRepository"`,
+    format,
+    'order by Repo.id;'
+  )
+
+  const promises = [
+    Repository.query({
+      text: countQuery,
+      rowMode: 'array'
+    }),
+    Repository.query({
+      text: query,
+      rowMode: 'array'
+    })
+  ]
+
+  const [
+    {
+      rows: [[total]]
+    },
+    { rows, fields }
+  ] = await Promise.all(promises)
+
+  return Number.parseInt(total) === 0 || rows.length === 0
+    ? new Pagination(options.api, [], {
+        limit,
+        offset,
+        page,
+        orderBy,
+        orderDirection,
+        total: Number(total)
+      })
+    : new Pagination(options.api, getNestedData(fields, rows), {
+        limit,
+        offset,
+        page,
+        orderBy,
+        orderDirection,
+        total: Number(total)
+      })
 }
 
 export default Repository

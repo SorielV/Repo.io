@@ -25,7 +25,7 @@
             .column.is-4
               .card.is-shady
                 .card-image.has-text-centered
-                  i.mdi.mdi-facebook
+                  i.mdi.mdi-vuejs.has-text-success
                 .card-content
                   .content
                     h4 Tristique senectus et netus et. 
@@ -36,7 +36,7 @@
             .column.is-4
               .card.is-shady
                 .card-image.has-text-centered
-                  i.mdi.mdi-facebook
+                  i.mdi.mdi-linux.has-text-black
                 .card-content
                   .content
                     h4 Tempor orci dapibus ultrices in.
@@ -48,7 +48,7 @@
             .column.is-4
               .card.is-shady
                 .card-image.has-text-centered
-                  i.mdi.mdi-facebook
+                  i.mdi.mdi-nodejs.has-text-success
                 .card-content
                   .content
                     h4  Leo integer malesuada nunc vel risus. 
@@ -58,7 +58,7 @@
                       a(href='#') Leer Mas
     section.hero.is-fullheight
       .hero-body
-        .container.has-text-centered.has-my-5(v-if="isLoading")            
+        .container.has-text-centered.has-my-5(v-if="isLoading")
           .columns.is-centered
             .column
               content-loader(:height='160', :width='400', :speed='2', primaryColor='#000000', secondaryColor='#ecebeb')

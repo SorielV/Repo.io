@@ -23,8 +23,8 @@
               | Autores
             nuxt-link.navbar-item.is-hidden-desktop-only(to='/repo/editorials')
               | Editoriales
-          form#masthead-search
-            input.draw(type='search', name='s', aria-labelledby='search-label', placeholder='Buscar')
+          form#masthead-search(action='/search')
+            input.draw.has-text-white(type='search', name='q', aria-labelledby='search-label', placeholder='Buscar')
           nav#site-nav(role='navigation')
             .container
               .columns.is-centered(style="margin-top: 1rem;")
@@ -32,62 +32,99 @@
                   h4 Paginas
                   ul
                     li
-                      nuxt-link(to='/')
+                      a(@click="to('/')")
                         | Inicio
                     li
-                      nuxt-link(
-                        to='/admin'
+                      a(
+                        @click="to('/admin')"
                         v-if="$store.state.isAuth && $store.state.isAdmin"
                       ) Dashboard
                     li
-                      nuxt-link(to='/repo')
+                      a(@click="to('/repo')")
                         | Repositorio
                     li
-                      nuxt-link(to='/repo/types')
+                      a(@click="to('/repo/types')")
                         | Recursos
                     li
-                      nuxt-link(to='/repo/topics')
+                      a(@click="to('/repo/topics')")
                         | Tematicas
                     li
-                      nuxt-link(to='/repo/authors')
+                      a(@click="to('/repo/authors')")
                         | Autores
                     li
-                      nuxt-link(to='/repo/editorials')
+                      a(@click="to('/repo/editorials')")
                         | Editoriales
                 .column
                   h4 Recursos
                   ul
                     li
-                      a(href='#') 1
+                      a(@click="to('/repo/topics')")
+                        | Todos los Recursos
                     li
-                      a(href='#') 2
+                      a(@click="to('/repo/topics/3')")
+                        | Cultura
                     li
-                      a(href='#') 3
+                      a(@click="to('/repo/topics/5')")
+                        | Videojuegos
                     li
-                      a(href='#') 4
-                    li
-                      a(href='#') 5
+                      a(@click="to('/repo/topics/21')")
+                        | Sotfware
+                    li.is-hidden-mobile
+                      a(@click="to('/repo/topics/17')")
+                        | Javascript
+                    li.is-hidden-mobile
+                      a(@click="to('/repo/topics/19')")
+                        | Machine
+                    li.is-hidden-mobile
+                      a(@click="to('/repo/topics/20')")
+                        | Programing
                 .column
                   h4 Tematicas
                   ul
                     li
-                      a(href='#') 1
+                      a(@click="to('/repo/types')")
+                        | Todos las tematicas
                     li
-                      a(href='#') 2
+                      a(@click="to('/repo/types/3')")
+                        | Cursos
                     li
-                      a(href='#') 3
+                      a(@click="to('/repo/types/4')")
+                        | Videos
                     li
-                      a(href='#') 4
-                    li
-                      a(href='#') 5
+                      a(@click="to('/repo/types/14')")
+                        | Books
+                    li.is-hidden-mobile
+                      a(@click="to('/repo/types/10')")
+                        | Comunidades
+                    li.is-hidden-mobile
+                      a(@click="to('/repo/types/12')")
+                        | DataSets
+                    li.is-hidden-mobile
+                      a(@click="to('/repo/types/13')")
+                        | Papers
+
                 .column
                   h4 Usuario
                   ul
                     li
-                      nuxt-link(to='/login') Login
+                      a(@click="to('/login')") Login
                     li
-                      nuxt-link(to='/singup') Registro
+                      a(@click="to('/singup')") Registro
 </template>
+
+<script>
+export default {
+  methods: {
+    to(to) {
+      this.$router.push(to)
+      Array.from(document.getElementsByClassName('hamburger')).forEach(
+        hamburger => hamburger.click()
+      )
+    }
+  }
+}
+</script>
+
 
 <style>
 /*

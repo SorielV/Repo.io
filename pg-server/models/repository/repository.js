@@ -38,6 +38,12 @@ const RepositoySchema = {
       updatable: true,
       length: 200
     },
+    content: {
+      type: String,
+      required: false,
+      updatable: true,
+      length: 1300
+    },
     image: {
       type: String,
       required: false,

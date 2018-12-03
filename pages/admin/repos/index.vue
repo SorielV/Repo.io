@@ -241,13 +241,24 @@
                       option(v-for="(type, key) in catalog.topics" v-text="type.text" :value="type.value")
 
             b-field(
-              label="Descripcion"
+              label="Descripcion Corta"
             )
               b-input(
                 type="textarea"
                 v-model="create.description"
                 value=""
-                maxlength="400"
+                maxlength="200"
+                :required="true"
+              )
+
+            b-field(
+              label="Descripcion"
+            )
+              b-input(
+                type="textarea"
+                v-model="create.content"
+                value=""
+                maxlength="655"
                 :required="true"
               )
 
@@ -346,13 +357,24 @@
                   )
 
                 b-field(
-                  label="Descripcion"
+                  label="Descripcion Cortar"
                 )
                   b-input(
                     type="textarea"
                     v-model="update.data.description"
                     value=""
-                    maxlength="400"
+                    maxlength="200"
+                    :required="true"
+                  )
+
+                b-field(
+                  label="Descripcion"
+                )
+                  b-input(
+                    type="textarea"
+                    v-model="update.data.content"
+                    value=""
+                    maxlength="1200"
                     :required="true"
                   )
 
