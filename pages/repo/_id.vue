@@ -3,8 +3,10 @@
     RepoDI(
       :repository="repository"
       :score="score"
+      :isReviewModalActive="isReviewModalActive"
       @handleSubmitReview="handleSubmitReview"
     )
+
     b-tabs.block(position="is-centered")
       // Comentarios
       b-tab-item(label="Comentarios")
@@ -29,10 +31,10 @@
           .media-content
             form(v-on:submit.prevent="handleSubmit($event)")
               .field(style="margin:0;")
-                b-input#comment(maxlength="255" type="textarea")
+                b-input#comment(maxlength="255" type="textarea" v-model="comment.comment")
               .field
                 p.control
-                  button#handle.button Comentar
+                  button#handle.button.is-info(type='submit' :class="[isSendingComment ? 'is-loading' : '']") Comentar
         section(v-else)
           .buttons.is-centered
             nuxt-link(to="/login").button.is-info
@@ -64,11 +66,11 @@
               img(:src="$store.state.user.profileImage || 'https://bulma.io/images/placeholders/128x128.png'")
           .media-content
             form(v-on:submit.prevent="handleSubmit($event)")
-              .field(style="margin:0;")
-                b-input#comment(maxlength="255" type="textarea")
+              //-.field(style="margin:0;")
+                b-input#comment(maxlength="255" type="textarea" v-model="comment.comment")
               .field
                 p.control
-                  button#handle.button Comentar
+                  button#handle.button.is-info(:class="[isSendingReview ? 'is-loading' : '']" @click="isReviewModalActive = true") Nueva Resenia
         section(v-else)
           .buttons.is-centered
             nuxt-link(to="/login").button.is-info
@@ -104,10 +106,16 @@ export default {
   },
   data() {
     return {
+      isReviewModalActive: false,
       score: {
         count: 0,
         avg: 0
       },
+      comment: {
+        comment: ''
+      },
+      isSendingComment: false,
+      isSendingReview: false,
       reviews: [],
       comments: [],
       repository: {}
@@ -164,14 +172,10 @@ export default {
       }
     },
     async handleSubmit({ target }) {
-      const handle = target.querySelector('#handle')
-      const content = target.querySelector('#comment')
-      handle.enable = false
-      content.enable = false
-
       try {
-        const { value: comment } = content
         const { id: idRepository } = this.repository
+        const { comment } = this.comment
+        this.isSendingComment = true
 
         const {
           data: { data }
@@ -180,13 +184,12 @@ export default {
           comment
         })
 
-        content.value = ''
         this.comments.push(data)
+        this.comment.comment = ''
+        this.isSendingComment = false
       } catch (error) {
         console.log(error.message)
       }
-      handle.enable = true
-      comment.enable = true
     }
   }
 }

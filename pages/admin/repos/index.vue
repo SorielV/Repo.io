@@ -215,6 +215,9 @@
         // Crear
         b-tab-item(label="Crear")
           form.block(v-on:submit.prevent="handleSubmitCreate")
+            pre
+              p.small.has-text-danger
+                | **Una vez creado se podra agregar author, tipos de recursos, tematicas, archivos, etc.
             b-field(
               label="Titulo"
             )
@@ -343,7 +346,7 @@
         b-tab-item(:label='`Actualizar (id: ${update.data.id})`' :disabled="update.index === null")
           b-tabs.block(position='is-centered')
             // Informacion Basica
-            b-tab-item(label='Informacion Basica')
+            b-tab-item(label='Informacion General')
               form.block(v-on:submit.prevent="handleSubmitUpdate")
                 b-field(
                   label="Titulo"
@@ -387,6 +390,66 @@
                     value=""
                     maxlength="200"
                     :required="false"
+                  )
+
+                .field
+                  label.label Autores
+                  .control
+                    b-autocomplete(
+                      v-model="catalog.authorFilter"
+                      :data="filterAuthors"
+                      placeholder="Agregar Autores"
+                      @select='author => addAuthor(author)'
+                    )
+                      template(slot-scope='props')
+                        .media
+                          .media-left
+                            img(width='32' :src="props.option.image || 'https://bulma.io/images/placeholders/128x128.png'")
+                          .media-content
+                            | {{ props.option.value }}
+                            br
+
+                    section.has-my-1
+                      .columns.is-multiline
+                        .column.is-4(v-for='(author, index) in update.data.author' :key='index')
+                          .box
+                            article.media
+                              .media-left
+                                figure.image.is-64x64
+                                  img(:src="author.image || 'https://bulma.io/images/placeholders/128x128.png'" alt='Image')
+                              .media-content
+                                .content
+                                  p
+                                    strong {{ author.firstName + ' ' + author.lastName }}
+                                nav.level.is-mobile
+                                  .level-left
+                                    a.button.is-danger.is-small.level-item(aria-label='reply')
+                                      span.icon.is-small
+                                        i.mdi.mdi-window-close(aria-hidden='true')
+                b-field(label='Tipos')
+                  b-taginput(
+                    v-model='update.data.type'
+                    :data='catalog.filteredTypes'
+                    autocomplete
+                    :allow-new='false'
+                    field='value'
+                    icon='label'
+                    @typing='getFilteredTypes'
+                    @remove="removeType"
+                    @add="addType"
+                  )
+
+                b-field(label='Temas')
+                  b-taginput(
+                    v-model='update.data.topic'
+                    :data='catalog.filteredTopics'
+                    autocomplete
+                    :allow-new='false'
+                    field='value'
+                    icon='label'
+                    @typing='getFilteredTopics'
+                    @remove="removeTopic"
+                    @add="addTopic"
                   )
 
                 .field
@@ -435,68 +498,6 @@
                   button.button.is-info(type="submit") Actualizar
 
             // Autores, Tipos, Temas
-            b-tab-item(label='Autores, Tipos, Temas')
-              .field
-                label.label Autores
-                .control
-                  b-autocomplete(
-                    v-model="catalog.authorFilter"
-                    :data="filterAuthors"
-                    placeholder="Agregar Autores"
-                    @select='author => addAuthor(author)'
-                  )
-                    template(slot-scope='props')
-                      .media
-                        .media-left
-                          img(width='32' :src="props.option.image || 'https://bulma.io/images/placeholders/128x128.png'")
-                        .media-content
-                          | {{ props.option.value }}
-                          br
-
-                  section.has-my-1
-                    .columns.is-multiline
-                      .column.is-4(v-for='(author, index) in update.data.author' :key='index')
-                        .box
-                          article.media
-                            .media-left
-                              figure.image.is-64x64
-                                img(:src="author.image || 'https://bulma.io/images/placeholders/128x128.png'" alt='Image')
-                            .media-content
-                              .content
-                                p
-                                  strong {{ author.firstName + ' ' + author.lastName }}
-                              nav.level.is-mobile
-                                .level-left
-                                  a.button.is-danger.is-small.level-item(aria-label='reply')
-                                    span.icon.is-small
-                                      i.mdi.mdi-window-close(aria-hidden='true')
-              b-field(label='Tipos')
-                b-taginput(
-                  v-model='update.data.type'
-                  :data='catalog.filteredTypes'
-                  autocomplete
-                  :allow-new='false'
-                  field='value'
-                  icon='label'
-                  @typing='getFilteredTypes'
-                  @remove="removeType"
-                  @add="addType"
-                )
-
-              b-field(label='Temas')
-                b-taginput(
-                  v-model='update.data.topic'
-                  :data='catalog.filteredTopics'
-                  autocomplete
-                  :allow-new='false'
-                  field='value'
-                  icon='label'
-                  @typing='getFilteredTopics'
-                  @remove="removeTopic"
-                  @add="addTopic"
-                )
-              .buttons.is-centered
-                button.button(@click="handleCancelEvent") Cancelar
             // Recursos
             b-tab-item(label='Recursos')
               b-table(

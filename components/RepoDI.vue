@@ -111,7 +111,7 @@
         .doc(v-else)
           iframe(:src="'https://docs.google.com/viewer?embedded=true&url=' + fileURL(repository.resource[selected].file)")
     // Submit Review
-    b-modal(:active.sync="isModalScoreActive")
+    b-modal(:active.sync="isReviewModalActive")
       form.box(v-on:submit.prevent="handleSubmitReview")
         .is-flex
           figure.image.is-48x48
@@ -152,6 +152,13 @@ export default {
       type: Object,
       required: false,
       default: null
+    },
+    isReviewModalActive: {
+      type: Boolean,
+      required: false,
+      default() {
+        return false
+      }
     }
   },
   data() {
@@ -160,7 +167,6 @@ export default {
         score: 0,
         comment: ''
       },
-      isModalScoreActive: false,
       isModalActive: false,
       tabSelected: 1,
       selected: 0,
@@ -184,7 +190,7 @@ export default {
   },
   methods: {
     handleModalScore() {
-      this.isModalScoreActive = true
+      this.isReviewModalActive = true
       this.review.score = 5
     },
     handleSubmitReview() {

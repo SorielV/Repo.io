@@ -1,7 +1,7 @@
 <template lang="pug">
   div.Site
     Header
-    b-modal(:active.sync='isCardModalActive', :width='640', scroll='keep')
+    b-modal(:active.sync='isModalDevActive', :width='640', scroll='keep')
       .card
         .card-content
           .media
@@ -14,8 +14,30 @@
           .content
             p En desarrollo => reparacion bugs, vistas e interaccion
             br
+            p Mejoras Proximas (Sig ~2hrs)
+              ul 
+                li.line-through
+                  u Catalogos Dinamicos (JSON Actulizable) (Hoy)
+                li.line-through
+                  u Bug Visual al agregar comentario (textbox) (Hoy)
+                li.line-through
+                  u Bug Visual menu en desktop (<1440px) (Hoy)
+                li Simplificacion de Creacion de Recurso (Repositorio) (~Hoy)
+                li Estilos de Catalogos (~Hoy)
+                li Bug Visual al reenviar una review (score)
+                li ...
+              ul Posteriores
+                li Actulizar Recursos
+                li
+                  a(href="https://dev.to/rdegges/please-stop-using-local-storage-1i04")
+                    | JWT (Secure)
+                li Sesiones Entre Ventanas (Bug Session Storage)
+                li Keywords (Mejor Implemation)
+                li CronJob Score, Rating, Comnnets
+                li Elimnar lorems en Inicio
             small
-
+            .buttons.is-centered
+              button.button.is-fullwidth.is-danger(@click="feedback") Sugerencias, Peticiones Correccion de Bugs y/o Erroes
     button#scrollUp.button.is-black.is-outlined
       i.mdi.mdi-chevron-up
     section.Site-content
@@ -41,7 +63,7 @@ export default {
   },
   data() {
     return {
-      isCardModalActive: true,
+      isModalDevActive: true,
       items: [
         { title: 'Home', icon: 'home', to: { name: 'index' } },
         { title: 'Inspire', icon: 'lightbulb', to: { name: 'inspire' } }
@@ -103,6 +125,12 @@ export default {
   },
   created() {
     this.$store.dispatch('loadAuth')
+  },
+  methods: {
+    feedback() {
+      this.isModalDevActive = false
+      this.$router.push('feedback')
+    }
   }
 }
 </script>
@@ -132,5 +160,8 @@ div.has-navbar-fixed-top {
   z-index: 99;
   font-size: 18px;
   cursor: pointer;
+}
+.line-through {
+  text-decoration: line-through;
 }
 </style>

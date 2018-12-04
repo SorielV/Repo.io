@@ -17,11 +17,11 @@
               | Repositorio
             nuxt-link.navbar-item(to='/repo/types')
               | Recursos
-            nuxt-link.navbar-item(to='/repo/topics')
+            nuxt-link.navbar-item.is-hidden-desktop-only.is-hidden-table-only.is-hidden-widescreen-only(to='/repo/topics')
               | Tematicas
-            nuxt-link.navbar-item.is-hidden-desktop-only(to='/repo/authors')
+            nuxt-link.navbar-item.is-hidden-desktop-only.is-hidden-table-only.is-hidden-widescreen-only(to='/repo/authors')
               | Autores
-            nuxt-link.navbar-item.is-hidden-desktop-only(to='/repo/editorials')
+            nuxt-link.navbar-item.is-hidden-desktop-only.is-hidden-table-only.is-hidden-widescreen-only(to='/repo/editorials')
               | Editoriales
           form#masthead-search(action='/search')
             input.draw.has-text-white(type='search', name='q', aria-labelledby='search-label', placeholder='Buscar')

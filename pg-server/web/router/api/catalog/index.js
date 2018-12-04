@@ -4,6 +4,7 @@ import fileUpload from 'express-fileupload'
 import { catchException, getAuth, isAdminAuth } from './../../../middleware'
 import { saveFile, slugify } from './../../../../utils'
 import Model from './model'
+import { readFileSync, writeFileSync } from 'fs'
 
 const hasImage = ['editorial', 'topic', 'type', 'author']
 const router = Router()
@@ -103,14 +104,37 @@ router.post(
       obj.setImage(fileName ? client + '/' + fileName : null)
     }
 
-    console.log(obj)
-
     const results = await obj.save()
 
-    return res
+    res
       .status(201)
       .json({ data: results })
       .end()
+
+    if (results) {
+      const catalogPath = Path.join(
+        process.env.CLIENT_PATH,
+        '/public/catalog',
+        req.model + 's.json'
+      )
+
+      const catalog = JSON.parse(readFileSync(catalogPath) || [])
+
+      const item = results
+      item.idCatalog = item.id
+
+      if (req.model === 'author' || req.model === 'editorial') {
+        item.value = item.name
+        delete item.value
+      }
+      delete item.id
+
+      catalog.push(item)
+
+      writeFileSync(catalogPath, JSON.stringify(catalog))
+      console.log(`Catalogo ${req.model} [JSON] Actualizado`)
+    }
+    return
   })
 )
 
