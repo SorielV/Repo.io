@@ -266,6 +266,9 @@ const columns = [
   }
 ]
 
+const isStrEmpty = str =>
+  typeof str !== 'string' ? str.trim().length > 0 : false
+
 export default {
   layout: 'admin',
   head: {
@@ -285,9 +288,6 @@ export default {
         data: data,
         table: {
           loading: false,
-          columns,
-          defaultOpenedDetails: [],
-          checkedRows: [],
           data: data,
           total: data.length
         }
@@ -296,12 +296,7 @@ export default {
       return {
         data: [],
         table: {
-          loading: false,
-          columns,
-          defaultOpenedDetails: [],
-          checkedRows: [],
-          data: [],
-          total: 0
+          loading: false
         }
       }
     }
@@ -344,87 +339,63 @@ export default {
   watch: {
     'search.param'(nparam) {
       if (this.search.local) {
-        if (nparam === '' || nparam === null) {
+        if (isStrEmpty(nparam)) {
           this.table.data = this.data
           return
         }
 
-        const _field = this.search.field
-        const { type } = Array.apply(null, this.table.columns).find(
-          ({ field }) => field === _field
+        const fieldName = this.search.field
+        const { type } = Array.from(this.table.columns).find(
+          ({ field }) => field === fieldName
         )
 
         if (type === 'string' || type === 'date') {
           const param = nparam.toUpperCase()
-          this.table.data = Array.apply(null, this.data).filter(author => {
-            return author[_field].toUpperCase().includes(param)
+          this.table.data = Array.from(this.data).filter(author => {
+            return author[fieldName].toUpperCase().includes(param)
           })
         } else if (type === 'number') {
           const param = nparam
-          this.table.data = Array.apply(null, this.data).filter(author => {
-            return author[_field] == param
+          this.table.data = Array.from(this.data).filter(author => {
+            return author[fieldName] == param
           })
         }
       }
     }
   },
   methods: {
-    cancelImage(ev) {
+    // Utils
+    createFormData(obj) {
+      return Object.keys(obj).reduce((data, prop) => {
+        data.append(prop, obj[prop])
+        return data
+      }, new FormData())
+    },
+    cancelCreate(ev) {
       ev.preventDefault()
-      this.upload.src = null
-      this.upload.isSelected = false
-      this.upload.isAdding = false
+      this.selectedTab = 0
     },
-    async renderImage() {
-      const [file] = this.upload.imageFile
-
-      if (file) {
-        const reader = new FileReader()
-        return await new Promise((resolve, reject) => {
-          reader.onerror = e => {
-            reader.abort()
-            return reject(null)
-          }
-
-          reader.onload = e => {
-            this.$set(this.upload, 'src', e.target.result)
-            return resolve()
-          }
-          reader.readAsDataURL(file)
-        })
-      }
-      return Promise.resolve(null)
-    },
-    handleRemoveImage(ev) {
+    cancelUpdate(ev) {
       ev.preventDefault()
-      this.upload.isAdding = true
-      this.upload.imageFile = []
+      this.selectedTab = 0
     },
-    async handleRenderImage(files) {
-      console.log(this.upload.imageFile)
-      this.upload.isSelected = true
-      await this.renderImage()
-    },
+
+    // Pagination
     onPageChange(page) {
       this.search.page = page
     },
-    createFormData(obj) {
-      const data = new FormData()
 
-      for (const prop in obj) {
-        data.append(prop, obj[prop])
-      }
-
-      console.log(data)
-      return data
-    },
+    /* CRUD */
+    // Creacion
     async onCreate() {
-      const hasImage = this.upload.isSelected
+      const {
+        isSelected: hasImage,
+        imageFile: [image = null]
+      } = this.upload
+
       const item = hasImage ? this.createFormData(this.create) : this.create
 
       if (hasImage) {
-        const [image] = this.upload.imageFile
-        console.log(item)
         item.delete('image')
         item.append('image', image)
       }
@@ -456,14 +427,7 @@ export default {
         })
       }
     },
-    cancelCreate(ev) {
-      ev.preventDefault()
-      this.selectedTab = 0
-    },
-    cancelUpdate(ev) {
-      ev.preventDefault()
-      this.selectedTab = 0
-    },
+
     async onUpdate(ev) {
       const hasImage = this.upload.isSelected
       const { id: itemId } = this.update.data
@@ -508,6 +472,44 @@ export default {
         })
       }
     },
+    // AUX
+    async renderImage() {
+      // Solo primera imagen
+      const [file] = this.upload.imageFile
+      if (file) {
+        const reader = new FileReader()
+        return await new Promise((resolve, reject) => {
+          reader.onload = e => {
+            this.$set(this.upload, 'src', e.target.result)
+            return resolve()
+          }
+
+          reader.onerror = e => {
+            this.abort()
+            return reject('Error al cargar imagen')
+          }
+
+          reader.readAsDataURL(file)
+        })
+      }
+      return Promise.resolve(null)
+    },
+    cancelImage(ev) {
+      ev.preventDefault()
+      this.upload.src = null
+      this.upload.isSelected = false
+      this.upload.isAdding = false
+    },
+    handleRemoveImage(ev) {
+      ev.preventDefault()
+      this.upload.isAdding = true
+      this.upload.imageFile = []
+    },
+    async handleRenderImage(files) {
+      this.upload.isSelected = true
+      await this.renderImage()
+    },
+
     async removeAuthor(row) {
       try {
         const { data } = await this.$axios.delete(
@@ -568,6 +570,7 @@ export default {
 </script>
 
 <style scoped>
+/* Bind on loading */
 [v-cloak] > * {
   display: none;
 }
