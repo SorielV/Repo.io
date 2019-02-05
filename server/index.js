@@ -26,7 +26,7 @@ app.use('*', cors(corsOptions))
 
 const server = Server(app)
 
-if (process.env['client-env'] === 'true') {
+if (process.env['client_env'] === 'true') {
   const config = require('./../nuxt.config.js')
   config.dev = !(process.env.NODE_ENV === 'production')
 
