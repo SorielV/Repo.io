@@ -1,10 +1,8 @@
 #!/usr/bin/env nodejs
-
 import consola from 'consola'
 import path from 'path'
 import express from 'express'
 import { Server } from 'http'
-import SocketIO from 'socket.io'
 import morgan from 'morgan'
 
 import cors from 'cors'
@@ -27,10 +25,8 @@ app.use(morgan('tiny'))
 app.use('*', cors(corsOptions))
 
 const server = Server(app)
-const io = SocketIO(server)
-require('./socket.io/rooms/repository/repository.room')(io)
 
-if (process.env.NUXT === 'true') {
+if (process.env['client-env'] === 'true') {
   const config = require('./../nuxt.config.js')
   config.dev = !(process.env.NODE_ENV === 'production')
 

@@ -7,11 +7,11 @@
     "password" : "postgres"
   },
   "development": {
-    "host" : "159.203.184.223",
+    "host" : "localhost",
     "port": 5432,
-    "user" : "admin",
+    "user" : "postgres",
     "database" : "repo-development",
-    "password" : "5510e72328be4b1b516c5afd92719402"
+    "password" : "postgres"
   },
   "testing": {
     "host" : "159.203.184.223",
