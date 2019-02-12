@@ -3,28 +3,14 @@
     "host" : "localhost",
     "port": 5432,
     "user" : "postgres",
-    "database" : "repo-development",
+    "database" : "repo",
     "password" : "postgres"
   },
   "development": {
     "host" : "localhost",
     "port": 5432,
     "user" : "postgres",
-    "database" : "repo-development",
+    "database" : "repo",
     "password" : "postgres"
-  },
-  "testing": {
-    "host" : "159.203.184.223",
-    "port": 5432,
-    "user" : "admin",
-    "database" : "repo-testing",
-    "password" : "5510e72328be4b1b516c5afd92719402"
-  },
-  "production": {
-    "host" : "159.203.184.223",
-    "port": 5432,
-    "user" : "admin",
-    "database" : "repo-production",
-    "password" : "5510e72328be4b1b516c5afd92719402"
   }
 }

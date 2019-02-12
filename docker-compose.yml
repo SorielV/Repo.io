@@ -1,0 +1,37 @@
+version: "3.7"
+services:
+  web:
+    build:
+      context: .
+    container_name: repo-io
+    # command: ["npm", 'run', 'dev']
+    ports:
+      - "8080:3000"
+    volumes:
+      - .:/home/app/
+      - /home/app/node_modules
+    depends_on:
+      - postgres
+    environment:
+      PORT: 3000
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: repo
+    networks:
+      - default
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: repo
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    ports:
+      - "6666:5432"
+      #- target: 5432
+      #  published: 5432
+      #  protocol: tcp
+      #  mode: host
+    networks:
+      - default

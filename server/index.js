@@ -4,8 +4,6 @@ import path from 'path'
 import express from 'express'
 import { Server } from 'http'
 import morgan from 'morgan'
-
-import cors from 'cors'
 import bodyParser from 'body-parser'
 import { Nuxt, Builder } from 'nuxt'
 import APIs from './web/router/api'
@@ -14,67 +12,41 @@ import LoginAPI from './web/router/login'
 const host = process.env.HOST || '127.0.0.1'
 const port = process.env.PORT || 3000
 
-const corsOptions = {
-  origin: 'http://localhost:8080',
-  optionsSuccessStatus: 200
-}
-
 const app = express()
-
-app.use(morgan('tiny'))
-app.use('*', cors(corsOptions))
-
 const server = Server(app)
 
-if (process.env['client_env'] === 'true') {
-  const config = require('./../nuxt.config.js')
-  config.dev = !(process.env.NODE_ENV === 'production')
+async function start() {
+  const client_env = process.env['client_env'] === 'true'
+  let config = {},
+    nuxt = {}
 
-  async function start() {
-    const nuxt = new Nuxt(config)
+  if (client_env) {
+    const config = require('./../nuxt.config.js')
+    config.dev = !(process.env.NODE_ENV === 'production')
+    nuxt = new Nuxt(config)
 
-    // Build only in dev mode
     if (config.dev) {
       const builder = new Builder(nuxt)
       await builder.build()
     }
-
-    // app.use(cors)
-    // parse application/x-www-form-urlencoded
-    app.use(bodyParser.urlencoded({ extended: false }))
-
-    // parse application/json
-    app.use(bodyParser.json())
-
-    app.use('/api', APIs)
-    app.use('/login', LoginAPI)
-    app.use(nuxt.render)
-
-    server.listen(port, () => {
-      consola.success('Server Running in Port ' + port)
-    })
   }
 
-  start()
-} else {
-  async function start() {
-    console.log('Server Only')
+  app.use(morgan('tiny'))
+  app.use(bodyParser.urlencoded({ extended: false }))
+  app.use(bodyParser.json())
 
-    app.use(express.static(path.join(__dirname + './../dist')))
-    console.log(path.join(__dirname + './../dist'))
+  // Client
+  if (!client_env) app.use(express.static(path.join(__dirname + './../dist')))
 
-    // parse application/x-www-form-urlencoded
-    app.use(bodyParser.urlencoded({ extended: false }))
+  app.use('/api', APIs)
+  app.use('/login', LoginAPI)
 
-    // parse application/json
-    app.use(bodyParser.json())
+  // Nuxt Router
+  if (client_env) app.use(nuxt.render)
 
-    app.use('/api', APIs)
-    app.use('/login', LoginAPI)
-
-    server.listen(port, () => {
-      consola.success('Server Running in Port ' + port)
-    })
-  }
-  start()
+  server.listen(port, () => {
+    consola.success('Server Running in ' + host + ':' + port)
+  })
 }
+
+start()
